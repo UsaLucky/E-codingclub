@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CSC 112 — CBT Practice Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0d0f14;--surface:#161a23;--surface2:#1e2433;--border:#2a3045;
+    --accent:#a78bfa;--accent-dim:rgba(167,139,250,0.12);
+    --green:#3ddc84;--green-dim:rgba(61,220,132,0.12);
+    --red:#ff5f5f;--red-dim:rgba(255,95,95,0.12);
+    --text:#e8eaf0;--muted:#7a8299;
+    --mono:'DM Mono',monospace;--sans:'Space Grotesk',sans-serif;
+  }
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:0 16px 80px}
+
+  header{width:100%;max-width:800px;padding:32px 0 20px;border-bottom:1px solid var(--border);margin-bottom:28px}
+  .course-tag{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+  header h1{font-size:clamp(18px,4vw,26px);font-weight:700;line-height:1.2}
+  header h1 span{color:var(--muted);font-weight:400}
+  .meta-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+  .meta-pill{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:4px 12px;border-radius:20px}
+
+  .progress-wrap{width:100%;max-width:800px;margin-bottom:22px}
+  .progress-top{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:7px}
+  .progress-bar{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}
+  .progress-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s ease;width:0%}
+
+  .score-strip{width:100%;max-width:800px;display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+  .score-card{flex:1;min-width:90px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px;text-align:center}
+  .score-card .val{font-family:var(--mono);font-size:20px;font-weight:500}
+  .score-card .lbl{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.05em;text-transform:uppercase}
+  .score-card.correct .val{color:var(--green)}
+  .score-card.wrong .val{color:var(--red)}
+  .score-card.total .val{color:var(--accent)}
+  .score-card.skipped .val{color:var(--muted)}
+
+  .nav-dots-wrap{width:100%;max-width:800px;margin-bottom:24px}
+  .nav-dots-title{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
+  .nav-dots{display:flex;flex-wrap:wrap;gap:5px}
+  .nav-dot{width:26px;height:26px;border-radius:5px;background:var(--surface2);border:1.5px solid var(--border);font-family:var(--mono);font-size:9px;color:var(--muted);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s}
+  .nav-dot:hover{border-color:var(--accent)}
+  .nav-dot.answered-correct{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+  .nav-dot.answered-wrong{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+
+  .module-divider{width:100%;max-width:800px;display:flex;align-items:center;gap:12px;margin:30px 0 18px}
+  .module-divider span{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+  .module-divider .divline{flex:1;height:1px;background:var(--border)}
+
+  .question-card{width:100%;max-width:800px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:26px 26px 22px;margin-bottom:14px}
+  .q-number{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;margin-bottom:10px}
+  .q-text{font-size:14px;font-weight:500;line-height:1.65;margin-bottom:18px}
+
+  .options{display:flex;flex-direction:column;gap:9px}
+  .option{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1.5px solid var(--border);border-radius:9px;padding:11px 14px;cursor:pointer;transition:border-color .18s,background .18s;user-select:none}
+  .option:hover:not(.locked){border-color:var(--accent);background:var(--accent-dim)}
+  .option.selected:not(.locked){border-color:var(--accent);background:var(--accent-dim)}
+  .option.correct{border-color:var(--green);background:var(--green-dim)}
+  .option.wrong{border-color:var(--red);background:var(--red-dim)}
+  .option.show-correct{border-color:var(--green);background:var(--green-dim)}
+
+  .opt-letter{font-family:var(--mono);font-size:12px;font-weight:500;width:24px;height:24px;border-radius:5px;background:var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--muted);transition:background .18s,color .18s}
+  .option.correct .opt-letter{background:var(--green);color:#0d0f14}
+  .option.wrong .opt-letter{background:var(--red);color:#fff}
+  .option.show-correct .opt-letter{background:var(--green);color:#0d0f14}
+  .option.selected:not(.locked) .opt-letter{background:var(--accent);color:#fff}
+  .opt-text{font-size:13px;line-height:1.45}
+
+  .feedback{margin-top:12px;padding:10px 13px;border-radius:7px;font-size:12px;line-height:1.5;display:none}
+  .feedback.show{display:block}
+  .feedback.correct{background:var(--green-dim);border:1px solid var(--green);color:var(--green)}
+  .feedback.wrong{background:var(--red-dim);border:1px solid var(--red);color:var(--red)}
+
+  .q-footer{display:flex;justify-content:flex-end;margin-top:14px}
+  .btn-submit{font-family:var(--sans);font-size:12px;font-weight:600;padding:8px 20px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;transition:opacity .18s}
+  .btn-submit:hover{opacity:.85}
+  .btn-submit:disabled{opacity:.28;cursor:default}
+  .btn-submit.answered{background:var(--surface2);color:var(--muted);border:1px solid var(--border)}
+
+  #results-panel{display:none;width:100%;max-width:800px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 32px;text-align:center;margin-top:28px}
+  #results-panel.show{display:block}
+  .result-grade{font-family:var(--mono);font-size:76px;font-weight:500;line-height:1;margin-bottom:8px}
+  .result-label{font-size:14px;color:var(--muted);margin-bottom:28px}
+  .grade-bar-wrap{margin:0 auto 28px;max-width:380px}
+  .grade-bar-bg{height:7px;background:var(--surface2);border-radius:4px;overflow:hidden}
+  .grade-bar-fill{height:100%;border-radius:4px;transition:width 1s ease}
+  .result-breakdown{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-bottom:28px}
+  .rb-item{font-size:13px;color:var(--muted)}
+  .rb-item strong{color:var(--text)}
+  .btn-restart{font-family:var(--sans);font-size:13px;font-weight:600;padding:11px 30px;border-radius:9px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:background .2s,color .2s}
+  .btn-restart:hover{background:var(--accent);color:#fff}
+
+  @media(max-width:500px){.question-card{padding:18px 14px}#results-panel{padding:28px 16px}.result-grade{font-size:56px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="course-tag">AFIT · CSC 112 · Practice CBT</div>
+  <h1>Programming Abstraction <span>& Recursion</span></h1>
+  <div class="meta-row">
+    <span class="meta-pill">70 Questions</span>
+    <span class="meta-pill">Recursion · OOP · Arrays · Functions</span>
+    <span class="meta-pill">Answer to reveal</span>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span id="prog-label">0 / 70 answered</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<div class="score-strip">
+  <div class="score-card total">  <div class="val" id="sc-total">0</div>  <div class="lbl">Answered</div></div>
+  <div class="score-card correct"><div class="val" id="sc-correct">0</div><div class="lbl">Correct</div></div>
+  <div class="score-card wrong">  <div class="val" id="sc-wrong">0</div>  <div class="lbl">Wrong</div></div>
+  <div class="score-card skipped"><div class="val" id="sc-skip">70</div>  <div class="lbl">Remaining</div></div>
+</div>
+
+<div class="nav-dots-wrap">
+  <div class="nav-dots-title">Question Navigator</div>
+  <div class="nav-dots" id="nav-dots"></div>
+</div>
+
+<div id="questions-container"></div>
+
+<div id="results-panel">
+  <div class="result-grade" id="res-pct">--%</div>
+  <div class="result-label" id="res-label">Loading...</div>
+  <div class="grade-bar-wrap"><div class="grade-bar-bg"><div class="grade-bar-fill" id="res-bar" style="width:0%"></div></div></div>
+  <div class="result-breakdown">
+    <div class="rb-item">Correct: <strong id="res-correct">0</strong></div>
+    <div class="rb-item">Wrong: <strong id="res-wrong">0</strong></div>
+    <div class="rb-item">Score: <strong id="res-score">0 / 70</strong></div>
+  </div>
+  <button class="btn-restart" onclick="restart()">↺ Retake Exam</button>
+</div>
+
+<script>
+// opts: [A, B, C, D], ans: index of correct answer
+// Answers are spread across all four positions (A=0, B=1, C=2, D=3)
+const QA = [
+
+  // ── RECURSION FUNDAMENTALS ─────────────────────────────────
+  { m:"Recursion Fundamentals",
+    q:"What is the fundamental definition of recursion in programming?",
+    opts:["A technique for hiding complex internal logic","A way to store data in contiguous memory","A method or function that calls itself to solve a problem","A loop that executes a fixed number of times"],
+    ans:2 },
+
+  { q:"Every recursive algorithm must have which two primary components to function correctly?",
+    opts:["A main function and a return value","A base case and a recursive call","A global variable and a local variable","A for-loop and an if-statement"],
+    ans:1 },
+
+  { q:"What is the primary purpose of a <em>base case</em> in recursion?",
+    opts:["To increase the size of the call stack","To define the mathematical formula being used","To initialize the recursive function","To provide a condition where the function stops calling itself"],
+    ans:3 },
+
+  { q:"What error typically occurs if a recursive function lacks a proper base case?",
+    opts:["Compilation Error","Pointer arithmetic overflow","Syntax Error","Logic Error (Infinite Recursion / Stack Overflow)"],
+    ans:3 },
+
+  { q:"Which memory structure is used by the computer to track active recursive subroutines?",
+    opts:["A 2D Matrix","A Doubly Linked List","The Call Stack","The Heap"],
+    ans:2 },
+
+  { q:"The call stack operates on which principle?",
+    opts:["Random Access","FIFO (First-In-First-Out)","Contiguous allocation","LIFO (Last-In-First-Out)"],
+    ans:3 },
+
+  { q:"In the <em>wind-up</em> phase of recursion, what happens to memory?",
+    opts:["The program execution terminates","The base case is immediately reached","Memory is freed as the function returns","A new layer is added to the stack with its own local variables"],
+    ans:3 },
+
+  { q:"What happens during the <em>unwind</em> phase of a recursive process?",
+    opts:["A loop takes over execution","The computer runs out of memory","The base case return value is passed back up through previous calls","The function calls itself with a larger argument"],
+    ans:2 },
+
+  { q:"Which of the following is a classic mathematical example of a recursive problem?",
+    opts:["Fibonacci Sequence","Sequential Linear Search","Bubble Sort","Matrix Multiplication"],
+    ans:0 },
+
+  { q:"In the recursive definition of Factorial (n!), what is the base case?",
+    opts:["n = n − 1","n = infinity","n = 100","n = 0 (where 0! = 1)"],
+    ans:3 },
+
+  { q:"How is the recursive call for Factorial (n!) typically structured?",
+    opts:["factorial(n × n)","factorial(n) / 2","n + factorial(n + 1)","n × factorial(n − 1)"],
+    ans:3 },
+
+  { q:"For the Fibonacci sequence, what are the two standard base cases?",
+    opts:["No base cases are required","fib(−1) = 0 and fib(0) = 1","fib(0) = 0 and fib(1) = 1","fib(1) = 1 and fib(2) = 2"],
+    ans:2 },
+
+  { q:"What is the recursive step in a standard Fibonacci algorithm?",
+    opts:["fib(n/2)","fib(n−1) − fib(n−2)","fib(n−1) × fib(n−2)","fib(n−1) + fib(n−2)"],
+    ans:3 },
+
+  { q:"Why might a recursive solution be less memory-efficient than an iterative one?",
+    opts:["It cannot handle large integers","Iteration is naturally faster for all problems","It uses more CPU cycles","Each recursive call adds a new frame to the stack"],
+    ans:3 },
+
+  // ── BINARY SEARCH & COMPLEXITY ────────────────────────────
+  { m:"Binary Search & Complexity",
+    q:"Recursive Binary Search uses which algorithmic strategy?",
+    opts:["Divide and Conquer","Backtracking","Brute Force","Greedy Search"],
+    ans:0 },
+
+  { q:"In recursive Binary Search, what happens if the target value (x) is greater than the middle element?",
+    opts:["The search switches to a linear search","The function calls itself on the right half of the array","The function calls itself on the left half of the array","The search terminates"],
+    ans:1 },
+
+  { q:"What is the time complexity (Big-O) of a recursive Binary Search?",
+    opts:["O(n²)","O(1)","O(n)","O(log n)"],
+    ans:3 },
+
+  { q:"If a recursive Binary Search runs on a list of 1,024 elements, approximately how many calls are made in the worst case?",
+    opts:["1","512","10","1,024"],
+    ans:2 },
+
+  { q:"What is the space complexity of the iterative version of Binary Search compared to the recursive version?",
+    opts:["Both are O(n)","Both are O(1)","Iterative is O(n), Recursive is O(1)","Iterative is O(1), Recursive is O(log n)"],
+    ans:3 },
+
+  { q:"Which of the following problems is best suited for recursion due to its self-similar nature?",
+    opts:["Printing a single string","Swapping two variables","Summing a list of 5 numbers","Tree traversals"],
+    ans:3 },
+
+  // ── CALL STACK & TRACING ──────────────────────────────────
+  { m:"Call Stack & Tracing",
+    q:"In a recursive trace, what does the <em>stack frame</em> contain?",
+    opts:["Only the global variables","The entire source code of the program","Only the function name","Local variables and the return address"],
+    ans:3 },
+
+  { q:"What occurs when the call stack exceeds its allotted memory limit?",
+    opts:["Memory is automatically doubled","The base case is automatically triggered","A Stack Overflow error","The program runs faster"],
+    ans:2 },
+
+  { q:"Which statement is TRUE regarding recursion and iteration?",
+    opts:["Recursion does not use the call stack","Recursion is always faster than iteration","Any problem solved with iteration can also be solved with recursion","Iteration requires a base case to stop"],
+    ans:2 },
+
+  { q:"In Binary Search code <code>binarySearch(arr, low, high, x)</code>, what is the base case for 'element not found'?",
+    opts:["if arr.length == 0","if x > 0","if arr[mid] == x","if high &lt; low"],
+    ans:3 },
+
+  { q:"Tracing the call <code>factorial(3)</code> would involve which sequence of calculations?",
+    opts:["3 × 3","3³","3 × 2 × 1","3 + 2 + 1"],
+    ans:2 },
+
+  { q:"Why is recursion often considered 'cleaner' for complex tasks?",
+    opts:["It is easier for the computer to compile","It doesn't require functions","It avoids using any memory","It breaks problems into identical, smaller sub-problems"],
+    ans:3 },
+
+  { q:"A recursive function that calls itself twice per step (like Fibonacci) creates what kind of execution tree?",
+    opts:["Linear","Constant","Logarithmic","Exponential"],
+    ans:3 },
+
+  { q:"In Python recursion, the <code>return</code> statement is vital because:",
+    opts:["It prevents the use of local variables","It only displays output to the console","It passes the result back up to the previous stack frame","It clears all global variables"],
+    ans:2 },
+
+  { q:"What happens to the local variables of a recursive function once it hits its base case and returns?",
+    opts:["They are saved in a file","They are passed to the next recursive call","They become global","They are deallocated from the stack"],
+    ans:3 },
+
+  { q:"Which is an advantage of recursion?",
+    opts:["Guaranteed to never loop infinitely","Lower memory usage","Intuitive for problems with nested or hierarchical structures","Easier to debug for beginners"],
+    ans:2 },
+
+  // ── ADVANCED RECURSION ────────────────────────────────────
+  { m:"Advanced Recursion",
+    q:"Recursive Binary Search: If the array is [11–16] and the target is 8, what is the first <em>mid</em> value?",
+    opts:["5","8","2","12 (approximate midpoint)"],
+    ans:3 },
+
+  { q:"In the Fibonacci sequence, what is fib(4)? (Sequence: 0, 1, 1, 2, 3...)",
+    opts:["5","4","3","2"],
+    ans:2 },
+
+  { q:"A recursive function is <em>tail-recursive</em> if:",
+    opts:["It uses a while loop","It has no base case","The recursive call is the very last operation performed","The recursive call is the first thing in the function"],
+    ans:2 },
+
+  { q:"What is the Big-O of a recursive function that decrements n by 1 until it hits 0?",
+    opts:["O(n²)","O(log n)","O(1)","O(n)"],
+    ans:3 },
+
+  { q:"Which of the following is NOT required to write a recursive function?",
+    opts:["Parameters to track state","A for-loop","A base case","A recursive call"],
+    ans:1 },
+
+  { q:"If <code>func(n)</code> calls <code>func(n−1)</code>, how many frames are on the stack when n reaches 0 (starting from 5)?",
+    opts:["5","0","1","6"],
+    ans:3 },
+
+  { q:"Recursion is a primary pillar of which programming paradigm?",
+    opts:["Database management","Sequential arithmetic","Procedural","Programming Abstraction"],
+    ans:3 },
+
+  { q:"In recursive Binary Search, the search space is reduced by what factor in each call?",
+    opts:["Double","1","10","Half"],
+    ans:3 },
+
+  { q:"What is the Big-O complexity of the naive recursive Fibonacci algorithm?",
+    opts:["O(log n)","O(1)","O(n)","O(2ⁿ)"],
+    ans:3 },
+
+  { q:"How can recursion be optimized in some languages to use constant space?",
+    opts:["By removing the base case","Making the function private","Tail-Call Optimization","Using global variables only"],
+    ans:2 },
+
+  { q:"A function <code>f(n)</code> that returns <code>n + f(n−1)</code> computes what?",
+    opts:["Fibonacci","n squared","Factorial","The sum of the first n numbers"],
+    ans:3 },
+
+  { q:"Recursion depth is limited by:",
+    opts:["The number of lines of code","The speed of the CPU","The number of variables in the function","The size of the physical RAM and call stack limits"],
+    ans:3 },
+
+  { q:"Which statement about the base case is FALSE?",
+    opts:["It must be reachable","It must contain another recursive call","It prevents infinite recursion","It returns a specific, non-recursive value"],
+    ans:1 },
+
+  { q:"What is the result of <code>factorial(0)</code>?",
+    opts:["Error","0","−1","1"],
+    ans:3 },
+
+  { q:"What is the result of <code>factorial(4)</code>?",
+    opts:["4","12","16","24"],
+    ans:3 },
+
+  { q:"Binary Search requires the data to be:",
+    opts:["Stored in a linked list","Unsorted","Sorted","Heterogeneous"],
+    ans:2 },
+
+  { q:"In the call stack, the top-most frame represents:",
+    opts:["The global scope","The very first function called","The base case only","The currently executing function"],
+    ans:3 },
+
+  { q:"If recursion is 'wind-up' and 'unwind,' iteration is best described as:",
+    opts:["'Inherit' and 'Override'","'Push' and 'Pop'","'Enclose' and 'Expose'","'Step' and 'Repeat'"],
+    ans:3 },
+
+  { q:"Which data structure can be used to manually simulate recursion?",
+    opts:["Queue","2D Array","Stack","String"],
+    ans:2 },
+
+  // ── PROGRAMMING ABSTRACTION & FUNCTIONS ───────────────────
+  { m:"Programming Abstraction & Functions",
+    q:"What is <em>Programming Abstraction</em>?",
+    opts:["Using only global variables","Writing as much code as possible in one file","Making code case-insensitive","Hiding complex internal logic to focus on high-level design"],
+    ans:3 },
+
+  { q:"A 'black box' analogy in functions refers to:",
+    opts:["A hardware failure","Code that is impossible to read","Knowing what a function does without needing to know how it works internally","Code that has no return value"],
+    ans:2 },
+
+  { q:"What is the main difference between a function and a procedure?",
+    opts:["Procedures are faster","Functions are only in Python","Functions return a value; procedures perform actions without returning a value","Functions cannot take parameters"],
+    ans:2 },
+
+  { q:"In the formula <code>Address = Base_Address + (Index × Data_Size)</code>, what does 'Index' represent?",
+    opts:["The binary value of the data","The total size of the array","The speed of the memory","The offset from the base memory address"],
+    ans:3 },
+
+  { q:"Accessing an array element by index has a time complexity of:",
+    opts:["O(n)","O(log n)","O(n²)","O(1)"],
+    ans:3 },
+
+  { q:"<em>Contiguous memory</em> in arrays means:",
+    opts:["Data is always 8 bytes","Data is only stored in binary","Data is stored in back-to-back memory locations","Data is scattered across the disk"],
+    ans:2 },
+
+  { q:"What is <em>Pass by Value</em>?",
+    opts:["The function deletes the data","The function gets the original variable's memory address","The function ignores the data","The function gets a complete copy of the data"],
+    ans:3 },
+
+  { q:"Variable scope refers to:",
+    opts:["The variable's naming convention","The speed of variable access","The physical size of the variable in bytes","The region of a program where a variable is visible and accessible"],
+    ans:3 },
+
+  { q:"A <em>Local Variable</em> exists:",
+    opts:["Within the global scope","Only in the computer's hard drive","Only while the function it is declared in is running","For the entire duration of the program"],
+    ans:2 },
+
+  { q:"What is <em>Short-Circuit Evaluation</em> in Boolean logic?",
+    opts:["Using only 'AND' operators","A hardware failure in the CPU","Evaluating all conditions even if the result is already known","Skipping evaluation of the second operand if the first already determines the result"],
+    ans:3 },
+
+  // ── OOP ───────────────────────────────────────────────────
+  { m:"Object-Oriented Programming (OOP)",
+    q:"In OOP, a <em>Class</em> is best described as:",
+    opts:["A type of loop","A list of sequential instructions","A specific instance of data","A blueprint or template for creating objects"],
+    ans:3 },
+
+  { q:"What is an <em>Object</em> in OOP?",
+    opts:["A blueprint","A type of memory address","A specific instance created from a class","A private variable"],
+    ans:2 },
+
+  { q:"<em>Encapsulation</em> involves:",
+    opts:["Using recursion to solve math problems","Letting classes inherit from each other","Making all data public","Keeping an object's data private and controlling access through methods"],
+    ans:3 },
+
+  { q:"What does the <code>override</code> keyword signify in inheritance (C#)?",
+    opts:["The method is private","A child class is adding a new method","A child class is replacing the parent's version of a method","The method cannot be changed"],
+    ans:2 },
+
+  { q:"<em>Polymorphism</em> allows:",
+    opts:["Code to be compressed","A program to run on many different operating systems","One class to have many instances","Different objects to respond to the same method call in their own specific way"],
+    ans:3 },
+
+  { q:"The <em>Singleton Pattern</em> ensures:",
+    opts:["A class has only one instance throughout the entire program","A class has many children","A class has no instances","A class is only used once"],
+    ans:0 },
+
+  // ── SORTING, COMPLEXITY & MISC ────────────────────────────
+  { m:"Sorting, Complexity & Misc",
+    q:"Which Big-O notation represents <em>Linear Time</em>?",
+    opts:["O(n²)","O(log n)","O(1)","O(n)"],
+    ans:3 },
+
+  { q:"Which sorting algorithm repeatedly swaps adjacent elements if they are in the wrong order?",
+    opts:["Selection Sort","Quick Sort","Bubble Sort","Binary Sort"],
+    ans:2 },
+
+  { q:"'Spaghetti code' is a negative term for:",
+    opts:["Code written in Python","Fast executing code","Code that uses too many arrays","Code that is disorganized and difficult to read"],
+    ans:3 },
+
+  { q:"File I/O <code>try/catch</code> blocks are used to:",
+    opts:["Encrypt file data","Delete files automatically","Speed up file writing","Handle errors (exceptions) gracefully without crashing the program"],
+    ans:3 },
+];
+
+const letters = ['A','B','C','D'];
+let state = QA.map(()=>({chosen:null,submitted:false}));
+
+function getStats(){
+  let answered=0,correct=0,wrong=0;
+  state.forEach((s,i)=>{if(s.submitted){answered++;if(s.chosen===QA[i].ans)correct++;else wrong++;}});
+  return{answered,correct,wrong,remaining:QA.length-answered};
+}
+
+function updateMeta(){
+  const{answered,correct,wrong,remaining}=getStats();
+  const total=QA.length;
+  document.getElementById('prog-label').textContent=`${answered} / ${total} answered`;
+  document.getElementById('prog-pct').textContent=Math.round(answered/total*100)+'%';
+  document.getElementById('prog-fill').style.width=(answered/total*100)+'%';
+  document.getElementById('sc-total').textContent=answered;
+  document.getElementById('sc-correct').textContent=correct;
+  document.getElementById('sc-wrong').textContent=wrong;
+  document.getElementById('sc-skip').textContent=remaining;
+  document.querySelectorAll('.nav-dot').forEach((dot,i)=>{
+    dot.className='nav-dot';
+    if(state[i].submitted)dot.classList.add(state[i].chosen===QA[i].ans?'answered-correct':'answered-wrong');
+  });
+  if(answered===total)showResults();
+}
+
+function selectOption(qIdx,optIdx){
+  if(state[qIdx].submitted)return;
+  state[qIdx].chosen=optIdx;
+  document.getElementById(`q-${qIdx}`).querySelectorAll('.option')
+    .forEach((el,i)=>el.classList.toggle('selected',i===optIdx));
+  document.getElementById(`q-${qIdx}`).querySelector('.btn-submit').disabled=false;
+}
+
+function submitQuestion(qIdx){
+  if(state[qIdx].submitted||state[qIdx].chosen===null)return;
+  state[qIdx].submitted=true;
+  const card=document.getElementById(`q-${qIdx}`);
+  const chosen=state[qIdx].chosen,correct=QA[qIdx].ans,isCorrect=chosen===correct;
+  card.querySelectorAll('.option').forEach((el,i)=>{
+    el.classList.add('locked');el.style.cursor='default';
+    if(i===chosen&&isCorrect)el.classList.add('correct');
+    else if(i===chosen&&!isCorrect)el.classList.add('wrong');
+    if(i===correct&&!isCorrect)el.classList.add('show-correct');
+  });
+  const fb=card.querySelector('.feedback');
+  fb.classList.add('show',isCorrect?'correct':'wrong');
+  fb.textContent=isCorrect
+    ?`✓ Correct! The answer is ${letters[correct]}. ${QA[qIdx].opts[correct]}.`
+    :`✗ Wrong. The correct answer is ${letters[correct]}. ${QA[qIdx].opts[correct]}.`;
+  const btn=card.querySelector('.btn-submit');
+  btn.textContent='Submitted';btn.classList.add('answered');btn.disabled=true;
+  updateMeta();
+}
+
+function showResults(){
+  const{correct,wrong}=getStats();
+  const pct=Math.round(correct/QA.length*100);
+  const color=pct>=70?'var(--green)':pct>=50?'var(--accent)':'var(--red)';
+  const label=pct>=70?'Solid performance! 🎉':pct>=50?'Fair attempt — review weak areas.':'Needs more revision — you got this!';
+  document.getElementById('res-pct').textContent=pct+'%';
+  document.getElementById('res-pct').style.color=color;
+  document.getElementById('res-label').textContent=label;
+  document.getElementById('res-correct').textContent=correct;
+  document.getElementById('res-wrong').textContent=wrong;
+  document.getElementById('res-score').textContent=correct+' / '+QA.length;
+  const bar=document.getElementById('res-bar');
+  bar.style.background=color;
+  setTimeout(()=>bar.style.width=pct+'%',100);
+  document.getElementById('results-panel').classList.add('show');
+  document.getElementById('results-panel').scrollIntoView({behavior:'smooth'});
+}
+
+function restart(){
+  state=QA.map(()=>({chosen:null,submitted:false}));
+  document.getElementById('results-panel').classList.remove('show');
+  renderAll();updateMeta();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function scrollToQ(i){document.getElementById(`q-${i}`).scrollIntoView({behavior:'smooth',block:'center'});}
+
+function renderAll(){
+  const container=document.getElementById('questions-container');
+  container.innerHTML='';
+  const dotsEl=document.getElementById('nav-dots');
+  dotsEl.innerHTML='';
+  let currentModule='';
+
+  QA.forEach((item,i)=>{
+    const dot=document.createElement('div');
+    dot.className='nav-dot';dot.textContent=i+1;dot.id=`dot-${i}`;
+    dot.onclick=()=>scrollToQ(i);
+    dotsEl.appendChild(dot);
+
+    if(item.m&&item.m!==currentModule){
+      currentModule=item.m;
+      const div=document.createElement('div');
+      div.className='module-divider';
+      div.innerHTML=`<span>${item.m}</span><div class="divline"></div>`;
+      container.appendChild(div);
+    }
+
+    const card=document.createElement('div');
+    card.className='question-card';card.id=`q-${i}`;
+    const optsHTML=item.opts.map((opt,j)=>`
+      <div class="option" onclick="selectOption(${i},${j})">
+        <div class="opt-letter">${letters[j]}</div>
+        <div class="opt-text">${opt}</div>
+      </div>`).join('');
+    card.innerHTML=`
+      <div class="q-number">QUESTION ${i+1} OF ${QA.length}</div>
+      <div class="q-text">${i+1}. ${item.q}</div>
+      <div class="options">${optsHTML}</div>
+      <div class="feedback"></div>
+      <div class="q-footer">
+        <button class="btn-submit" onclick="submitQuestion(${i})" disabled>Submit Answer</button>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+renderAll();
+updateMeta();
+</script>
+</body>
+</html>
