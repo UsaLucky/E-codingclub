@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>COS 102 — ULTRA HARD Exam Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --primary:#E8302A;--primary-dark:#C0251F;--primary-light:#F05550;
+  --red-bg:rgba(232,48,42,.08);--red-bg-hover:rgba(232,48,42,.13);--red-border:rgba(232,48,42,.25);
+  --bg:#F5F5F7;--surface:#FFFFFF;--surface2:#F0F0F2;
+  --border:#E4E4E8;--border2:#D0D0D5;
+  --ink:#0F0F0F;--ink2:#3A3A3F;--ink3:#6E6E78;--ink4:#9E9EA8;
+  --green:#16A34A;--amber:#D97706;--blue:#2563EB;--purple:#7C3AED;
+  --r-card:16px;--r-input:12px;--r-pill:999px;--r-sm:8px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 10px 32px rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.06);
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#0F0F0F;--surface:#1A1A1A;--surface2:#242424;--border:#2A2A2A;--border2:#333;--ink:#F0F0F4;--ink2:#C8C8D0;--ink3:#8A8A96;--ink4:#5A5A66;}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;padding-bottom:80px}
+/* WARNING OVERLAY */
+#warn-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:16px}
+#warn-box{background:var(--surface);border-radius:20px;max-width:460px;width:100%;padding:28px 22px;text-align:center;border:2px solid var(--primary);box-shadow:0 0 50px rgba(232,48,42,.35)}
+.warn-icon{font-size:3rem;margin-bottom:10px}
+#warn-box h2{font-size:1.25rem;font-weight:900;color:var(--primary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+#warn-box .warn-sub{font-size:.84rem;font-weight:700;color:var(--ink);margin-bottom:14px}
+#warn-box .warn-list{text-align:left;background:var(--red-bg);border:1px solid var(--red-border);border-radius:12px;padding:14px 16px;margin-bottom:16px;list-style:none}
+#warn-box .warn-list li{font-size:.77rem;color:var(--ink2);line-height:1.75;padding-left:4px}
+#warn-box .warn-note{font-size:.73rem;color:var(--ink3);margin-bottom:20px;font-style:italic}
+#warn-accept{width:100%;padding:14px;background:var(--primary);color:#fff;border:none;border-radius:var(--r-pill);font-family:'Inter',sans-serif;font-size:.9rem;font-weight:800;cursor:pointer;letter-spacing:.03em;transition:background .15s}
+#warn-accept:hover{background:var(--primary-dark)}
+/* NAV */
+#top-nav{position:sticky;top:0;height:56px;background:var(--surface);border-bottom:1px solid var(--border);z-index:100;display:flex;align-items:center;padding:0 16px;gap:10px}
+#back-btn{width:36px;height:36px;border-radius:var(--r-sm);background:var(--surface2);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--ink);flex-shrink:0}
+#logo-box{width:34px;height:34px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+#logo-box svg{width:20px;height:20px}
+#brand{display:flex;flex-direction:column;line-height:1.2;flex:1}
+#brand b{font-size:.85rem;font-weight:700;color:var(--ink)}
+#brand span{font-size:.7rem;color:var(--ink3)}
+#timer{font-family:'JetBrains Mono',monospace;font-size:.78rem;font-weight:600;color:var(--primary);background:var(--red-bg);border:1px solid var(--red-border);padding:4px 10px;border-radius:var(--r-pill);flex-shrink:0}
+#bm-toggle{width:36px;height:36px;border-radius:var(--r-sm);background:var(--surface2);border:none;cursor:pointer;font-size:16px;flex-shrink:0}
+/* HERO */
+#hero{background:var(--surface);border-bottom:1px solid var(--border);padding:20px 16px 16px}
+#hero .breadcrumb{font-size:.72rem;color:var(--ink3);margin-bottom:10px}
+#hero .breadcrumb .current{color:var(--primary);font-weight:600}
+#hero-tag{display:inline-block;font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);background:var(--red-bg);border:1px solid var(--red-border);padding:3px 10px;border-radius:var(--r-pill);margin-bottom:10px}
+.hard-badge{display:inline-block;font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--primary);padding:3px 10px;border-radius:var(--r-pill);margin-bottom:10px;margin-left:6px}
+#hero h1{font-size:1.25rem;font-weight:700;line-height:1.3;margin-bottom:6px}
+#hero h1 em{color:var(--primary);font-style:normal}
+#hero .subtitle{font-size:.78rem;color:var(--ink3);margin-bottom:14px}
+.stats-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.stat-chip{font-size:.7rem;font-weight:600;padding:4px 10px;border-radius:var(--r-pill);border:1px solid transparent}
+.chip-blue{background:rgba(37,99,235,.08);color:var(--blue);border-color:rgba(37,99,235,.2)}
+.chip-green{background:rgba(22,163,74,.08);color:var(--green);border-color:rgba(22,163,74,.2)}
+.chip-red{background:var(--red-bg);color:var(--primary);border-color:var(--red-border)}
+.chip-purple{background:rgba(124,58,237,.08);color:var(--purple);border-color:rgba(124,58,237,.2)}
+.chip-amber{background:rgba(217,119,6,.08);color:var(--amber);border-color:rgba(217,119,6,.2)}
+#progress-wrap{display:flex;align-items:center;gap:8px}
+#prog-bar-bg{flex:1;height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+#prog-bar{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-light));border-radius:3px;width:0%;transition:width .4s ease}
+#prog-label{font-size:.7rem;color:var(--ink3);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+/* ACTIONS */
+#actions{max-width:720px;margin:0 auto;padding:12px 16px;display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-family:'Inter',sans-serif;font-size:.78rem;font-weight:600;padding:8px 16px;border-radius:var(--r-pill);cursor:pointer;border:none;transition:all .15s}
+.btn-outline{background:var(--surface);border:1.5px solid var(--border2);color:var(--ink2)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary);background:var(--red-bg)}
+.btn-ghost-red{background:var(--red-bg);color:var(--primary);border:1.5px solid var(--red-border)}
+.btn-ghost-red:hover{background:var(--red-bg-hover)}
+.btn-danger{background:var(--primary);color:#fff}
+.btn-danger:hover{background:var(--primary-dark)}
+/* MAIN */
+#main{max-width:720px;margin:0 auto;padding:0 16px 16px}
+#bm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);padding:14px;margin-bottom:12px;display:none;box-shadow:var(--shadow-sm)}
+#bm-card h3{font-size:.8rem;font-weight:700;margin-bottom:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em}
+#bm-list{display:flex;flex-wrap:wrap;gap:6px}
+/* SUMMARY */
+#sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-card);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow-sm)}
+#sum-toggle{width:100%;padding:14px 16px;background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:600;color:var(--ink);text-align:left}
+#sum-toggle .arrow{margin-left:auto;font-size:.7rem;color:var(--ink3);transition:transform .25s}
+#sum-toggle.open .arrow{transform:rotate(180deg)}
+#sum-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}
+#sum-body.open{display:block}
+.sum-week{margin-top:14px}
+.sum-week h4{font-size:.78rem;font-weight:700;color:var(--primary);margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em}
+.sum-week p,.sum-week li{font-size:.78rem;color:var(--ink2);line-height:1.6;margin-bottom:4px}
+.sum-week ul{padding-left:16px}
+.chip{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:600;color:var(--primary);background:var(--red-bg);padding:1px 6px;border-radius:4px;display:inline-block}
+/* SEARCH */
+#search-wrap{position:relative;margin-bottom:12px}
+#search-wrap .icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink4);font-size:.9rem;pointer-events:none}
+#search-input{width:100%;padding:10px 12px 10px 36px;border-radius:var(--r-input);border:1.5px solid var(--border2);background:var(--surface);color:var(--ink);font-family:'Inter',sans-serif;font-size:.82rem;outline:none;transition:border-color .15s}
+#search-input:focus{border-color:var(--primary)}
+#filters{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.filter-pill{font-size:.72rem;font-weight:600;padding:5px 12px;border-radius:var(--r-pill);border:1.5px solid var(--border2);background:var(--surface);color:var(--ink3);cursor:pointer;transition:all .15s}
+.filter-pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
+.filter-pill:hover:not(.active){border-color:var(--primary);color:var(--primary);background:var(--red-bg)}
+#shuffle-note{font-size:.74rem;color:var(--ink3);font-style:italic;margin-bottom:8px;display:none}
+#q-list{display:flex;flex-direction:column;gap:12px}
+#no-results{display:none;text-align:center;padding:40px 20px;color:var(--ink3);font-size:.85rem}
+/* Q CARD */
+.q-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-card);padding:16px;box-shadow:var(--shadow-sm);animation:fadeUp .3s ease both}
+.q-card.bookmarked{border-color:var(--primary)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.q-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;background:var(--surface2);color:var(--ink3);padding:2px 8px;border-radius:4px}
+.q-topic{font-size:.65rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--primary);background:var(--red-bg);border:1px solid var(--red-border);padding:2px 8px;border-radius:var(--r-pill)}
+.q-diff{font-size:.65rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#fff;background:var(--primary);padding:2px 8px;border-radius:var(--r-pill)}
+.bk-btn{margin-left:auto;background:none;border:none;cursor:pointer;font-size:.9rem;opacity:.4;transition:opacity .15s;padding:2px 4px}
+.bk-btn:hover,.bk-btn.active{opacity:1}
+.q-text{font-size:.86rem;font-weight:500;line-height:1.6;color:var(--ink);margin-bottom:14px}
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+@media(max-width:480px){.options-grid{grid-template-columns:1fr}}
+.opt-btn{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--surface);cursor:pointer;text-align:left;transition:all .15s;width:100%}
+.opt-btn:hover:not(:disabled){border-color:var(--primary);background:var(--red-bg)}
+.opt-btn:disabled{cursor:default}
+.opt-letter{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;width:20px;height:20px;border-radius:4px;background:var(--surface2);color:var(--ink3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .15s}
+.opt-text{font-size:.8rem;color:var(--ink2);line-height:1.45}
+.opt-btn.correct{border-color:var(--green);background:rgba(22,163,74,.07)}
+.opt-btn.correct .opt-letter{background:var(--green);color:#fff}
+.opt-btn.correct .opt-text{color:var(--green);font-weight:600}
+.opt-btn.wrong{border-color:var(--primary);background:var(--red-bg)}
+.opt-btn.wrong .opt-letter{background:var(--primary);color:#fff}
+.opt-btn.wrong .opt-text{color:var(--primary);font-weight:600}
+.opt-btn.revealed-correct{border-color:rgba(22,163,74,.4);background:rgba(22,163,74,.04)}
+.opt-btn.revealed-correct .opt-letter{background:rgba(22,163,74,.15);color:var(--green)}
+.q-footer{display:flex;justify-content:flex-end;margin-bottom:8px}
+.reveal-btn{font-size:.75rem;font-weight:600;color:var(--ink3);background:var(--surface2);border:none;border-radius:var(--r-pill);padding:5px 12px;cursor:pointer;transition:all .15s}
+.reveal-btn:hover{color:var(--primary);background:var(--red-bg)}
+.explanation{display:none;border-left:3px solid var(--primary);background:var(--red-bg);border-radius:0 var(--r-sm) var(--r-sm) 0;padding:10px 12px;animation:fadeIn .25s ease}
+.explanation.show{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.explanation p{font-size:.78rem;color:var(--ink2);line-height:1.55}
+.explanation strong{color:var(--primary)}
+#diag-bar{position:fixed;bottom:56px;left:0;right:0;z-index:90;display:flex;justify-content:center;padding:10px 16px;pointer-events:none;opacity:0;transition:opacity .3s}
+#diag-bar.show{opacity:1;pointer-events:auto}
+#diag-btn{background:var(--primary);color:#fff;border:none;border-radius:var(--r-pill);padding:12px 24px;font-family:'Inter',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;box-shadow:var(--shadow-lg);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:var(--shadow-lg)}50%{box-shadow:0 0 0 8px rgba(232,48,42,.15),var(--shadow-lg)}}
+#modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+#modal-overlay.open{opacity:1;pointer-events:auto}
+#modal-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-width:720px;max-height:90vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+#modal-overlay.open #modal-sheet{transform:translateY(0)}
+#modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:10px auto 0}
+#modal-head{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:1}
+#modal-head h2{font-size:1rem;font-weight:700;flex:1}
+#modal-close{width:32px;height:32px;border-radius:50%;background:var(--surface2);border:none;cursor:pointer;font-size:1rem}
+#modal-body{padding:16px}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.score-cell{padding:14px;border-radius:var(--r-card);border:1.5px solid var(--border)}
+.score-cell .val{font-size:1.6rem;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1}
+.score-cell .lbl{font-size:.72rem;color:var(--ink3);margin-top:4px}
+.score-cell.green-cell{background:rgba(22,163,74,.07);border-color:rgba(22,163,74,.2)}.score-cell.green-cell .val{color:var(--green)}
+.score-cell.red-cell{background:var(--red-bg);border-color:var(--red-border)}.score-cell.red-cell .val{color:var(--primary)}
+.score-cell.blue-cell{background:rgba(37,99,235,.07);border-color:rgba(37,99,235,.2)}.score-cell.blue-cell .val{color:var(--blue)}
+.score-cell.amber-cell{background:rgba(217,119,6,.07);border-color:rgba(217,119,6,.2)}.score-cell.amber-cell .val{color:var(--amber)}
+.modal-section-title{font-size:.78rem;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px}
+.topic-bar-row{margin-bottom:10px}
+.topic-bar-label{display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:4px}
+.topic-bar-label span:first-child{font-weight:600;color:var(--ink)}
+.topic-bar-label span:last-child{font-weight:700;font-family:'JetBrains Mono',monospace}
+.topic-bar-bg{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.topic-bar-fill{height:100%;border-radius:4px;width:0%;transition:width .6s ease}
+.focus-card{padding:12px;border-radius:var(--r-sm);margin-bottom:8px;border:1.5px solid}
+.focus-card.critical{background:rgba(232,48,42,.05);border-color:var(--red-border)}
+.focus-card.warning{background:rgba(217,119,6,.05);border-color:rgba(217,119,6,.25)}
+.focus-card.good{background:rgba(22,163,74,.05);border-color:rgba(22,163,74,.2)}
+.focus-card .fc-head{font-size:.78rem;font-weight:700;margin-bottom:4px}
+.focus-card .fc-body{font-size:.74rem;color:var(--ink2);line-height:1.5}
+.verdict-box{background:var(--ink);color:#fff;border-radius:var(--r-card);padding:16px;margin-top:16px}
+.verdict-box p{font-size:.82rem;line-height:1.6}
+.verdict-box strong{color:var(--primary-light)}
+#modal-footer{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--border)}
+#modal-footer button{flex:1;padding:11px;border-radius:var(--r-pill);font-family:'Inter',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;border:none}
+#modal-close-sec{background:var(--surface2);color:var(--ink2)}
+#modal-retake{background:var(--primary);color:#fff}
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:4px 16px;color:var(--ink3);font-family:'Inter',sans-serif}
+.nav-item span:first-child{font-size:1rem}
+.nav-item span:last-child{font-size:.6rem;font-weight:600}
+.nav-item.active{color:var(--primary)}
+</style>
+</head>
+<body>
+<!-- WARNING OVERLAY -->
+<div id="warn-overlay">
+  <div id="warn-box">
+    <div class="warn-icon">⚠️</div>
+    <h2>Extreme Difficulty Warning</h2>
+    <p class="warn-sub">This is NOT a regular quiz. Proceed with caution.</p>
+    <ul class="warn-list">
+      <li>🔴 150 ultra-hard questions designed to expose every gap in your knowledge</li>
+      <li>🔴 Questions test deep understanding — NOT surface memorisation</li>
+      <li>🔴 Traps, edge cases, and near-identical distractors throughout</li>
+      <li>🔴 Code tracing, multi-step logic &amp; exception reasoning required</li>
+      <li>🔴 Average pass rate on this format is below 40%</li>
+      <li>🔴 Do NOT attempt unless you have studied ALL weeks thoroughly</li>
+    </ul>
+    <p class="warn-note">If you score above 70%, you are genuinely exam-ready. Most students will not.</p>
+    <button id="warn-accept" onclick="document.getElementById('warn-overlay').style.display='none'">I Understand — Start the Challenge 💀</button>
+  </div>
+</div>
+
+<nav id="top-nav">
+  <button id="back-btn" onclick="history.back()">←</button>
+  <div id="logo-box"><svg viewBox="0 0 20 20" fill="none"><rect x="3" y="2" width="10" height="13" rx="2" fill="white" opacity=".9"/><rect x="6" y="8" width="10" height="10" rx="2" fill="white" opacity=".5"/><rect x="5" y="5" width="5" height="1.2" rx=".6" fill="white" opacity=".7"/><rect x="5" y="7.5" width="7" height="1.2" rx=".6" fill="white" opacity=".7"/></svg></div>
+  <div id="brand"><b>PDFNest</b><span>💀 Ultra Hard Mode</span></div>
+  <div id="timer">⏱ 00:00</div>
+  <button id="bm-toggle" onclick="toggleBookmarks()" title="Bookmarks">🔖</button>
+</nav>
+
+<div id="hero">
+  <div class="breadcrumb">AFIT › 100 Level › Computing › <span class="current">COS 102 Ultra Hard Quiz</span></div>
+  <div id="hero-tag">AFIT · 100 LEVEL · COMPUTING</div><span class="hard-badge">💀 ULTRA HARD</span>
+  <h1>Introduction to <em>Problem Solving</em></h1>
+  <p class="subtitle">Weeks 1–10 · 150 Questions · Deep Exam Preparation · All Topics</p>
+  <div class="stats-row">
+    <span class="stat-chip chip-blue" id="stat-showing">Showing: 150</span>
+    <span class="stat-chip chip-green" id="stat-correct">✓ Correct: 0</span>
+    <span class="stat-chip chip-red" id="stat-wrong">✗ Wrong: 0</span>
+    <span class="stat-chip chip-purple" id="stat-attempted">Attempted: 0</span>
+    <span class="stat-chip chip-amber" id="stat-score">Score: 0%</span>
+  </div>
+  <div id="progress-wrap">
+    <div id="prog-bar-bg"><div id="prog-bar"></div></div>
+    <span id="prog-label">0 / 150</span>
+  </div>
+</div>
+
+<div id="actions">
+  <button class="btn btn-outline" onclick="shuffleQuestions()">🔀 Shuffle</button>
+  <button class="btn btn-ghost-red" onclick="revealAll()">👁 Reveal All</button>
+  <button class="btn btn-danger" onclick="resetQuiz()">↺ Reset</button>
+</div>
+
+<div id="main">
+  <div id="bm-card"><h3>🔖 Bookmarks</h3><div id="bm-list"></div></div>
+  <div id="sum-card">
+    <button id="sum-toggle" onclick="toggleSummary()">📚 Topic Revision Summary<span class="arrow">▼</span></button>
+    <div id="sum-body">
+      <div class="sum-week"><h4>Week 1 — Problems &amp; Critical Thinking</h4><ul>
+        <li>A <span class="chip">problem</span> = <span class="chip">initial state</span> + <span class="chip">goal state</span>.</li>
+        <li><span class="chip">Well-structured</span>: clear goals, known constraints. <span class="chip">Ill-structured</span>: vague goals, need creativity.</li>
+        <li><span class="chip">Inductive</span>: specific→general. <span class="chip">Deductive</span>: general→specific. <span class="chip">Objectivity</span>: remove personal bias.</li>
+        <li>4 pillars: <span class="chip">Decomposition</span>, <span class="chip">Pattern Recognition</span>, <span class="chip">Abstraction</span>, <span class="chip">Algorithm Design</span>.</li>
+      </ul></div>
+      <div class="sum-week"><h4>Week 2 — Problem-Solving Strategies</h4><ul>
+        <li><span class="chip">Trial &amp; Error</span>: Thorndike's cat. <span class="chip">Algorithm</span>: finite, definite, effective, guaranteed.</li>
+        <li><span class="chip">Heuristics</span>: rule-of-thumb, fast, not guaranteed. <span class="chip">Means-End Analysis</span>: Newell &amp; Simon 1972, GPS model.</li>
+        <li><span class="chip">Divide &amp; Conquer</span>: split→solve→merge. <span class="chip">Dynamic Programming</span>: memoisation. <span class="chip">Backtracking</span>: abandon invalid paths.</li>
+      </ul></div>
+      <div class="sum-week"><h4>Week 3 — Problem-Solving Process</h4><ul>
+        <li>Steps: <span class="chip">Identification → Analysis → Model → Algorithm → Coding → Testing → Evaluation</span></li>
+        <li>Von Neumann (1945): <span class="chip">Control Unit</span>, <span class="chip">ALU</span>, <span class="chip">Memory</span>, Input, Output. Stored-program concept.</li>
+      </ul></div>
+      <div class="sum-week"><h4>Week 4 — Algorithms</h4><ul>
+        <li>5 characteristics: <span class="chip">Finiteness</span>, <span class="chip">Definiteness</span>, <span class="chip">Input (≥0)</span>, <span class="chip">Output (≥1)</span>, <span class="chip">Effectiveness</span>.</li>
+        <li>Efficiency: <span class="chip">Time Complexity</span> (runtime vs input size) + <span class="chip">Space Complexity</span> (memory usage).</li>
+      </ul></div>
+      <div class="sum-week"><h4>Week 5 — Flowcharting</h4><ul>
+        <li><span class="chip">Oval</span>=Start/End · <span class="chip">Parallelogram</span>=I/O · <span class="chip">Rectangle</span>=Process · <span class="chip">Diamond</span>=Decision</li>
+        <li><span class="chip">Circle</span>=On-page connector · <span class="chip">Pentagon</span>=Off-page connector · <span class="chip">Double Rectangle</span>=Predefined Process</li>
+      </ul></div>
+      <div class="sum-week"><h4>Week 6 — Pseudocode</h4><ul>
+        <li>"Pseudo"=almost/fake. Language-independent. Cannot be compiled. 3 structures: <span class="chip">Sequence</span>, <span class="chip">Selection</span>, <span class="chip">Iteration</span>.</li>
+        <li><span class="chip">WHILE</span>: pre-test (checks before). <span class="chip">REPEAT-UNTIL</span>: post-test (runs ≥1, stops when TRUE). <span class="chip">MOD</span>=remainder.</li>
+      </ul></div>
+      <div class="sum-week"><h4>Week 9 — SDLC</h4><ul>
+        <li>Phases: <span class="chip">Planning→Requirements→Design→Implementation→Testing→Deployment→Maintenance</span></li>
+        <li>Models: <span class="chip">Waterfall</span>(linear) · <span class="chip">Agile</span>(sprints) · <span class="chip">V-Model</span>(test at every stage) · <span class="chip">DevOps</span>(CI/CD)</li>
+        <li>IBM: bug after deployment = <span class="chip">100×</span> cost of fixing during development.</li>
+      </ul></div>
+      <div class="sum-week"><h4>Week 10 — Control Structures</h4><ul>
+        <li>Selection: <span class="chip">if</span>, <span class="chip">if-else</span>, <span class="chip">if-else if ladder</span>, <span class="chip">switch</span> (fall-through without break).</li>
+        <li>Iteration: <span class="chip">for</span>(known count, pre-test) · <span class="chip">while</span>(pre-test) · <span class="chip">do-while</span>(post-test, runs ≥1).</li>
+        <li><span class="chip">break</span>=exit loop · <span class="chip">continue</span>=skip current iteration only.</li>
+      </ul></div>
+    </div>
+  </div>
+  <div id="search-wrap"><span class="icon">🔍</span><input id="search-input" type="text" placeholder="Search questions…" oninput="filterQuestions()"/></div>
+  <div id="filters"></div>
+  <div id="shuffle-note">🔀 Shuffled — reset to restore order</div>
+  <div id="q-list"></div>
+  <div id="no-results">No questions match your search or filter.</div>
+</div>
+
+<div id="diag-bar"><button id="diag-btn" onclick="openModal()">📊 View My Learning Diagnosis</button></div>
+
+<div id="modal-overlay" onclick="closeModalOutside(event)">
+  <div id="modal-sheet">
+    <div id="modal-handle"></div>
+    <div id="modal-head"><span>📊</span><h2>Learning Diagnosis</h2><button id="modal-close" onclick="closeModal()">✕</button></div>
+    <div id="modal-body"></div>
+    <div id="modal-footer">
+      <button id="modal-close-sec" onclick="closeModal()">Close</button>
+      <button id="modal-retake" onclick="resetQuiz();closeModal()">↺ Retake Quiz</button>
+    </div>
+  </div>
+</div>
+
+<nav id="bottom-nav">
+  <button class="nav-item active"><span>🏠</span><span>Home</span></button>
+  <button class="nav-item"><span>➕</span><span>Contribute</span></button>
+  <button class="nav-item"><span>👤</span><span>Profile</span></button>
+</nav>
+
+<script>
+const questions=[
+{id:1,topic:"Problems & Critical Thinking",text:"Which statement MOST precisely captures the formal definition of a 'problem' in computing problem-solving?",options:["A situation where the current state differs from a desired goal state and the bridging path is not immediately obvious","Any task a computer performs requiring more than one instruction","A mathematical equation whose answer cannot be computed analytically","A bug or logical error contained within a software program"],answer:0,explanation:"A problem is formally defined as a situation with an initial state and a goal state where the method of bridging that gap is not immediately obvious. Bugs are a narrow subset; the definition is much broader."}
+,{id:2,topic:"Problems & Critical Thinking",text:"A university timetabling challenge — assigning rooms, lecturers, and time slots under dozens of overlapping constraints — is BEST classified as:",options:["A well-structured routine problem with known solution steps","An ill-structured non-routine problem requiring creative and iterative approaches","A computational problem solvable by a simple loop","A decomposition problem only"],answer:1,explanation:"Timetabling involves vague, overlapping constraints with no single defined algorithm. This makes it ill-structured (non-routine), requiring heuristic and creative approaches."}
+,{id:3,topic:"Problems & Critical Thinking",text:"Which option correctly maps Inductive and Deductive reasoning to their directions of inference?",options:["Both move from general to specific","Inductive: general→specific; Deductive: specific→general","Inductive: specific→general; Deductive: general→specific","Both move from specific to general"],answer:2,explanation:"Inductive reasoning moves from specific observations to a general conclusion (bottom-up). Deductive reasoning applies a general rule to reach a specific conclusion (top-down)."}
+,{id:4,topic:"Problems & Critical Thinking",text:"A researcher observes every swan over 10 years is white and concludes 'All swans are white.' This exemplifies:",options:["Heuristic reasoning — a rule of thumb","Deductive reasoning — applying a known rule","Abstraction — ignoring irrelevant swan features","Inductive reasoning — drawing a general conclusion from specific cases"],answer:3,explanation:"Observing many specific white swans and concluding all swans are white is classic inductive reasoning. It can be falsified (black swans exist), illustrating induction's key limitation."}
+,{id:5,topic:"Problems & Critical Thinking",text:"'All patients with symptom X have disease Y. This patient has symptom X. Therefore this patient has disease Y.' Which reasoning type is demonstrated?",options:["Heuristic","Inductive","Deductive","Lateral"],answer:2,explanation:"This is deductive reasoning: a general rule (all X→Y) applied to a specific case (this patient has X) produces a specific conclusion (this patient has Y). Logically certain if premises are true."}
+,{id:6,topic:"Problems & Critical Thinking",text:"A programmer ignores a button's colour when designing its click-handler logic. Which computational thinking pillar is this?",options:["Pattern Recognition","Algorithm Design","Abstraction","Decomposition"],answer:2,explanation:"Abstraction means focusing on relevant details (the button's click action) while ignoring irrelevant ones (its colour, font, size). The programmer abstracts away visual styling when writing logic."}
+,{id:7,topic:"Problems & Critical Thinking",text:"Objectivity in critical thinking is violated when a developer chooses a technology stack because they personally enjoy it, ignoring performance benchmarks. This describes:",options:["Inductive reasoning applied correctly","Personal bias overriding evidence-based analysis","Abstraction failure","Pattern Recognition applied incorrectly"],answer:1,explanation:"Objectivity requires evidence-based decisions. Choosing a stack based on personal enjoyment rather than benchmarks is a classic personal bias violation of objectivity."}
+,{id:8,topic:"Problems & Critical Thinking",text:"Which is the STRONGEST distinguishing feature between well-structured and ill-structured problems?",options:["Ill-structured problems always have more than one correct answer","Well-structured problems cannot be solved by algorithms","Well-structured problems have clearly defined goals, constraints, and solution paths; ill-structured do not","Well-structured problems are always mathematical; ill-structured are always verbal"],answer:2,explanation:"The defining distinction is clarity: well-structured (routine) problems have clear goals, known constraints, and established solution procedures. Ill-structured (non-routine) problems lack one or more of these."}
+,{id:9,topic:"Problems & Critical Thinking",text:"'Pattern Recognition' in computational thinking helps MOST with which task?",options:["Ignoring irrelevant details in a problem","Breaking a large problem into independent sub-problems","Writing an algorithm free of ambiguity","Applying a previously known solution to a new but structurally similar problem"],answer:3,explanation:"Pattern Recognition identifies structural similarities between problems, allowing re-use of previously known solution strategies — a major efficiency gain."}
+,{id:10,topic:"Problems & Critical Thinking",text:"A student is told: 'Solve this any way you see fit, no specific format required.' The core challenge here is:",options:["Routine — clear solution path exists","Well-structured — freedom makes it easier","Computational — it can be coded","Ill-structured — vague goals and undefined constraints require creative approaches"],answer:3,explanation:"Lack of defined format, constraints, and expected output makes this ill-structured. Freedom does not make a problem well-structured; clarity of goals and constraints does."}
+,{id:11,topic:"Problems & Critical Thinking",text:"In critical thinking, 'analysing and evaluating information to reach a reasoned conclusion' EXCLUDES which of the following?",options:["Accepting claims purely on authority without examining evidence","Using logical frameworks to assess claims","Identifying assumptions in an argument","Seeking multiple perspectives before concluding"],answer:0,explanation:"Critical thinking explicitly rejects accepting claims on authority alone. It requires examining evidence and reasoning, not deference to authority."}
+,{id:12,topic:"Problems & Critical Thinking",text:"All cars in a study consumed fuel. Conclusion: all vehicles consume fuel. This inductive reasoning is flawed because:",options:["It uses deductive logic incorrectly","The conclusion should move from general to specific","Inductive generalisations can be invalidated by a single counter-example — electric vehicles do not consume fossil fuel","The sample size was too large"],answer:2,explanation:"Inductive conclusions can always be falsified by a counter-example. Electric vehicles immediately invalidate the generalisation. This is a core limitation of inductive reasoning."}
+,{id:13,topic:"Problems & Critical Thinking",text:"Which scenario BEST illustrates the initial state and goal state framework of a problem?",options:["A flowchart that starts and ends with an Oval","A student who knows no Python (initial state) and must submit a working Python program (goal state)","A program that reads input and writes output","A loop incrementing a counter from 1 to 10"],answer:1,explanation:"A student who currently knows no Python (initial state) and must produce a working program (goal state) perfectly illustrates the two-state problem framework."}
+,{id:14,topic:"Problems & Critical Thinking",text:"Which behaviour is MOST incompatible with objectivity?",options:["Consulting multiple data sources before concluding","Dismissing evidence that contradicts a pre-formed opinion","Acknowledging uncertainty when data is incomplete","Presenting counter-arguments alongside your own view"],answer:1,explanation:"Dismissing contradicting evidence is confirmation bias — the direct opposite of objectivity. Objectivity requires evaluating all evidence fairly regardless of whether it supports your existing view."}
+,{id:15,topic:"Problems & Critical Thinking",text:"Ideal decomposition produces sub-problems with which additional key property?",options:["They must use the same algorithm","They must be solved simultaneously","They must be independent and manageable","They must all be mathematical"],answer:2,explanation:"Ideal decomposition produces sub-problems that are independent (solutions do not interfere) and manageable (small enough to solve individually). Independence enables parallel work and modular testing."}
+,{id:16,topic:"Problems & Critical Thinking",text:"A programmer recognises that sorting, searching, and inserting all share a sequential traversal pattern. This is:",options:["Algorithm Design","Pattern Recognition","Abstraction","Decomposition"],answer:1,explanation:"Recognising the common sequential traversal pattern across different tasks (sort, search, insert) is Pattern Recognition. This can lead to a single reusable traversal utility."}
+,{id:17,topic:"Problems & Critical Thinking",text:"Which statement about critical thinking is FALSE?",options:["Objectivity means basing decisions on evidence rather than personal preference","Critical thinking requires examining assumptions underlying a problem","Deductive reasoning guarantees a correct conclusion if premises are true","Inductive reasoning always guarantees the conclusion is correct"],answer:3,explanation:"Inductive reasoning does NOT guarantee conclusions. It builds probability, not certainty. A single counter-example can invalidate an inductively derived general conclusion."}
+,{id:18,topic:"Problems & Critical Thinking",text:"An engineer considers only load-bearing forces and ignores paint colour in structural simulations. Which pillar is this?",options:["Algorithm Design","Pattern Recognition","Abstraction","Decomposition"],answer:2,explanation:"Focusing on structurally relevant data (load forces) while ignoring irrelevant aesthetic data (paint colour) is Abstraction — filtering out non-essential information to reduce complexity."}
+,{id:19,topic:"Problems & Critical Thinking",text:"'If it rains, the ground is wet. The ground is wet. Therefore it rained.' What logical fallacy is demonstrated?",options:["Straw man — misrepresenting the original premise","Affirming the consequent — the ground could be wet for other reasons (sprinkler, flood)","Hasty generalisation","False dilemma — assuming only two options"],answer:1,explanation:"Affirming the consequent is a classic deductive fallacy. The ground being wet does not prove rain — other causes exist. Valid deduction requires: rain→wet; NOT wet→rain."}
+,{id:20,topic:"Problems & Critical Thinking",text:"Before writing an algorithm for a new problem, which pair of computational thinking skills MOST directly supports understanding what to build?",options:["Decomposition and Debugging — split the problem and fix errors","Objectivity and Inductive Reasoning — remove bias and form a general rule","Pattern Recognition and Abstraction — understand structure and identify essential details","Lateral Thinking and Deduction — find unconventional shortcuts"],answer:2,explanation:"Pattern Recognition (understand the problem's structure) and Abstraction (identify which details matter) together establish the precise scope needed before algorithm design can begin."}
+,{id:21,topic:"Problem-Solving Strategies",text:"Thorndike's cat puzzle-box experiment. Which observation MOST directly supports Trial and Error as the strategy?",options:["The cat's escape time decreased with repetition as random successful actions were reinforced","The cat divided the box into zones and searched each systematically","The cat memorised a fixed sequence from a previous attempt","The cat used a pre-formed plan before entering the box"],answer:0,explanation:"Thorndike's key finding: random actions eventually hit the lever; decreasing escape time through reinforcement of accidental successes is the hallmark of Trial and Error."}
+,{id:22,topic:"Problem-Solving Strategies",text:"A heuristic and an algorithm can both find a path through a maze. The CRITICAL difference in guarantees is:",options:["An algorithm guarantees finding the optimal path; a heuristic finds a good-enough path quickly but may not be optimal","Algorithms are visual; heuristics are textual","Algorithms are always faster; heuristics are slower","Heuristics use more memory than algorithms"],answer:0,explanation:"The definitive difference: algorithms guarantee correctness and optimality. Heuristics trade guarantee for speed — they may find a valid but not shortest exit path."}
+,{id:23,topic:"Problem-Solving Strategies",text:"Merge Sort divides the array in half, sorts each half independently, then merges. This exemplifies:",options:["Means-End Analysis — reducing gap between unsorted and sorted","Divide and Conquer — split, solve independently, merge","Backtracking — abandoning incorrect orderings","Dynamic Programming — storing partial sort results"],answer:1,explanation:"Merge Sort is the canonical Divide and Conquer example: Divide (split array), Conquer (sort halves independently), Merge (combine sorted halves). Sub-problems are independent."}
+,{id:24,topic:"Problem-Solving Strategies",text:"Dynamic Programming solves Fibonacci more efficiently than naïve recursion. The key mechanism is:",options:["Backtracking through failed sub-computations","Dividing the sequence into independent halves","Memoisation — storing previously computed values to avoid recomputation","Using iteration instead of recursion always"],answer:2,explanation:"Naïve recursion recomputes Fib(n-1) and Fib(n-2) exponentially. DP stores results (memoisation), reducing complexity from O(2^n) to O(n). Memoisation is the essential mechanism."}
+,{id:25,topic:"Problem-Solving Strategies",text:"A Sudoku solver tries a digit, continues, and undoes the choice when a contradiction arises. This is:",options:["Divide and Conquer — solving each row independently","Means-End Analysis — reducing the gap to a valid grid","Backtracking — incrementally building and abandoning invalid paths","Heuristics — a good-enough approximation"],answer:2,explanation:"Backtracking tries a value, continues building the solution, and backtracks when a contradiction is detected. Sudoku, maze-solving, and constraint satisfaction problems are its classic applications."}
+,{id:26,topic:"Problem-Solving Strategies",text:"Newell and Simon's GPS model introduced Means-End Analysis. What year, and what was its CORE operation?",options:["1945 — designing the Von Neumann architecture","1985 — implementing heuristic search algorithms","1965 — dividing problems into equal halves","1972 — identifying the difference between current and goal states, then selecting operators to reduce that difference"],answer:3,explanation:"GPS was introduced in 1972 by Newell and Simon. Core: identify the difference (gap) between current state and goal, apply operators to reduce it iteratively."}
+,{id:27,topic:"Problem-Solving Strategies",text:"Which pair of algorithms are the MOST cited Divide and Conquer examples in COS 102?",options:["Dijkstra's and Floyd-Warshall","Bellman-Ford and Fibonacci DP","Linear Search and Binary Search","Merge Sort and Quicksort"],answer:3,explanation:"Merge Sort and Quicksort are the canonical Divide and Conquer examples. Dijkstra/Floyd-Warshall are graph algorithms; Bellman-Ford and Fibonacci DP are Dynamic Programming."}
+,{id:28,topic:"Problem-Solving Strategies",text:"Trial and Error is LEAST appropriate for which scenario?",options:["A lock-picker practicing on their own padlock","A beginner programmer guessing syntax one change at a time","Designing the flight control algorithm for a spacecraft where failure is catastrophic","A child learning to stack blocks by trying arrangements"],answer:2,explanation:"Trial and Error is inappropriate where failure is catastrophic. Spacecraft control requires a provably correct algorithm — not random experimentation."}
+,{id:29,topic:"Problem-Solving Strategies",text:"A chess engine uses 'control the centre' and 'protect piece safety' rules to prune its search. This is BEST described as:",options:["A heuristic approach — rules-of-thumb guiding efficient search without guaranteeing the best move","Dynamic Programming — memoising board states","Divide and Conquer — splitting the board into sectors","Backtracking — abandoning losing positions"],answer:0,explanation:"Chess heuristics (control centre, protect pieces) guide search without examining every possible state. No engine can guarantee optimal play through exhaustive search — heuristics make it feasible."}
+,{id:30,topic:"Problem-Solving Strategies",text:"Which algorithm characteristic is violated by: 'Do approximately the right calculation'?",options:["Finiteness — the step could run forever","Definiteness — 'approximately' is ambiguous and imprecise","Input — no input is specified","Effectiveness — the step cannot be performed in finite time"],answer:1,explanation:"Definiteness requires each step to be precisely and unambiguously defined. 'Approximately the right calculation' violates this — different executors would interpret it differently."}
+,{id:31,topic:"Problem-Solving Strategies",text:"Which of the following is NOT a valid advantage of Divide and Conquer?",options:["It simplifies complex problems into manageable units","Sub-problems can often be solved in parallel","Applying it always reduces time complexity below O(n)","It naturally maps to recursive implementations"],answer:2,explanation:"Divide and Conquer does not always reduce complexity below O(n). Merge Sort is O(n log n) — better than O(n²) but not O(n). The 'always below O(n)' claim is false."}
+,{id:32,topic:"Problem-Solving Strategies",text:"Floyd-Warshall and Bellman-Ford are examples of which strategy?",options:["Divide and Conquer","Heuristics","Backtracking","Dynamic Programming"],answer:3,explanation:"Floyd-Warshall (all-pairs shortest path) and Bellman-Ford (single-source shortest path) both use Dynamic Programming — storing and reusing sub-problem results."}
+,{id:33,topic:"Problem-Solving Strategies",text:"A knight tour algorithm tries moves, continues until stuck, then undoes moves and tries alternatives. This is:",options:["Means-End Analysis","Heuristic Search","Dynamic Programming with memoisation","Backtracking — classic constraint satisfaction application"],answer:3,explanation:"The knight tour is solved by backtracking: try a move, recurse, and if no valid extension exists, undo (backtrack) and try the next option. Classic CSP solved by backtracking."}
+,{id:34,topic:"Problem-Solving Strategies",text:"What is the MAIN reason DP is more efficient than plain recursion for overlapping sub-problems?",options:["It converts recursion to iteration, which is always faster","It eliminates all recursion by using loops","It divides the problem into non-overlapping halves","It stores sub-problem results so each is computed only once, avoiding exponential recomputation"],answer:3,explanation:"DP's efficiency gain comes from not recomputing overlapping sub-problems. Memoisation or tabulation ensures each sub-problem is solved exactly once."}
+,{id:35,topic:"Problem-Solving Strategies",text:"The seven PSS types covered in Week 2 are:",options:["Trial and Error, Pseudocode, Flowchart, Algorithm, SDLC, Testing, Deployment","Trial and Error, Heuristics, Algorithm, Means-End Analysis, Divide and Conquer, Dynamic Programming, Backtracking","Heuristics, Abstraction, Pattern Recognition, Decomposition, Algorithm, Syntax, Semantics","Trial and Error, Sorting, Searching, Recursion, Loops, Conditions, Functions"],answer:1,explanation:"The seven PSS types from Week 2: Trial and Error, Heuristics, Algorithm, Means-End Analysis, Divide and Conquer, Dynamic Programming, and Backtracking."}
+,{id:36,topic:"Problem-Solving Strategies",text:"When a heuristic is used in cybersecurity to detect intrusions, what trade-off does it make?",options:["Speed for lower memory usage","Exhaustive search for a loop structure","Accuracy for a smaller codebase","Guaranteed detection for faster detection — accepting possible false positives or missed threats"],answer:3,explanation:"Cybersecurity heuristics scan for suspicious patterns quickly but may miss novel attacks (false negatives) or flag benign activity (false positives). They trade guaranteed accuracy for processing speed."}
+,{id:37,topic:"Problem-Solving Strategies",text:"Quicksort partitions around a pivot, recursively sorts each partition, and never merges. Compared to Merge Sort, Quicksort is:",options:["Still Divide and Conquer — clever partitioning replaces the need for an explicit merge","Not Divide and Conquer because it has no Merge step","Dependent on Dynamic Programming for its partition step","Using Backtracking to find the correct pivot"],answer:0,explanation:"Quicksort is still Divide and Conquer. Its partitioning leaves elements in correct relative order, eliminating a separate merge. The strategy doesn't require an explicit merge step."}
+,{id:38,topic:"Problem-Solving Strategies",text:"What condition makes Backtracking inefficient — potentially as slow as brute force?",options:["When memoisation tables cannot be stored in memory","When sub-problems overlap extensively","When the problem can be divided into independent halves","When the constraint function prunes very few paths — the search space remains nearly intact"],answer:3,explanation:"Backtracking's efficiency depends on pruning. If constraints rarely eliminate paths (weak pruning), backtracking degenerates toward exhaustive brute-force search."}
+,{id:39,topic:"Problem-Solving Strategies",text:"Which scenario BEST illustrates Means-End Analysis?",options:["Memorising all possible exam questions","Writing code by guessing syntax until it compiles","Sorting a list by trying random orderings until sorted","To submit an assignment (goal), a student breaks it into: understand→research→draft→review→submit, tackling each gap in sequence"],answer:3,explanation:"Means-End Analysis: identify the gap between current state and goal, create subgoals to progressively close that gap. The student's sequential breakdown perfectly illustrates this."}
+,{id:40,topic:"Problem-Solving Strategies",text:"A human trying PINs 0000, 0001, 0002...9999 in sequence is applying which strategy?",options:["Means-End Analysis — progressively narrowing the gap","Heuristics — using prior knowledge of likely PINs","Dynamic Programming — storing attempted codes","Trial and Error — exhaustive sequential attempts with no pruning"],answer:3,explanation:"Sequential exhaustive attempts with no prior knowledge or pruning is Trial and Error. A heuristic approach would prioritise likely PINs (birthdays, common patterns)."}
+,{id:41,topic:"Problem-Solving Process",text:"The CORRECT order of the seven computing problem-solving steps is:",options:["Identification→Analysis→Formulating a Model→Algorithm→Coding→Testing→Evaluation","Analysis→Identification→Model→Algorithm→Testing→Coding→Evaluation","Coding→Identification→Algorithm→Analysis→Testing→Model→Evaluation","Algorithm→Coding→Testing→Identification→Analysis→Model→Evaluation"],answer:0,explanation:"The correct order: Identification→Analysis→Formulating a Model→Algorithm→Coding→Testing→Evaluation. Each step builds on the previous."}
+,{id:42,topic:"Problem-Solving Process",text:"The Von Neumann architecture was designed in 1945. Which component DIRECTS all CPU operations by fetching, decoding, and executing instructions?",options:["Arithmetic Logic Unit (ALU)","Memory Unit","Control Unit","Input Unit"],answer:2,explanation:"The Control Unit fetches instructions from memory, decodes them, and directs other components. The ALU performs arithmetic and logic. CU coordinates the overall operation."}
+,{id:43,topic:"Problem-Solving Process",text:"A computer's fundamental role in the problem-solving model is best described as:",options:["A storage device that retains data indefinitely","A random number generator for unpredictable outputs","An Input→Process→Output model: accepting data, applying logic, producing results","A debugging tool that automatically finds and fixes human errors"],answer:2,explanation:"At its core, a computer is an Input→Process→Output machine. It accepts input, applies programmed logic, and produces output. This model underpins all computing problem-solving."}
+,{id:44,topic:"Problem-Solving Process",text:"Which problem-solving step specifically translates a real-world problem into logical or mathematical structures?",options:["Formulating a Model — creating a logical/mathematical representation","Identification — naming the problem","Coding — writing source code","Testing — running the program with test cases"],answer:0,explanation:"Formulating a Model translates the real problem into an abstracted logical/mathematical structure — e.g. Average = Sum ÷ Count. This bridges Analysis and Algorithm design."}
+,{id:45,topic:"Problem-Solving Process",text:"When testing a grade calculator, a tester inputs an empty list. The expected result is an error message, not a crash. This input is:",options:["A performance test","An edge case — a boundary condition revealing division-by-zero vulnerability","An integration test","A normal test case"],answer:1,explanation:"An empty list (count=0) is an edge case — a boundary condition at the extreme end of valid input that exposes specific failure modes like division by zero."}
+,{id:46,topic:"Problem-Solving Process",text:"Evaluation goes BEYOND testing. Which pair of concerns is SPECIFICALLY addressed in Evaluation but NOT Testing?",options:["Logic errors and incorrect output values","Efficiency and user-friendliness — whether the solution meets original objectives holistically","Syntax errors and compilation failures","Edge cases and null inputs"],answer:1,explanation:"Testing checks correctness. Evaluation asks: Is it efficient? Is it user-friendly? Does it truly meet original goals? These meta-quality concerns belong to Evaluation."}
+,{id:47,topic:"Problem-Solving Process",text:"Which Von Neumann component performs BOTH arithmetic calculations AND logical comparisons?",options:["Control Unit","Input Unit","Arithmetic Logic Unit (ALU)","Memory Unit"],answer:2,explanation:"The ALU performs arithmetic (add, subtract, multiply, divide) and logic (AND, OR, comparisons). It is the computational engine of the CPU."}
+,{id:48,topic:"Problem-Solving Process",text:"A developer identifies that the problem requires floating-point currency values and that input comes from a user form. This belongs to which step?",options:["Testing — discovered by running incorrect inputs","Algorithm Development — the algorithm reveals data types","Evaluation — reviewing the final solution","Analysis — gathering information about inputs, outputs, and constraints"],answer:3,explanation:"Analysis involves comprehensively documenting inputs, outputs, and constraints. Identifying data types and input sources is an Analysis-phase activity."}
+,{id:49,topic:"Problem-Solving Process",text:"Decomposition as a computational thinking pillar is applied MOST directly in which problem-solving step?",options:["Formulating a Model and Algorithm Design — breaking the problem into independent sub-problems","Evaluation — decompose the final review","Coding — decompose code into functions","Testing — decompose tests into unit and integration"],answer:0,explanation:"Decomposition is applied when formulating the model and designing the algorithm: breaking the overall problem into independent sub-problems, each solved separately then combined."}
+,{id:50,topic:"Problem-Solving Process",text:"A program passes all tests with expected inputs but crashes with unexpected data types. The failure to anticipate this was MOST likely in:",options:["Analysis — inputs, outputs, and constraints were not fully documented","Formulating a Model — the mathematical model failed","Evaluation — the final review missed edge cases","Identification — the problem was poorly named"],answer:0,explanation:"Failing to anticipate all data types is an Analysis failure — inputs and their valid types must be comprehensively documented in Analysis to prevent runtime crashes."}
+,{id:51,topic:"Problem-Solving Process",text:"What is the PRIMARY purpose of the 'Identification' step?",options:["To clearly define and state what the problem actually is before any analysis or solution work begins","To run the program with test cases","To evaluate whether the solution meets user needs","To write the first draft of the code"],answer:0,explanation:"Identification is the foundation: precisely stating what the problem is. Without this, subsequent steps risk solving the wrong problem entirely."}
+,{id:52,topic:"Problem-Solving Process",text:"A developer recognises that a new inventory problem has the same search structure as a previously solved library catalogue problem. This is:",options:["Pattern Recognition","Abstraction","Decomposition","Algorithm Design"],answer:0,explanation:"Recognising structural similarity between a new problem (inventory) and a solved one (library catalogue) is Pattern Recognition. This enables reuse of existing solution logic."}
+,{id:53,topic:"Problem-Solving Process",text:"Why is 'Formulating a Model' important even for experienced programmers?",options:["It ensures the problem gets an official name","It generates test cases automatically","It produces executable code directly","It creates a language-independent logical abstraction that validates understanding before coding, preventing costly rework"],answer:3,explanation:"A model validates that the developer truly understands the problem in an abstract form. Discovering a modelling error before coding is far cheaper than rewriting code after implementation."}
+,{id:54,topic:"Problem-Solving Process",text:"In the Von Neumann architecture, memory stores both _____ and _____, which is the stored-program concept.",options:["Inputs and outputs only","ALU results and control signals","Source code and machine code","Instructions and data — enabling general-purpose computing without hardware rewiring"],answer:3,explanation:"The stored-program concept: BOTH program instructions and data are stored in the same memory. This is what makes general-purpose computers reprogrammable without rewiring hardware."}
+,{id:55,topic:"Problem-Solving Process",text:"A program correctly calculates grades but takes 45 minutes per record due to an inefficient algorithm. Which step SHOULD have caught this?",options:["Formulating a Model — the formula was wrong","Identification — performance requirements belong in the problem statement","Coding — the programmer should have written faster code intuitively","Evaluation — assessing whether the solution is efficient and meets objectives"],answer:3,explanation:"Evaluation checks efficiency (among other quality metrics). A functionally correct but 45-minute-per-record solution fails the efficiency criterion — Evaluation's responsibility."}
+,{id:56,topic:"Problem-Solving Process",text:"Which step DIRECTLY precedes 'Writing the Program (Coding)'?",options:["Identifying the Problem","Evaluating the Solution","Developing an Algorithm","Testing the Program"],answer:2,explanation:"The sequence: ...Formulating a Model→Developing an Algorithm→Writing the Program (Coding)→Testing→Evaluation. Coding follows directly after the algorithm, which serves as its blueprint."}
+,{id:57,topic:"Problem-Solving Process",text:"Which computational thinking pillar focuses on designing the step-by-step solution procedure after decomposing and abstracting the problem?",options:["Abstraction","Decomposition","Algorithm Design","Pattern Recognition"],answer:2,explanation:"Algorithm Design produces the step-by-step procedure. It builds on Decomposition (break down), Abstraction (identify essentials), and Pattern Recognition (apply known solutions)."}
+,{id:58,topic:"Problem-Solving Process",text:"A student models compound interest as A = P(1 + r/n)^(nt). This activity falls under which step?",options:["Evaluation","Formulating a Model","Testing","Identification"],answer:1,explanation:"Translating the compound interest scenario into the mathematical formula is precisely Formulating a Model — creating a logical/mathematical representation of the problem."}
+,{id:59,topic:"Algorithms",text:"An algorithm MUST have at least _____ output(s) and may have _____ input(s).",options:["zero; at least one","two; at least one","at least one; zero or more","exactly one; exactly one"],answer:2,explanation:"An algorithm must produce at least one output. However, it may have zero or more inputs — some algorithms require no external input (e.g. computing π to n digits)."}
+,{id:60,topic:"Algorithms",text:"Which of the following VIOLATES the Finiteness characteristic?",options:["A loop from i=1 to 1000 printing each value","A recursive function with no base case — it recurses indefinitely","A sort algorithm taking O(n log n) steps","A function reading 10 numbers and returning their sum"],answer:1,explanation:"A recursive function with no base case never terminates, violating Finiteness. All other options terminate in a finite number of steps."}
+,{id:61,topic:"Algorithms",text:"'Repeat Step 3 several times until it seems done' violates which characteristic?",options:["Effectiveness — the step cannot be performed in finite time","Output — no output is specified","Definiteness — 'several times' and 'seems done' are vague and imprecise","Finiteness — the number of repetitions is infinite"],answer:2,explanation:"Definiteness requires precise, unambiguous instruction. 'Several times' and 'seems done' are inherently vague — different executors would interpret them differently."}
+,{id:62,topic:"Algorithms",text:"Effectiveness as an algorithm characteristic means every step must be:",options:["Provably optimal in time complexity","Written in a specific programming language","Expressed as a mathematical formula","Basic and precisely performable in a finite amount of time by a person or machine"],answer:3,explanation:"Effectiveness means each step is basic enough to be carried out exactly and in a finite amount of time. Steps cannot be so complex or abstract that they become unexecutable."}
+,{id:63,topic:"Algorithms",text:"Which scenario MOST illustrates a Space Complexity concern?",options:["A sorting algorithm taking 2 hours to sort 1 million records","A search algorithm checking every element before finding a match","A DP solution storing a 10,000×10,000 table, consuming gigabytes of RAM","An algorithm with an infinite loop that never terminates"],answer:2,explanation:"Space Complexity measures memory usage. A 10,000×10,000 DP table consuming gigabytes is a Space Complexity concern — the algorithm is correct but requires impractical memory."}
+,{id:64,topic:"Algorithms",text:"The FIRST step in algorithm development is Define the Problem. The SECOND step is:",options:["Identify Inputs, Outputs, and Constraints","Test with sample inputs","Write the code","Refine and optimise the steps"],answer:0,explanation:"Algorithm development: (1) Define the Problem, (2) Identify Inputs/Outputs/Constraints, (3) Design the Logic, (4) Refine the steps. Identifying inputs/outputs comes before designing logic."}
+,{id:65,topic:"Algorithms",text:"Which is a LANGUAGE-INDEPENDENT representation of an algorithm?",options:["An x86 assembly listing","A Python script","A pseudocode description","A compiled Java .class file"],answer:2,explanation:"Pseudocode is language-independent — it describes algorithmic logic without binding to any programming language's syntax. Python, Java bytecode, and assembly are all language/platform specific."}
+,{id:66,topic:"Algorithms",text:"An algorithm takes 10 steps for 10 inputs and 100 steps for 100 inputs. Its time complexity is:",options:["O(log n) — logarithmic","O(1) — constant","O(n) — linear","O(n²) — quadratic"],answer:2,explanation:"Steps proportional to input size n is O(n) linear time. O(n²) would mean 100 inputs→10,000 steps. O(log n) would mean 100 inputs→~7 steps. O(1) means input size doesn't affect step count."}
+,{id:67,topic:"Algorithms",text:"An O(n²) algorithm doubles its input size. Its running time increases by approximately:",options:["4× — quadruples","2× — doubles","1.41× — square root of 2","10× — order of magnitude"],answer:0,explanation:"O(n²) means time ∝ n². If n doubles to 2n, time ∝ (2n)²=4n². Runtime quadruples. This is why O(n²) is impractical for large inputs."}
+,{id:68,topic:"Algorithms",text:"Which disadvantage of algorithms is specifically listed in COS 102 course material?",options:["They produce incorrect results when used with pseudocode","Writing complex algorithms is time-consuming and deeply nested logic is hard to modify","They cannot be tested before coding","They are not language-independent"],answer:1,explanation:"The course lists two key algorithm disadvantages: writing complex algorithms is time-consuming, and deeply nested logic becomes difficult to modify or understand."}
+,{id:69,topic:"Algorithms",text:"'Reusable' in the context of algorithms means:",options:["The algorithm solves multiple completely unrelated problems","The algorithm can be copy-pasted into any IDE","The algorithm automatically updates when requirements change","The same algorithm logic can be implemented in different programming languages without redesign"],answer:3,explanation:"'Reusable' means the logic, once designed, can be implemented in Python, Java, C#, or any language. The pseudocode or flowchart transcends specific programming language choices."}
+,{id:70,topic:"Algorithms",text:"Which characteristic ensures any program implementing an algorithm must eventually stop running?",options:["Input","Finiteness","Definiteness","Effectiveness"],answer:1,explanation:"Finiteness guarantees termination after a finite number of steps. Without Finiteness, programs could run forever in infinite loops."}
+,{id:71,topic:"Algorithms",text:"'Compute the square root of any number.' For negative numbers with real arithmetic, this step cannot be performed. Which characteristic is violated?",options:["Finiteness","Effectiveness — the step cannot be performed for all valid inputs","Definiteness","Output"],answer:1,explanation:"Effectiveness requires every step to be performable. The square root of a negative real number is undefined in real arithmetic, violating Effectiveness for negative inputs."}
+,{id:72,topic:"Algorithms",text:"Algorithms 'help identify errors early' refers to error detection occurring:",options:["During unit testing of compiled code","During the deployment phase","After users report bugs in production","Before any code is written — design-time logic error detection"],answer:3,explanation:"Designing and validating an algorithm before coding catches logical errors at the design stage — far cheaper to fix than errors discovered after implementation."}
+,{id:73,topic:"Algorithms",text:"For binary search of a sorted list of n=1,024 elements, approximately how many steps are required (O(log n))?",options:["32","10","1,024","512"],answer:1,explanation:"O(log₂ n): log₂(1024)=10. Binary search halves the search space each step: 1024→512→256→128→64→32→16→8→4→2→1. That is 10 steps."}
+,{id:74,topic:"Algorithms",text:"A flowchart and pseudocode represent the same algorithm. Which statement is MOST accurate?",options:["Flowcharts are superior because they compile faster","They are complementary — pseudocode provides text-based logic; flowcharts provide visual logic; both are language-independent blueprints","Only pseudocode is used in professional development","Pseudocode is superior because it can be executed directly"],answer:1,explanation:"Flowcharts and pseudocode are complementary representations of the same algorithm. Neither is inherently superior — both are language-independent and neither is directly executable."}
+,{id:75,topic:"Algorithms",text:"If an algorithm allows zero inputs, which of the following is a valid algorithm?",options:["One taking no input but always outputting π to 10 decimal places","One requiring at least two user inputs to produce output","One taking input but producing no output","One running forever computing digits of π"],answer:0,explanation:"Zero inputs is valid. The π computation takes no external input but produces a defined output. Zero output is NOT allowed (Output requires ≥1 result), and infinite runtime violates Finiteness."}
+,{id:76,topic:"Algorithms",text:"Which BEST describes why algorithms are 'language-independent'?",options:["The same logical steps expressed in pseudocode/flowchart can be implemented in any programming language","They are written in a universal programming language understood by all compilers","They are independent of hardware architecture","They use only mathematical notation that transcends all languages"],answer:0,explanation:"Language independence means the algorithm logic can be translated into Python, Java, C++, or any language. The logic is constant; the syntax is the variable."}
+,{id:77,topic:"Flowcharting",text:"A flowchart uses standardised ISO symbols. Which symbol represents a DECISION point with exactly two exit paths?",options:["Oval — marks start/end","Diamond — evaluates a condition and exits via YES or NO","Parallelogram — for I/O operations","Rectangle — one entry, one exit"],answer:1,explanation:"The Diamond is the decision symbol. It evaluates a Boolean condition and produces exactly two exit paths: YES/TRUE and NO/FALSE."}
+,{id:78,topic:"Flowcharting",text:"Which flowchart symbol is used SPECIFICALLY for sub-routine or predefined process calls?",options:["Double Rectangle (Predefined Process)","Parallelogram (Input/Output)","Pentagon (Off-page Connector)","Circle (On-page Connector)"],answer:0,explanation:"The Double Rectangle represents a Predefined Process — a sub-routine whose detailed logic is defined elsewhere and called but not expanded inline."}
+,{id:79,topic:"Flowcharting",text:"A flowchart spans three pages. To connect flow at the bottom of page 2 to the top of page 3, which symbol is used?",options:["Circle — On-page Connector","Diamond — decision point","Double Rectangle — predefined process","Pentagon — Off-page Connector"],answer:3,explanation:"The Pentagon (Off-page Connector) links flow across different physical pages. The Circle (On-page Connector) continues flow within the same page only."}
+,{id:80,topic:"Flowcharting",text:"Standard flowchart convention says flow is top-to-bottom or left-to-right. An upward arrow is valid ONLY for:",options:["Representing recursion","Representing a loop — the feedback path back to a previous step (e.g. loop condition check)","Forbidden in all flowcharts — arrows must always go down","Used only in system flowcharts"],answer:1,explanation:"Upward arrows are used specifically for loops — the feedback path back to an earlier step. They are not general flow direction; they exist only for iteration."}
+,{id:81,topic:"Flowcharting",text:"Which type of flowchart maps hardware, files, and physical data flows through an entire system?",options:["System Flowchart","Process Flowchart","Program Flowchart","Decision Flowchart"],answer:0,explanation:"A System Flowchart shows the physical system: hardware components, data files, communication links, and how data flows between them. A Program Flowchart shows internal software logic."}
+,{id:82,topic:"Flowcharting",text:"In a flowchart, the step 'X ← A + B' would be enclosed in which symbol?",options:["Rectangle (Process) — it is an arithmetic operation","Oval — it terminates the algorithm","Diamond — it is a decision","Parallelogram — it is an I/O operation"],answer:0,explanation:"Arithmetic operations (calculations, assignments) go in Rectangles. Parallelograms are for I/O. Diamonds are for decisions. Ovals mark Start/End."}
+,{id:83,topic:"Flowcharting",text:"A flowchart that loops back to re-read user input until valid data is entered represents:",options:["Selection inside a Sequence","Sequence only","Iteration (loop) with an embedded Selection to validate input","Selection only"],answer:2,explanation:"Repeatedly reading input until valid is an Iteration (loop). The decision diamond inside the loop (is input valid?) represents Selection. Input validation combines both structures."}
+,{id:84,topic:"Flowcharting",text:"Which combination of symbols is needed to draw a simple if-else structure?",options:["One Diamond and Two Rectangles (one per branch) converging to a common exit","Two Ovals and a Rectangle","One Parallelogram and two Ovals","Three Diamonds in sequence"],answer:0,explanation:"An if-else needs: one Diamond (condition), one Rectangle on the YES branch, one Rectangle on the NO branch, with both branches converging afterward."}
+,{id:85,topic:"Flowcharting",text:"What information on an On-page Connector makes it useful?",options:["A matching label/number so readers know which entry point a flow exits to and enters from","The time complexity of the connected section","The hardware device involved","The data type of variables passed between sections"],answer:0,explanation:"On-page connectors carry matching labels (e.g. both circles labelled '1'). Flow exiting connector '1' at the bottom continues at the entry connector '1' elsewhere on the same page."}
+,{id:86,topic:"Flowcharting",text:"A program flowchart for a factorial function will MOST likely contain which structural element?",options:["A Double Rectangle for a hardware sub-system call","A Pentagon for off-page flow to another factorial definition","An upward arrow back to a loop condition — representing iterative computation","A system-level file access symbol"],answer:2,explanation:"Factorial is computed iteratively. A flowchart representation shows an upward arrow looping back to the condition check — the flowchart's iteration structure."}
+,{id:87,topic:"Flowcharting",text:"The MOST significant advantage of drawing a flowchart BEFORE writing code is:",options:["Logic errors are visualised and corrected at design time, before costly code changes are needed","They automatically generate documentation for the final software","Flowcharts can be compiled and executed to check correctness","They enforce a specific programming language's syntax"],answer:0,explanation:"Visualising logic before coding allows designers to spot structural errors, missing branches, and infinite loops at the design stage — where fixes are cheap."}
+,{id:88,topic:"Flowcharting",text:"'An algorithm is to a flowchart as a script is to a storyboard.' This analogy means:",options:["An algorithm provides the textual step-by-step logic; a flowchart provides the visual representation of those same steps","Flowcharts are always more accurate than algorithms","Storyboards replace scripts in professional film production","Scripts are more detailed than storyboards"],answer:0,explanation:"A script (algorithm) gives the textual sequential narrative. A storyboard (flowchart) gives the visual representation of that same narrative. Both describe identical content in different formats."}
+,{id:89,topic:"Flowcharting",text:"In a payroll system flowchart, 'Read Employee Hours' would be placed in which symbol?",options:["Parallelogram — it is an Input operation","Oval — it terminates the process","Rectangle — it is a calculation","Diamond — it is a decision"],answer:0,explanation:"Reading data (input) is always represented by a Parallelogram. Writing/printing output also uses Parallelogram. Rectangle is for calculations only."}
+,{id:90,topic:"Flowcharting",text:"A flowchart's decision diamond has one entry and ___ exits. A process rectangle has one entry and ___ exit(s).",options:["one; two","three; two","two; two","two; one"],answer:3,explanation:"The Diamond has ONE entry and TWO exits (YES/NO). The Rectangle (Process) has ONE entry and ONE exit. This structural rule is a key flowchart convention."}
+,{id:91,topic:"Flowcharting",text:"Which scenario requires a System Flowchart rather than a Program Flowchart?",options:["Showing how a database query handles NULL values","Documenting the decision logic inside a payroll calculation function","Mapping how data enters from a POS terminal, is processed by a server, stored in a database, and printed on a receipt","Drawing the iteration structure of a FOR loop"],answer:2,explanation:"The POS→Server→Database→Receipt scenario spans multiple physical system components. This is exactly what a System Flowchart documents: physical data flow across system components."}
+,{id:92,topic:"Flowcharting",text:"A WHILE loop flowchart shows the condition diamond with:",options:["The condition checked after the process rectangle — post-test","The condition checked before the process rectangle — pre-test; YES enters the body; NO exits the loop","No diamond — WHILE loops use a different symbol","Two diamonds — one before and one after the loop body"],answer:1,explanation:"A WHILE loop is a pre-test loop: diamond comes before the rectangle. If YES (true), enter the body then loop back to the diamond. If NO (false), exit the loop."}
+,{id:93,topic:"Flowcharting",text:"Why might a complex flowchart use BOTH On-page and Off-page connectors?",options:["Off-page connectors carry data values; on-page carry control signals","On-page connectors are for system flowcharts; off-page for program flowcharts","They are interchangeable and the choice is purely aesthetic","On-page connectors avoid crossing arrows within a single page; off-page connectors continue flow to a new page — together they keep multi-page flowcharts clean"],answer:3,explanation:"On-page connectors prevent messy crossing arrows within one page. Off-page connectors handle flow continuation across pages. Using both keeps complex multi-page flowcharts organised."}
+,{id:94,topic:"Flowcharting",text:"The symbol used to mark both the START and END of a flowchart is:",options:["Rectangle","Diamond","Oval (Terminator)","Parallelogram"],answer:2,explanation:"The Oval (Terminator) marks both the START and END of a flowchart. Every flowchart must have exactly one START oval and at least one END oval."}
+,{id:95,topic:"Pseudocode",text:"Pseudocode is BEST defined as:",options:["A visual diagram using shapes and arrows","An informal, language-independent, human-readable description of algorithmic logic that cannot be directly compiled","Executable code that runs in any interpreter","A formal programming language with strict syntax"],answer:1,explanation:"Pseudocode is informal (no strict syntax), language-independent, and human-readable. It describes logic without binding to any language and cannot be compiled or executed directly."}
+,{id:96,topic:"Pseudocode",text:"The MOST significant limitation of pseudocode in team environments is:",options:["It cannot express selection structures","No universal standard — different authors write incompatible styles, causing team confusion","It is too difficult for beginners to write","It can only represent sequential algorithms"],answer:1,explanation:"Pseudocode's lack of a universal standard means different team members may use Pascal-style, Python-style, or custom conventions, creating confusion when reading others' work."}
+,{id:97,topic:"Pseudocode",text:"All computable algorithms can be expressed using three fundamental control structures. Which option correctly states all three with their keyword families?",options:["Recursion, Iteration, Selection — CALL, LOOP, IF","Sequence (no keywords), Selection (IF-THEN-ELSE), Iteration (WHILE, FOR, REPEAT-UNTIL)","Start, Middle, End — BEGIN, PROCESS, TERMINATE","Input/Output/Process — READ, WRITE, CALCULATE"],answer:1,explanation:"The three fundamental structures: Sequence (steps in order), Selection (IF-THEN-ELSE), Iteration (WHILE, FOR, REPEAT-UNTIL). Any algorithm can be expressed with just these three."}
+,{id:98,topic:"Pseudocode",text:"A REPEAT-UNTIL loop has two key differences from WHILE. Which answer correctly states BOTH?",options:["REPEAT-UNTIL checks before; WHILE checks after; both repeat while condition is false","REPEAT-UNTIL checks condition AFTER the body (runs at least once) AND repeats UNTIL condition is TRUE (not while it is true)","REPEAT-UNTIL is faster and uses less memory","REPEAT-UNTIL uses FOR syntax; WHILE requires a counter variable"],answer:1,explanation:"Two critical differences: (1) REPEAT-UNTIL checks at the END — guaranteeing at least one execution. (2) It stops when condition becomes TRUE (the opposite of WHILE)."}
+,{id:99,topic:"Pseudocode",text:"What is the output of:\nSET x = 1\nWHILE x <= 3 DO\n  OUTPUT x * x\n  SET x = x + 1\nENDWHILE",options:["1 2 3","2 4 6","1 4 9","0 1 4"],answer:2,explanation:"x=1: output 1×1=1. x=2: output 2×2=4. x=3: output 3×3=9. x=4: condition 4<=3 false, loop ends. Output: 1 4 9."}
+,{id:100,topic:"Pseudocode",text:"What is 17 MOD 5?",options:["3","4","1","2"],answer:3,explanation:"17 ÷ 5 = 3 remainder 2. Therefore 17 MOD 5 = 2. MOD is used to check divisibility, cyclic counting, and hash functions."}
+,{id:101,topic:"Pseudocode",text:"Which pseudocode structure is BEST for menu-driven input where the user must see the menu at least once?",options:["REPEAT-UNTIL — shows menu, then checks if user chose to exit","IF-THEN-ELSE — no repetition","WHILE loop — check condition before showing menu","FOR loop — known number of menu displays"],answer:0,explanation:"A menu must display at least once before checking whether the user wants to exit. REPEAT-UNTIL guarantees at least one execution — perfectly suited to menu systems."}
+,{id:102,topic:"Pseudocode",text:"FOR i = 1 TO 5 STEP 2 DO OUTPUT i ENDFOR. What is the output?",options:["1 3 5","1 2 3 4 5","1 2 4 5","2 4"],answer:0,explanation:"Starting at i=1, incrementing by 2: i=1 (output 1), i=3 (output 3), i=5 (output 5), i=7 (7>5, stop). Output: 1 3 5."}
+,{id:103,topic:"Pseudocode",text:"In pseudocode, IF-THEN-ELSE belongs to which of the three fundamental control structures?",options:["Sequence","Selection","Iteration","Recursion"],answer:1,explanation:"IF-THEN-ELSE is a Selection structure — it selects one of two or more execution paths based on a condition's truth value. Selection = decision making."}
+,{id:104,topic:"Pseudocode",text:"Which pseudocode keyword pair marks the boundary of a WHILE loop body?",options:["WHILE...ENDWHILE (or WHILE...DO...ENDWHILE)","BEGIN...END","REPEAT...UNTIL","DO...LOOP"],answer:0,explanation:"WHILE condition DO...ENDWHILE is the standard pseudocode WHILE loop structure. REPEAT...UNTIL is for post-test loops. BEGIN...END marks procedure/program boundaries."}
+,{id:105,topic:"Pseudocode",text:"Language independence means a developer reading Pascal-style pseudocode can implement it in Python because:",options:["They must convert it to a flowchart first","The logic described is universal and can be implemented in Python despite different keyword style","It only works if written by a Python developer","They cannot — it uses Pascal syntax"],answer:1,explanation:"Language independence means the logic transcends keyword choice. A Pascal-style 'BEGIN...END' block is logically identical to Python's indentation. A skilled developer reads the intent and implements it in their language."}
+,{id:106,topic:"Pseudocode",text:"A password validator checks length, special characters, and uppercase. Which structure MOST handles all three checks in a single validation decision?",options:["FOR loop — iterate through requirements","WHILE loop with counter","REPEAT-UNTIL — keep asking until valid","Nested IF-THEN-ELSE or compound IF with AND/OR operators"],answer:3,explanation:"Multiple simultaneous conditions (length AND special char AND uppercase) are handled by compound IF conditions or nested IF-THEN-ELSE. This is Selection structure."}
+,{id:107,topic:"Pseudocode",text:"The pseudocode keyword OUTPUT corresponds to which component of the computing model?",options:["Output — it sends results to the display or file","Process — it processes and transforms data","Input — it inputs data from the user","Storage — it saves data to memory"],answer:0,explanation:"OUTPUT/PRINT/DISPLAY in pseudocode maps directly to the Output component of the computing model — sending results to a display, file, or other output device."}
+,{id:108,topic:"Pseudocode",text:"Which pseudocode fragment correctly computes the sum of integers from 1 to n?",options:["SET sum=1; WHILE i<=n DO sum=sum*i ENDWHILE","REPEAT OUTPUT i UNTIL i=n","SET sum=0; FOR i=1 TO n DO SET sum=sum+i ENDFOR; OUTPUT sum","FOR i = n TO 1 DO sum = i ENDFOR"],answer:2,explanation:"Correct: initialise sum=0, loop from 1 to n adding each i, then output. Option A replaces sum rather than accumulates. Option B uses multiplication (factorial). Option C lacks accumulation."}
+,{id:109,topic:"Pseudocode",text:"REPEAT ... UNTIL done=TRUE — executes the loop body a minimum of how many times?",options:["Zero — if done is already TRUE, it skips","Exactly two — REPEAT runs twice by definition","Depends on the initial value of 'done'","One — the body always executes before the condition is first checked"],answer:3,explanation:"REPEAT-UNTIL always executes the body at least ONCE before checking the condition. Even if 'done' is already TRUE at the start, the body runs once first."}
+,{id:110,topic:"Pseudocode",text:"FOR i = 10 TO 1 STEP -1 DO OUTPUT i ENDFOR. What is the output?",options:["10 only","10 9 8 7 6 5 4 3 2 1","1 2 3 4 5 6 7 8 9 10","No output — STEP -1 causes an error"],answer:1,explanation:"STEP -1 decrements i. Starting at 10, decrementing by 1 each iteration: 10, 9, 8, 7, 6, 5, 4, 3, 2, 1. When i=0, 0>=1 is false, loop ends. Output: 10 9 8 7 6 5 4 3 2 1."}
+,{id:111,topic:"Pseudocode",text:"A pseudocode fragment uses: IF a>b THEN IF b>c THEN OUTPUT 'a is largest' ENDIF ENDIF. What outputs when a=5, b=3, c=4?",options:["Nothing — inner condition b>c is FALSE (3>4 is false)","'a is largest'","'b is largest'","An error — nested IFs are invalid"],answer:0,explanation:"Outer: 5>3→TRUE. Inner: 3>4→FALSE, skip inner block. Output: nothing. The logic is flawed — 'a is largest' requires a>b AND a>c, but this code checks a>b AND b>c."}
+,{id:112,topic:"Pseudocode",text:"Which advantage do BOTH pseudocode and flowcharts share that distinguishes them from actual source code?",options:["Both use visual symbols","Both are standardised by ISO","Both can be compiled and run","Both are language-independent representations of algorithm logic, readable without knowledge of a specific programming language"],answer:3,explanation:"Language independence is the shared property: both pseudocode and flowcharts describe algorithm logic without being tied to a specific programming language. They are blueprints that transcend syntax."}
+,{id:113,topic:"SDLC",text:"According to IBM research cited in SDLC material, fixing a bug AFTER deployment costs how many times more than during development?",options:["10×","50×","1,000×","100×"],answer:3,explanation:"IBM's research: a bug fixed after deployment costs 100× more than the same bug fixed during development. This justifies heavy investment in testing throughout the SDLC."}
+,{id:114,topic:"SDLC",text:"The SRS document is produced at the end of which SDLC phase?",options:["System Design","Implementation","Requirement Analysis","Planning"],answer:2,explanation:"The Software Requirement Specification (SRS) document is the primary deliverable of the Requirement Analysis phase. It documents all functional and non-functional requirements."}
+,{id:115,topic:"SDLC",text:"High-Level Design (HLD) and Low-Level Design (LLD) documents are produced in which SDLC phase?",options:["Planning","Requirement Analysis","Testing","System Design"],answer:3,explanation:"System Design produces HLD (overall architecture) and LLD (detailed component design). These precede Implementation (coding)."}
+,{id:116,topic:"SDLC",text:"Which SDLC model pairs each development phase with a corresponding testing phase, forming a 'V' shape?",options:["Waterfall — linear sequential phases","Agile — short iterative sprints","V-Model — parallel development and testing phases","DevOps — continuous integration and delivery"],answer:2,explanation:"The V-Model mirrors each development phase (requirements, design, implementation) with a corresponding testing phase (acceptance, integration, unit testing), forming the shape of a 'V'."}
+,{id:117,topic:"SDLC",text:"In Agile, what is a 'sprint'?",options:["A performance test measuring code execution speed","A full software release cycle spanning months","A short, time-boxed iteration (typically 2–4 weeks) that produces a working software increment","A deployment to production environment"],answer:2,explanation:"Agile sprints are time-boxed iterations (typically 2–4 weeks) delivering a working software increment. Each sprint includes planning, development, testing, and review."}
+,{id:118,topic:"SDLC",text:"Apple's staged iOS rollout — releasing to a small percentage of users first then expanding — exemplifies which deployment strategy?",options:["Pilot deployment — selected users only","Phased deployment — staged rollout expanding over time","Blue-green deployment — two identical environments","Full deployment — all users at once"],answer:1,explanation:"Phased deployment releases to users in stages, monitoring each stage before expanding. Apple's iOS percentage rollout starts small and gradually increases to 100% of users."}
+,{id:119,topic:"SDLC",text:"The Waterfall model is LEAST suited for which real-world scenario?",options:["A single-purpose calculator with no planned future updates","A mission-critical safety system with complete specifications","A startup building a social media app where user requirements change weekly based on feedback","A government payroll system with fixed, fully documented requirements"],answer:2,explanation:"Waterfall requires complete, stable requirements before proceeding. A startup where requirements change weekly cannot afford to restart phases — Agile is far better for volatile requirements."}
+,{id:120,topic:"SDLC",text:"Which SDLC phase is responsible for post-launch support, patches, and feature updates?",options:["Testing","Evaluation","Deployment","Maintenance"],answer:3,explanation:"Maintenance is the longest SDLC phase in practice: corrective maintenance (bug fixes), adaptive maintenance (environment changes), perfective maintenance (new features), and preventive maintenance (refactoring)."}
+,{id:121,topic:"SDLC",text:"Unit testing, integration testing, system testing, and UAT all occur in which SDLC phase?",options:["Testing","Deployment","System Design","Implementation"],answer:0,explanation:"The Testing phase encompasses all testing activities: unit, integration, system, and user acceptance testing (UAT). QA engineers lead this phase."}
+,{id:122,topic:"SDLC",text:"A Minimum Viable Product (MVP) is MOST associated with which SDLC phase?",options:["Testing — MVP is the minimum set of test cases","Planning — the MVP is defined during feasibility and scope planning","Maintenance — MVPs are deployed incrementally during maintenance","Requirement Analysis — MVP defines minimum requirements"],answer:1,explanation:"The MVP is defined during Planning: it identifies the minimum feature set needed to validate the product concept with early users, determining initial scope and feasibility."}
+,{id:123,topic:"SDLC",text:"In which SDLC phase would a developer write Python functions, C# classes, or SQL stored procedures?",options:["Requirement Analysis","Testing","Implementation (Coding)","System Design"],answer:2,explanation:"Implementation (Coding) is where developers write actual source code based on the design documents produced in System Design."}
+,{id:124,topic:"SDLC",text:"The DevOps model extends Agile by adding:",options:["Continuous integration, continuous delivery, and automated deployment pipelines — bridging development and operations","Formal sign-off gates between each phase","A separate testing team working independently","A linear sequence of phases similar to Waterfall"],answer:0,explanation:"DevOps integrates development and operations teams, enabling CI/CD and automated pipelines. It extends Agile's iterative approach with operational automation for faster, reliable deployments."}
+,{id:125,topic:"SDLC",text:"Which is a NON-FUNCTIONAL requirement?",options:["The system shall respond to any query within 200 milliseconds under peak load","The system shall store customer order history","The system shall display an invoice after purchase","The system shall allow users to reset their password"],answer:0,explanation:"Response time under peak load is a performance-based non-functional requirement. Functional requirements describe WHAT the system does. Non-functional requirements describe HOW WELL it does it."}
+,{id:126,topic:"SDLC",text:"The V-Model's PRIMARY disadvantage is:",options:["It has no design phase","It is inflexible to changing requirements and cumbersome for large, complex evolving projects","It cannot be used for object-oriented systems","It does not include a testing phase"],answer:1,explanation:"Like Waterfall, the V-Model assumes stable requirements. For evolving projects, the rigid phase-to-phase mirroring becomes cumbersome — changing requirements force costly revisiting of both development and testing phases."}
+,{id:127,topic:"SDLC",text:"During which SDLC phase would architects decide between microservices and monolithic architecture?",options:["Planning","Requirement Analysis","System Design","Testing"],answer:2,explanation:"Architectural decisions (microservices vs. monolith, cloud vs. on-premise) are made in System Design — the High-Level Design (HLD) activity defining the system's structural blueprint."}
+,{id:128,topic:"SDLC",text:"The correct SDLC phase sequence is:",options:["Design→Planning→Requirements→Implementation→Testing→Deployment→Maintenance","Planning→Requirements→Design→Implementation→Testing→Deployment→Maintenance","Implementation→Design→Testing→Requirements→Planning→Deployment→Maintenance","Requirements→Planning→Testing→Design→Deployment→Implementation→Maintenance"],answer:1,explanation:"The correct SDLC sequence: Planning→Requirement Analysis→System Design→Implementation→Testing→Deployment→Maintenance. Each phase builds on the previous one."}
+,{id:129,topic:"SDLC",text:"Blue-green deployment maintains TWO identical production environments. Its PRIMARY benefit is:",options:["Zero-downtime deployment: traffic switches instantly between environments, enabling instant rollback if the new version fails","It doubles development speed","It automatically tests both versions simultaneously","It cuts server costs in half"],answer:0,explanation:"Blue-green: environment Blue (live) and Green (new). Traffic switches from Blue to Green instantly. If Green fails, traffic switches back to Blue in seconds — zero downtime and instant rollback."}
+,{id:130,topic:"SDLC",text:"Which scenario BEST illustrates the Planning phase activity of 'resource allocation'?",options:["Deploying the application to a staging environment","Gathering functional requirements from business stakeholders","Writing unit tests for all modules","Assigning 3 developers, 1 DBA, and 1 UI designer with a 6-month timeline and defined budget to the project"],answer:3,explanation:"Resource allocation in Planning means defining who works on the project, for how long, and with what budget. This occurs before any technical work begins."}
+,{id:131,topic:"Control Structures",text:"What is the output of this nested loop?\nfor(int i=0;i<3;i++){ for(int j=0;j<3;j++){ if(i==j) Console.Write(i+\",\"); } }",options:["0,1,2,","1,2,3,","0,0,1,1,2,2,","0,1,2,3,"],answer:0,explanation:"i=0,j=0: 0==0→print '0,'. i=0,j=1,j=2: skip. i=1,j=0: skip. i=1,j=1: 1==1→print '1,'. i=1,j=2: skip. i=2,j=0,j=1: skip. i=2,j=2: 2==2→print '2,'. Output: 0,1,2,"}
+,{id:132,topic:"Control Structures",text:"Which control structure guarantees its body executes AT LEAST ONCE regardless of the condition's initial value?",options:["do-while loop","while loop","if-else statement","for loop"],answer:0,explanation:"The do-while loop executes the body FIRST, then evaluates the condition. Even if the condition is initially false, the body has already run once. Guaranteed minimum one execution."}
+,{id:133,topic:"Control Structures",text:"Trace: int x=10; while(x>0){x-=3; if(x==4) break;} Console.WriteLine(x);",options:["4","0","1","7"],answer:0,explanation:"x=10→10-3=7; 7!=4. x=7→7-3=4; 4==4→break. x=4. Output: 4."}
+,{id:134,topic:"Control Structures",text:"The 'fall-through' behaviour in a switch statement occurs when:",options:["The switch expression evaluates to null","The switch is nested inside a loop","A case block ends without a break statement, causing execution to continue into the next case","The default case is missing"],answer:2,explanation:"Without break, execution falls through from a matched case into the next case block regardless of whether it matches. Often a bug, but can be used intentionally for shared case logic."}
+,{id:135,topic:"Control Structures",text:"Trace: for(int i=1;i<=10;i++){if(i%2==0) continue; if(i>7) break; Console.Write(i+\" \");}",options:["1 3 5 7 9","1 2 3 4 5 6 7","1 3 5 7","2 4 6 8 10"],answer:2,explanation:"i=1: odd, 1<=7→print 1. i=2: even→continue. i=3: print 3. i=4: continue. i=5: print 5. i=6: continue. i=7: odd, 7<=7→print 7. i=8: 8>7→break. Output: 1 3 5 7."}
+,{id:136,topic:"Control Structures",text:"The key difference between 'break' and 'continue' inside a loop:",options:["break skips one iteration; continue exits the loop entirely","They are functionally identical","break exits the loop entirely; continue skips only the current iteration and proceeds to the next","break resets the loop counter; continue doubles the increment"],answer:2,explanation:"break terminates the loop entirely. continue skips only the rest of the current iteration, jumping to the next iteration's increment/condition check. These are opposite in scope."}
+,{id:137,topic:"Control Structures",text:"if(score>=90) grade='A'; else if(score>=80) grade='B'; else if(score>=70) grade='C'; else grade='F'. For score=80, what is grade?",options:["B","F","C","A"],answer:0,explanation:"score=80: 80>=90? No. 80>=80? YES→grade='B'. Execution stops at the first true condition in an if-else if ladder. Grade = B."}
+,{id:138,topic:"Control Structures",text:"Which situation would cause a while loop to become an infinite loop?",options:["The loop body contains a break statement","The loop is nested inside another loop","The loop counter starts at 1 and the condition is i<=10","The loop counter is never updated inside the loop body, so the exit condition is never reached"],answer:3,explanation:"If the variable controlling the exit condition is never updated (e.g. forgot i++), the condition remains permanently true, producing an infinite loop — the program freezes or crashes."}
+,{id:139,topic:"Control Structures",text:"A switch statement checks menuChoice=5, but there is no case 5. The switch has a default block. What executes?",options:["The case 1 block by default","A runtime error is thrown","The default block","Nothing — the switch silently skips all cases"],answer:2,explanation:"When no case matches the switch expression, the default block executes. It is the fallback for all unmatched values. If there is no default, nothing executes."}
+,{id:140,topic:"Control Structures",text:"The for loop: for(initialisation; condition; update). If the condition is FALSE at initialisation, the body executes how many times?",options:["Infinitely","Depends on the update expression","Zero times — the condition is checked BEFORE the first execution","One time — for loops always run at least once"],answer:2,explanation:"The for loop (and while loop) checks the condition BEFORE executing the body. If false at initialisation, the body never runs — zero executions. Only do-while guarantees at least one execution."}
+,{id:141,topic:"Control Structures",text:"Which scenario requires a do-while loop rather than a while loop?",options:["Counting from 1 to 100","Iterating through all elements of an array","Searching for a value in a sorted list","Validating user input: keep prompting until valid input is received (must ask at least once)"],answer:3,explanation:"User input validation must show the prompt at least once — even before checking validity. do-while guarantees this. A while loop would require duplicating the prompt before the loop."}
+,{id:142,topic:"Control Structures",text:"In a nested loop (outer i, inner j), a break statement in the INNER loop does what?",options:["Pauses execution until a condition is met","Only breaks out of the inner loop — the outer loop continues to its next iteration","Resets both loop counters to their initial values","Breaks out of BOTH inner and outer loops"],answer:1,explanation:"break only exits the innermost loop containing it. The outer loop continues to its next iteration. To break both loops, you need a flag variable or restructured code."}
+,{id:143,topic:"Control Structures",text:"int sum=0; for(int i=1; i<=5; i++){sum+=i;} Console.WriteLine(sum);",options:["25","10","15","5"],answer:2,explanation:"sum: 0+1=1, 1+2=3, 3+3=6, 6+4=10, 10+5=15. Output: 15. This is 1+2+3+4+5=15 (=n(n+1)/2=5×6/2=15)."}
+,{id:144,topic:"Control Structures",text:"Control structures are universal. Which of the following does NOT support if-else and loops?",options:["No such language among modern mainstream languages — all support control structures","Python","C++","Java"],answer:0,explanation:"Every modern mainstream programming language — Python, Java, C++, C#, JavaScript, Go, Rust, Swift — supports if-else, for loops, while loops, and switch constructs. Control structures are universal."}
+,{id:145,topic:"Control Structures",text:"What does the 'continue' statement do inside a loop?",options:["Exits the loop completely","Terminates the entire program","Resets the loop counter to zero","Skips the rest of the current iteration and jumps to the next iteration"],answer:3,explanation:"continue skips the rest of the current iteration and immediately jumps to the next iteration's condition check. It does NOT exit the loop — that is what break does."}
+,{id:146,topic:"Control Structures",text:"A for loop: for(int i=1; i<=5; i++) Console.WriteLine(i). What is the output?",options:["2 3 4 5 6","0 1 2 3 4 5","1 2 3 4 5 6","1 2 3 4 5"],answer:3,explanation:"The loop starts at i=1, prints i, increments by 1, continues while i<=5. Prints: 1, 2, 3, 4, 5. When i=6, 6<=5 is false — loop terminates. Output: 1 2 3 4 5."}
+,{id:147,topic:"Control Structures",text:"A banking withdrawal system proceeds ONLY if account balance is sufficient. This is an example of which control structure?",options:["Recursion","Selection","Iteration","Sequence"],answer:1,explanation:"Checking if balance is sufficient before allowing a withdrawal is a Selection (decision-making) control structure. The if statement evaluates the condition (balance>=withdrawal) and branches accordingly."}
+,{id:148,topic:"Control Structures",text:"int x=6; do { Console.WriteLine(x); x++; } while(x<=5). How many times does the loop body execute?",options:["5 times","Infinitely","0 times — condition is false initially","1 time — body runs once (prints 6, x becomes 7), then x<=5 is false so it stops"],answer:3,explanation:"do-while executes the body FIRST. x=6: body runs, prints 6, x becomes 7. Then 7<=5 is false — stop. Total: 1 execution."}
+,{id:149,topic:"Control Structures",text:"The switch statement is BEST used when:",options:["You need to loop through an array","Multiple conditions involve ranges like >=70","Dealing with fixed, discrete values like menu options (1, 2, 3, 4)","Complex logical conditions must be evaluated"],answer:2,explanation:"switch is best for fixed, discrete values (menu choice of 1, 2, 3, 4). For complex conditions or ranges (e.g. score>=70), if-else is more appropriate."}
+,{id:150,topic:"Control Structures",text:"In an if-else if ladder, the final 'else' block executes when:",options:["When a syntax error is detected","When ALL conditions above it have evaluated to false","Always — it is the default","When the first condition is true"],answer:1,explanation:"In an if-else if ladder, conditions are checked top-to-bottom. The final else executes only when ALL preceding conditions have evaluated to false — it serves as the fallback/default path."}
+];
+
+
+// ── STATE ──
+const state={answers:{},revealed:{},bookmarks:new Set(),filter:'All',search:'',shuffled:[...questions],isShuffled:false,timerSecs:0,timerInterval:null};
+
+// ── INIT ──
+function init(){buildFilters();renderQuestions();startTimer();}
+
+function buildFilters(){
+  const topics=['All',...new Set(questions.map(q=>q.topic))];
+  document.getElementById('filters').innerHTML=topics.map(t=>`<button class="filter-pill${t==='All'?' active':''}" onclick="setFilter(this.dataset.t,this)" data-t="${t}">${t}</button>`).join('');
+}
+function setFilter(topic,btn){state.filter=topic;document.querySelectorAll('.filter-pill').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderQuestions();}
+function filterQuestions(){state.search=document.getElementById('search-input').value.toLowerCase();renderQuestions();}
+function getVisible(){return state.shuffled.filter(q=>{const mt=state.filter==='All'||q.topic===state.filter;const ms=!state.search||q.text.toLowerCase().includes(state.search)||q.options.some(o=>o.toLowerCase().includes(state.search));return mt&&ms;});}
+
+// ── RENDER ──
+function renderQuestions(){
+  const vis=getVisible();const list=document.getElementById('q-list');const nr=document.getElementById('no-results');
+  if(vis.length===0){list.innerHTML='';nr.style.display='block';}
+  else{nr.style.display='none';list.innerHTML=vis.map((q,i)=>buildCard(q,i+1)).join('');}
+  updateStats();
+}
+function buildCard(q,idx){
+  const ans=state.answers[q.id];const rev=state.revealed[q.id];const bk=state.bookmarks.has(q.id);const answered=ans!==undefined;const letters=['A','B','C','D'];
+  const opts=q.options.map((o,i)=>{
+    let cls='opt-btn';
+    if(answered||rev){if(i===q.answer)cls+=answered?' correct':' revealed-correct';else if(answered&&i===ans)cls+=' wrong';}
+    const dis=(answered||rev)?'disabled':'';
+    return`<button class="${cls}" onclick="pickAnswer(${q.id},${i})" ${dis}><span class="opt-letter">${letters[i]}</span><span class="opt-text">${o}</span></button>`;
+  }).join('');
+  const expl=(answered||rev)?`<div class="explanation show"><p><strong>Explanation:</strong> ${q.explanation}</p></div>`:'';
+  const revBtn=(!answered&&!rev)?`<div class="q-footer"><button class="reveal-btn" onclick="revealAns(${q.id})">Reveal Answer</button></div>`:'';
+  return`<div class="q-card${bk?' bookmarked':''}" id="qcard-${q.id}"><div class="q-meta"><span class="q-num">Q${idx}</span><span class="q-topic">${q.topic}</span><span class="q-diff">💀 HARD</span><button class="bk-btn${bk?' active':''}" onclick="toggleBk(${q.id})" title="Bookmark">🔖</button></div><p class="q-text">${q.text}</p><div class="options-grid">${opts}</div>${revBtn}${expl}</div>`;
+}
+
+// ── INTERACTIONS ──
+function pickAnswer(id,chosen){
+  if(state.answers[id]!==undefined||state.revealed[id])return;
+  state.answers[id]=chosen;
+  const q=questions.find(x=>x.id===id);const vis=getVisible();const idx=vis.findIndex(x=>x.id===id);
+  const card=document.getElementById('qcard-'+id);if(card)card.outerHTML=buildCard(q,idx+1);
+  updateStats();checkDiagnostic();
+}
+function revealAns(id){
+  state.revealed[id]=true;
+  const q=questions.find(x=>x.id===id);const vis=getVisible();const idx=vis.findIndex(x=>x.id===id);
+  const card=document.getElementById('qcard-'+id);if(card)card.outerHTML=buildCard(q,idx+1);updateStats();
+}
+function revealAll(){getVisible().forEach(q=>{if(!state.answers[q.id])state.revealed[q.id]=true;});renderQuestions();}
+function resetQuiz(){
+  state.answers={};state.revealed={};state.bookmarks=new Set();state.filter='All';state.search='';state.isShuffled=false;state.shuffled=[...questions];
+  document.getElementById('search-input').value='';
+  document.querySelectorAll('.filter-pill').forEach((b,i)=>b.classList.toggle('active',i===0));
+  document.getElementById('shuffle-note').style.display='none';state.timerSecs=0;renderQuestions();
+}
+function shuffleQuestions(){
+  for(let i=state.shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[state.shuffled[i],state.shuffled[j]]=[state.shuffled[j],state.shuffled[i]];}
+  state.isShuffled=true;document.getElementById('shuffle-note').style.display='block';renderQuestions();
+}
+
+// ── BOOKMARKS ──
+function toggleBk(id){
+  if(state.bookmarks.has(id))state.bookmarks.delete(id);else state.bookmarks.add(id);
+  const q=questions.find(x=>x.id===id);const vis=getVisible();const idx=vis.findIndex(x=>x.id===id);
+  const card=document.getElementById('qcard-'+id);if(card)card.outerHTML=buildCard(q,idx+1);updateBookmarkPanel();
+}
+function toggleBookmarks(){const bc=document.getElementById('bm-card');bc.style.display=bc.style.display==='block'?'none':'block';updateBookmarkPanel();}
+function updateBookmarkPanel(){
+  const list=document.getElementById('bm-list');
+  if(state.bookmarks.size===0){list.innerHTML='<span style="font-size:.76rem;color:var(--ink3)">No bookmarks yet.</span>';return;}
+  list.innerHTML=[...state.bookmarks].map(id=>`<button onclick="scrollToQ(${id})" style="font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:var(--r-pill);background:var(--red-bg);color:var(--primary);border:1px solid var(--red-border);cursor:pointer;">Q${id}</button>`).join('');
+}
+function scrollToQ(id){const el=document.getElementById('qcard-'+id);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}
+
+// ── STATS ──
+function updateStats(){
+  const vis=getVisible();const attempted=vis.filter(q=>state.answers[q.id]!==undefined).length;
+  const correct=vis.filter(q=>state.answers[q.id]===q.answer).length;const wrong=attempted-correct;
+  const score=attempted>0?Math.round((correct/attempted)*100):0;
+  document.getElementById('stat-showing').textContent=`Showing: ${vis.length}`;
+  document.getElementById('stat-correct').textContent=`✓ Correct: ${correct}`;
+  document.getElementById('stat-wrong').textContent=`✗ Wrong: ${wrong}`;
+  document.getElementById('stat-attempted').textContent=`Attempted: ${attempted}`;
+  document.getElementById('stat-score').textContent=`Score: ${score}%`;
+  const pct=vis.length>0?(attempted/vis.length)*100:0;
+  document.getElementById('prog-bar').style.width=pct+'%';
+  document.getElementById('prog-label').textContent=`${attempted} / ${vis.length}`;
+}
+function checkDiagnostic(){const attempted=Object.keys(state.answers).length;document.getElementById('diag-bar').classList.toggle('show',attempted>=10);}
+function toggleSummary(){const body=document.getElementById('sum-body');const btn=document.getElementById('sum-toggle');body.classList.toggle('open');btn.classList.toggle('open');}
+
+// ── MODAL ──
+function openModal(){document.getElementById('modal-body').innerHTML=buildReport();document.getElementById('modal-overlay').classList.add('open');setTimeout(()=>{document.querySelectorAll('.topic-bar-fill').forEach(bar=>{bar.style.width=bar.dataset.pct+'%';});},80);}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+function buildReport(){
+  const total=questions.length;const attempted=Object.keys(state.answers).length;
+  const correct=Object.values(state.answers).filter((ans,i)=>{const id=parseInt(Object.keys(state.answers)[i]);const q=questions.find(x=>x.id===id);return q&&ans===q.answer;}).length;
+  const wrong=attempted-correct;const scorePct=attempted>0?Math.round((correct/attempted)*100):0;
+  const topics=[...new Set(questions.map(q=>q.topic))];
+  const topicBars=topics.map(t=>{
+    const qs=questions.filter(q=>q.topic===t);const att=qs.filter(q=>state.answers[q.id]!==undefined);const cor=att.filter(q=>state.answers[q.id]===q.answer);
+    const pct=att.length>0?Math.round((cor.length/att.length)*100):0;const color=pct>=70?'var(--green)':pct>=40?'var(--amber)':'var(--primary)';
+    return`<div class="topic-bar-row"><div class="topic-bar-label"><span>${t}</span><span style="color:${color}">${att.length>0?pct+'%':'—'}</span></div><div class="topic-bar-bg"><div class="topic-bar-fill" style="background:${color}" data-pct="${pct}"></div></div></div>`;
+  }).join('');
+  const focusCards=topics.map(t=>{
+    const qs=questions.filter(q=>q.topic===t);const att=qs.filter(q=>state.answers[q.id]!==undefined);if(att.length===0)return'';
+    const cor=att.filter(q=>state.answers[q.id]===q.answer);const pct=Math.round((cor.length/att.length)*100);
+    if(pct>=80)return`<div class="focus-card good"><div class="fc-head">✅ ${t}</div><div class="fc-body">Excellent — exam-ready on this topic. One final review to lock it in.</div></div>`;
+    if(pct>=50)return`<div class="focus-card warning"><div class="fc-head">⚠️ ${t}</div><div class="fc-body">Partial understanding. Re-read lecture notes and retry missed questions before the exam.</div></div>`;
+    return`<div class="focus-card critical"><div class="fc-head">🚨 ${t}</div><div class="fc-body">Critical gaps. Revisit ALL material for this topic — you are at serious risk here.</div></div>`;
+  }).filter(Boolean).join('');
+  const verdict=scorePct>=80?`<strong>Exceptional!</strong> You are genuinely exam-ready. Very few students pass this quiz above 80%. Focus on any remaining red topics.`:
+    scorePct>=60?`<strong>Above average.</strong> You understand most core concepts but have exploitable gaps. Target every ⚠️ topic before the exam.`:
+    scorePct>=40?`<strong>Needs serious work.</strong> Multiple critical areas flagged 🚨. Do not sit this exam without revisiting every red topic using the Revision Summary above.`:
+    `<strong>Not yet ready.</strong> Use the Revision Summary, reset and retake topic-by-topic, and re-read all lecture notes before attempting again.`;
+  return`<div class="score-grid"><div class="score-cell green-cell"><div class="val">${correct}</div><div class="lbl">Correct</div></div><div class="score-cell red-cell"><div class="val">${wrong}</div><div class="lbl">Wrong</div></div><div class="score-cell amber-cell"><div class="val">${scorePct}%</div><div class="lbl">Score</div></div><div class="score-cell blue-cell"><div class="val">${attempted}/${total}</div><div class="lbl">Attempted</div></div></div><p class="modal-section-title">Performance by Topic</p>${topicBars}<p class="modal-section-title" style="margin-top:20px">Areas to Focus On</p>${focusCards||'<p style="font-size:.78rem;color:var(--ink3)">Answer some questions to see your focus areas.</p>'}<div class="verdict-box"><p>${verdict}</p></div>`;
+}
+
+// ── TIMER ──
+function startTimer(){state.timerInterval=setInterval(()=>{state.timerSecs++;const m=String(Math.floor(state.timerSecs/60)).padStart(2,'0');const s=String(state.timerSecs%60).padStart(2,'0');document.getElementById('timer').textContent=`⏱ ${m}:${s}`;},1000);}
+
+init();
+</script>
+</body>
+</html>
