@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>COS 102 — CBT Practice Exam</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0f14; --surface: #161a23; --surface2: #1e2433; --border: #2a3045;
+    --accent: #4f8ef7; --accent-dim: rgba(79,142,247,0.12);
+    --green: #3ddc84; --green-dim: rgba(61,220,132,0.12);
+    --red: #ff5f5f; --red-dim: rgba(255,95,95,0.12);
+    --amber: #f7a94f; --amber-dim: rgba(247,169,79,0.12);
+    --text: #e8eaf0; --muted: #7a8299;
+    --mono: 'DM Mono', monospace; --sans: 'Space Grotesk', sans-serif;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 0 16px 80px; }
+
+  header { width: 100%; max-width: 800px; padding: 32px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+  .course-tag { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
+  header h1 { font-size: clamp(18px, 4vw, 26px); font-weight: 700; line-height: 1.2; }
+  header h1 span { color: var(--muted); font-weight: 400; }
+  .meta-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .meta-pill { font-family: var(--mono); font-size: 11px; color: var(--muted); background: var(--surface2); border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px; }
+
+  .progress-wrap { width: 100%; max-width: 800px; margin-bottom: 22px; }
+  .progress-top { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 11px; color: var(--muted); margin-bottom: 7px; }
+  .progress-bar { height: 3px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--amber); border-radius: 2px; transition: width .4s ease; width: 0%; }
+
+  .score-strip { width: 100%; max-width: 800px; display: flex; gap: 10px; margin-bottom: 22px; flex-wrap: wrap; }
+  .score-card { flex: 1; min-width: 90px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; text-align: center; }
+  .score-card .val { font-family: var(--mono); font-size: 20px; font-weight: 500; }
+  .score-card .lbl { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: .05em; text-transform: uppercase; }
+  .score-card.correct .val { color: var(--green); }
+  .score-card.wrong   .val { color: var(--red); }
+  .score-card.total   .val { color: var(--amber); }
+  .score-card.skipped .val { color: var(--muted); }
+
+  .nav-dots-wrap { width: 100%; max-width: 800px; margin-bottom: 24px; }
+  .nav-dots-title { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 9px; }
+  .nav-dots { display: flex; flex-wrap: wrap; gap: 5px; }
+  .nav-dot { width: 26px; height: 26px; border-radius: 5px; background: var(--surface2); border: 1.5px solid var(--border); font-family: var(--mono); font-size: 9px; color: var(--muted); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: border-color .15s; }
+  .nav-dot:hover { border-color: var(--amber); }
+  .nav-dot.answered-correct { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .nav-dot.answered-wrong   { background: var(--red-dim);   border-color: var(--red);   color: var(--red); }
+  .nav-dot.current { border-color: var(--amber); color: var(--amber); }
+
+  /* Module divider */
+  .module-divider { width: 100%; max-width: 800px; display: flex; align-items: center; gap: 12px; margin: 28px 0 18px; }
+  .module-divider span { font-family: var(--mono); font-size: 11px; color: var(--amber); letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+  .module-divider::before, .module-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .module-divider::before { display: none; }
+
+  .question-card { width: 100%; max-width: 800px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 26px 26px 22px; margin-bottom: 14px; }
+  .q-number { font-family: var(--mono); font-size: 10px; color: var(--amber); letter-spacing: .1em; margin-bottom: 10px; }
+  .q-text { font-size: 14px; font-weight: 500; line-height: 1.65; margin-bottom: 18px; }
+
+  .options { display: flex; flex-direction: column; gap: 9px; }
+  .option { display: flex; align-items: center; gap: 12px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 9px; padding: 11px 14px; cursor: pointer; transition: border-color .18s, background .18s; user-select: none; }
+  .option:hover:not(.locked) { border-color: var(--amber); background: var(--amber-dim); }
+  .option.selected:not(.locked) { border-color: var(--amber); background: var(--amber-dim); }
+  .option.correct  { border-color: var(--green); background: var(--green-dim); }
+  .option.wrong    { border-color: var(--red);   background: var(--red-dim); }
+  .option.show-correct { border-color: var(--green); background: var(--green-dim); }
+
+  .opt-letter { font-family: var(--mono); font-size: 12px; font-weight: 500; width: 24px; height: 24px; border-radius: 5px; background: var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--muted); transition: background .18s, color .18s; }
+  .option.correct  .opt-letter { background: var(--green); color: #0d0f14; }
+  .option.wrong    .opt-letter { background: var(--red);   color: #fff; }
+  .option.show-correct .opt-letter { background: var(--green); color: #0d0f14; }
+  .option.selected:not(.locked) .opt-letter { background: var(--amber); color: #0d0f14; }
+  .opt-text { font-size: 13px; line-height: 1.45; }
+
+  .feedback { margin-top: 12px; padding: 10px 13px; border-radius: 7px; font-size: 12px; line-height: 1.5; display: none; }
+  .feedback.show { display: block; }
+  .feedback.correct { background: var(--green-dim); border: 1px solid var(--green); color: var(--green); }
+  .feedback.wrong   { background: var(--red-dim);   border: 1px solid var(--red);   color: var(--red); }
+
+  .q-footer { display: flex; justify-content: flex-end; margin-top: 14px; }
+  .btn-submit { font-family: var(--sans); font-size: 12px; font-weight: 600; padding: 8px 20px; border-radius: 7px; border: none; background: var(--amber); color: #0d0f14; cursor: pointer; transition: opacity .18s; }
+  .btn-submit:hover { opacity: .85; }
+  .btn-submit:disabled { opacity: .28; cursor: default; }
+  .btn-submit.answered { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+  #results-panel { display: none; width: 100%; max-width: 800px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 40px 32px; text-align: center; margin-top: 28px; }
+  #results-panel.show { display: block; }
+  .result-grade { font-family: var(--mono); font-size: 76px; font-weight: 500; line-height: 1; margin-bottom: 8px; }
+  .result-label { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+  .grade-bar-wrap { margin: 0 auto 28px; max-width: 380px; }
+  .grade-bar-bg { height: 7px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .grade-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .result-breakdown { display: flex; justify-content: center; gap: 22px; flex-wrap: wrap; margin-bottom: 28px; }
+  .rb-item { font-size: 13px; color: var(--muted); }
+  .rb-item strong { color: var(--text); }
+  .btn-restart { font-family: var(--sans); font-size: 13px; font-weight: 600; padding: 11px 30px; border-radius: 9px; border: 1.5px solid var(--amber); background: transparent; color: var(--amber); cursor: pointer; transition: background .2s, color .2s; }
+  .btn-restart:hover { background: var(--amber); color: #0d0f14; }
+
+  @media(max-width:500px){ .question-card{padding:18px 14px;} #results-panel{padding:28px 16px;} .result-grade{font-size:56px;} }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="course-tag">AFIT · COS 102 · Practice CBT</div>
+  <h1>Introduction to <span>Problem Solving</span></h1>
+  <div class="meta-row">
+    <span class="meta-pill">70 Questions</span>
+    <span class="meta-pill">10 Modules</span>
+    <span class="meta-pill">Answer to reveal</span>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span id="prog-label">0 / 70 answered</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<div class="score-strip">
+  <div class="score-card total">  <div class="val" id="sc-total">0</div>   <div class="lbl">Answered</div></div>
+  <div class="score-card correct"><div class="val" id="sc-correct">0</div> <div class="lbl">Correct</div></div>
+  <div class="score-card wrong">  <div class="val" id="sc-wrong">0</div>   <div class="lbl">Wrong</div></div>
+  <div class="score-card skipped"><div class="val" id="sc-skip">70</div>   <div class="lbl">Remaining</div></div>
+</div>
+
+<div class="nav-dots-wrap">
+  <div class="nav-dots-title">Question Navigator</div>
+  <div class="nav-dots" id="nav-dots"></div>
+</div>
+
+<div id="questions-container"></div>
+
+<div id="results-panel">
+  <div class="result-grade" id="res-pct">--%</div>
+  <div class="result-label" id="res-label">Loading...</div>
+  <div class="grade-bar-wrap"><div class="grade-bar-bg"><div class="grade-bar-fill" id="res-bar" style="width:0%"></div></div></div>
+  <div class="result-breakdown">
+    <div class="rb-item">Correct: <strong id="res-correct">0</strong></div>
+    <div class="rb-item">Wrong: <strong id="res-wrong">0</strong></div>
+    <div class="rb-item">Score: <strong id="res-score">0 / 70</strong></div>
+  </div>
+  <button class="btn-restart" onclick="restart()">↺ Retake Exam</button>
+</div>
+
+<script>
+// Each entry: { q, opts: [A,B,C,D], ans: index of correct opt }
+// Options have been shuffled so correct answers are distributed across A/B/C/D
+const QA = [
+  // ── MODULE 1 ──────────────────────────────────────────────────
+  { m:"Module 1: Nature of Problems & Critical Thinking",
+    q:"In a technical sense, how is a <strong>problem</strong> defined?",
+    opts:["An emotional state of confusion","A physical task requiring manual labor","A gap between where you are and where you want to be","A situation with no possible solution"], ans:2 },
+
+  { q:"Which component of a computational problem refers to the <strong>starting point</strong> or raw data?",
+    opts:["Goal State","Constraints","Operators","Initial State"], ans:3 },
+
+  { q:"A problem that has clear parameters, explicit rules, and a definite goal is called:",
+    opts:["Routine","Well-defined","Ill-defined","Non-routine"], ans:1 },
+
+  { q:"Which of the following is an example of an <strong>ill-defined</strong> problem?",
+    opts:["Calculating sales tax","Finding the square root of 144","Solving a Sudoku puzzle","Designing a 'great' user interface"], ans:3 },
+
+  { q:"The cognitive bias of <strong>anchoring</strong> involves:",
+    opts:["Seeing the problem from the viewpoint of others","Being influenced by framing as a loss or gain","Only looking for info that supports existing solutions","Over-relying on the first piece of information heard"], ans:3 },
+
+  { q:"Starting with a <strong>general rule</strong> and moving toward a specific conclusion is known as:",
+    opts:["Deductive Reasoning","Inductive Reasoning","Root Cause Analysis","Bottom-up logic"], ans:0 },
+
+  { q:"Which constraint refers to a lack of specific information or expertise needed to move forward?",
+    opts:["Resources","Goal State","Knowledge","Time"], ans:2 },
+
+  // ── MODULE 2 ──────────────────────────────────────────────────
+  { m:"Module 2: Problem-Solving Strategies",
+    q:"Which strategy involves trying various responses until one succeeds, as seen in <strong>Thorndike's cat experiment</strong>?",
+    opts:["Trial and Error","Algorithms","Means-End Analysis","Heuristics"], ans:0 },
+
+  { q:"A <strong>heuristic</strong> is best described as a:",
+    opts:["Method of storing subproblem results","Way to find the absolute perfect solution","Step-by-step guaranteed procedure","Rule-of-thumb or cognitive shortcut"], ans:3 },
+
+  { q:"The <strong>General Problem Solver (GPS)</strong> model was developed to support which strategy?",
+    opts:["Dynamic Programming","Backtracking","Divide and Conquer","Means-End Analysis"], ans:3 },
+
+  { q:"Which strategy divides a problem into <strong>identical</strong> subproblems, solves them, and then merges them?",
+    opts:["Trial and Error","Decomposition","Divide and Conquer","Means-End Analysis"], ans:2 },
+
+  { q:"<strong>Backtracking</strong> is most commonly used to solve which type of problem?",
+    opts:["Merge Sort","Simple Arithmetic","Fibonacci Numbers","Sudoku or Maze Solving"], ans:3 },
+
+  { q:"<strong>Dynamic Programming</strong> is an optimization technique that saves time by:",
+    opts:["Identifying the gap between current and goal states","Trying every possible solution blindly","Abandoning invalid paths early","Storing results of subproblems (memoization)"], ans:3 },
+
+  { q:"In terms of efficiency, <strong>Divide and Conquer</strong> often allows for:",
+    opts:["Non-optimal 'good enough' results","Pruning of search trees","Elimination of all constraints","Parallel execution of subproblems"], ans:3 },
+
+  // ── MODULE 3 ──────────────────────────────────────────────────
+  { m:"Module 3: The Problem-Solving Process",
+    q:"What is the <strong>first and most critical</strong> step in the problem-solving roadmap?",
+    opts:["Write the Program","Develop an Algorithm","Formulate a Model","Understand the Problem"], ans:3 },
+
+  { q:"During the 'Understand the Problem' phase, identifying the <strong>Goal State</strong> means:",
+    opts:["Coding the initial variables","Writing the mathematical formula","Listing the available raw data","Determining the desired outcome or result"], ans:3 },
+
+  { q:"The <strong>IPO chart</strong> is used to clarify:",
+    opts:["Input, Process, Output","Independent Problem Organization","Implementation, Planning, Operations","Inheritance, Polymorphism, Objects"], ans:0 },
+
+  { q:"Testing performed by the <strong>actual end-users</strong> is called:",
+    opts:["System testing","Unit testing","Integration testing","Acceptance testing"], ans:3 },
+
+  { q:"Which category of testing involves checking if the <strong>entire completed product</strong> works before market introduction?",
+    opts:["Integration testing","Unit testing","System testing","Component testing"], ans:2 },
+
+  { q:"Why is the <strong>Documentation</strong> phase considered critical?",
+    opts:["It replaces the need for an algorithm","It is the only way to find syntax errors","It makes the code run faster","It prevents information loss for future maintenance"], ans:3 },
+
+  { q:"A <strong>walk-through</strong> is a logic check performed by:",
+    opts:["The end-user during deployment","A robot simulating human movements","A group of programmers in a meeting","A computer compiler"], ans:2 },
+
+  // ── MODULE 4 ──────────────────────────────────────────────────
+  { m:"Module 4: Algorithm Fundamentals",
+    q:"The term 'Algorithm' is derived from the name of which 9th-century mathematician?",
+    opts:["Adelard de Bath","James Gosling","Bjarne Stroustrup","Abu Ja'far Mohammed ibn Musa al-Khowarizmi"], ans:3 },
+
+  { q:"Which property ensures an algorithm <strong>eventually ends</strong>?",
+    opts:["Effectiveness","Generality","Definiteness","Finiteness"], ans:3 },
+
+  { q:"<strong>Definiteness</strong> means that every step in an algorithm must be:",
+    opts:["Written in Java or Python","Able to accept zero inputs","Precise and unambiguous","Doable in a finite time"], ans:2 },
+
+  { q:"Measuring the <strong>time</strong> an algorithm takes to run relative to input size is called:",
+    opts:["Resource Complexity","Space Complexity","Time Complexity","Logic Complexity"], ans:2 },
+
+  { q:"Which Big O notation represents <strong>Constant Time</strong>?",
+    opts:["O(1)","O(n)","O(n²)","O(log n)"], ans:0 },
+
+  { q:"<strong>Correctness</strong> of an algorithm refers to:",
+    opts:["How fast it executes","The amount of disk space it occupies","Whether it uses minimal RAM","Whether it actually does what it is meant to do"], ans:3 },
+
+  { q:"Which of the following is <strong>NOT</strong> a common way to express an algorithm?",
+    opts:["Flowcharts","Natural Language","Hardware Schematic","Pseudocode"], ans:2 },
+
+  // ── MODULE 5 ──────────────────────────────────────────────────
+  { m:"Module 5: Flowcharting",
+    q:"In a flowchart, which ISO symbol represents a <strong>decision</strong> point?",
+    opts:["Oval","Diamond","Rectangle","Parallelogram"], ans:1 },
+
+  { q:"The <strong>Parallelogram</strong> shape is used for:",
+    opts:["Connecting different pages","Calculations and internal operations","Start/End points","Input and Output of data"], ans:3 },
+
+  { q:"Which symbol is used to show a <strong>predefined process</strong> (like a subroutine)?",
+    opts:["Double-sided Rectangle","Oval","Circle","Diamond"], ans:0 },
+
+  { q:"What is the function of a <strong>Pentagon</strong> symbol in flowcharting?",
+    opts:["Terminal","Decision","On-page connector","Off-page connector"], ans:3 },
+
+  { q:"Flowcharts generally flow in which directions?",
+    opts:["Circularly only","Right to Left","Bottom to Top","Top to Bottom and Left to Right"], ans:3 },
+
+  { q:"A flowchart showing controls at a <strong>physical or resource level</strong> (hardware/files) is a:",
+    opts:["System Flowchart","Data Flowchart","Document Flowchart","Program Flowchart"], ans:0 },
+
+  { q:"The rule for <strong>Process boxes</strong> states they should have:",
+    opts:["No exit lines at all","Multiple entry points","Exactly two exit paths","One entry and one exit line"], ans:3 },
+
+  // ── MODULE 6 ──────────────────────────────────────────────────
+  { m:"Module 6: Pseudocode",
+    q:"The word <strong>'pseudo'</strong> literally means:",
+    opts:["Complex","Binary","Fake or Almost","Real"], ans:2 },
+
+  { q:"Pseudocode is considered <strong>language-independent</strong> because:",
+    opts:["It uses only mathematical symbols","It cannot be read by humans","It can only be written in English","It is not tied to any specific programming syntax"], ans:3 },
+
+  { q:"Which keyword is used to <strong>give a value</strong> to a variable in pseudocode?",
+    opts:["PRINT","IF","INPUT","SET or INIT"], ans:3 },
+
+  { q:"The mathematical operator <strong>MOD</strong> returns:",
+    opts:["The average of a list","The result of multiplication","The remainder after division","The sum of two numbers"], ans:2 },
+
+  { q:"What happens in a <strong>WHILE</strong> loop if the condition is false from the very start?",
+    opts:["The computer crashes","The loop runs forever","The block never executes","The loop runs once"], ans:2 },
+
+  { q:"Which iteration structure <strong>always executes at least once</strong>?",
+    opts:["WHILE","IF-THEN","FOR","REPEAT-UNTIL"], ans:3 },
+
+  { q:"<strong>PDL</strong> stands for:",
+    opts:["Path Deployment Level","Process Diagram Link","Problem Data Logic","Program Design Language"], ans:3 },
+
+  // ── MODULE 7 ──────────────────────────────────────────────────
+  { m:"Module 7: Decomposition & Modularisation",
+    q:"<strong>Decomposition</strong> is the process of:",
+    opts:["Hiding data from the user","Deleting unused code","Merging modules together","Breaking a large system into smaller sub-systems"], ans:3 },
+
+  { q:"Each module in a well-designed system should focus on <strong>one single task</strong>. This is called:",
+    opts:["Low Coupling","High Cohesion","Inheritance","Encapsulation"], ans:1 },
+
+  { q:"<strong>Low Coupling</strong> refers to:",
+    opts:["Reusing code from a parent class","How much a module does internally","Hiding implementation details","The degree of independence between modules"], ans:3 },
+
+  { q:"Starting with identification of basic components and combining them into larger systems is:",
+    opts:["Functional Modularization","Bottom-Up Decomposition","Top-Down Design","Stepwise Refinement"], ans:1 },
+
+  { q:"Hiding internal details of a module and providing access only through an interface is:",
+    opts:["Decomposition","Scalability","Encapsulation","Cohesion"], ans:2 },
+
+  { q:"A major advantage of <strong>Modularization</strong> is that it:",
+    opts:["Guarantees there will be no bugs","Forces the program to be linear","Increases the 'logical distance' to the problem","Facilitates parallel development by different teams"], ans:3 },
+
+  { q:"In Object-Oriented Design, an <strong>object</strong> is an instance of a:",
+    opts:["Function","Module","Variable","Class"], ans:3 },
+
+  // ── MODULE 8 ──────────────────────────────────────────────────
+  { m:"Module 8: Software Development Life Cycle (SDLC)",
+    q:"What is the <strong>SDLC</strong>?",
+    opts:["A testing tool for bugs","A type of programming language","A hardware maintenance manual","A structured process for building software"], ans:3 },
+
+  { q:"During which SDLC phase is the <strong>SRS</strong> (Software Requirement Specification) document created?",
+    opts:["System Design","Requirement Analysis","Planning","Implementation"], ans:1 },
+
+  { q:"Which SDLC model is <strong>linear</strong> and assumes each phase is error-free before moving on?",
+    opts:["Agile","DevOps","V-Model","Waterfall Model"], ans:3 },
+
+  { q:"Which model uses small, incremental cycles called <strong>'Sprints'</strong>?",
+    opts:["Agile","System Design","Waterfall","Iterative"], ans:0 },
+
+  { q:"The phase that involves continuous monitoring, security updates, and bug fixes post-release is:",
+    opts:["Testing","Analysis","Maintenance","Deployment"], ans:2 },
+
+  { q:"The <strong>V-Model</strong> emphasizes:",
+    opts:["Only using objects","Eliminating the need for documentation","Speed over quality","Testing at every stage of development"], ans:3 },
+
+  { q:"<strong>DevOps</strong> focuses on bridging the gap between:",
+    opts:["Development and Operations teams","Input and Output","Humans and Machines","Algorithms and Flowcharts"], ans:0 },
+
+  // ── MODULE 9 ──────────────────────────────────────────────────
+  { m:"Module 9: Control Structures",
+    q:"By default, computer programs follow which execution model?",
+    opts:["Recursive","Iteration","Sequential","Selection"], ans:2 },
+
+  { q:"Which structure allows a program to choose between <strong>alternative actions</strong> based on a condition?",
+    opts:["Constant","Iteration","Sequence","Selection"], ans:3 },
+
+  { q:"The <strong>SWITCH</strong> statement is best used when:",
+    opts:["Validating user input only once","You need to run a loop 10 times","Comparing a single expression against discrete constant values","Evaluating complex range conditions"], ans:2 },
+
+  { q:"Which keyword is used to <strong>terminate</strong> a loop execution immediately?",
+    opts:["STOP","CONTINUE","BREAK","EXIT"], ans:2 },
+
+  { q:"Which loop structure is used when the number of repetitions is <strong>known beforehand</strong>?",
+    opts:["IF-ELSE","REPEAT-UNTIL","WHILE","FOR"], ans:3 },
+
+  { q:"A loop that <strong>never ends</strong> because the condition never becomes false is an:",
+    opts:["Infinite loop","Internal loop","Initialized loop","Iterative loop"], ans:0 },
+
+  { q:"Which selection structure handles <strong>multiple mutually exclusive conditions</strong> in a row?",
+    opts:["While Loop","If Statement","If-Else If Ladder","If-Else Statement"], ans:2 },
+
+  // ── MODULE 10 ──────────────────────────────────────────────────
+  { m:"Module 10: Exam Quick Reference",
+    q:"A <strong>desk-check</strong> is:",
+    opts:["The final phase of the SDLC","A physical inspection of a computer","A software tool for drawing flowcharts","A dry run of an algorithm using a variable table"], ans:3 },
+
+  { q:"<strong>Verification</strong> asks:",
+    opts:["Are we building the product right?","Does the user like the UI?","How much did the project cost?","Are we building the right product?"], ans:0 },
+
+  { q:"<strong>Stepwise Refinement</strong> is the process of:",
+    opts:["Using rules of thumb","Testing for edge cases","Writing code in Java","Breaking a problem down until the answer is obvious"], ans:3 },
+
+  { q:"Which of the following is an example of an <strong>edge case</strong> for a grading system (0–100)?",
+    opts:["Score = 75","Score = 50","Score = 101","Score = 'A'"], ans:2 },
+
+  { q:"The longest and most expensive phase of the SDLC is:",
+    opts:["System Design","Implementation","Requirement Analysis","Maintenance"], ans:3 },
+
+  { q:"In a flowchart, the <strong>Circle</strong> symbol represents:",
+    opts:["Off-page connector","Process","Terminal","On-page connector"], ans:3 },
+
+  { q:"Which is a <strong>'pure'</strong> object-oriented programming language?",
+    opts:["Fortran","Java","C","Natural Language"], ans:1 },
+];
+
+const letters = ['A','B','C','D'];
+let state = QA.map(() => ({ chosen: null, submitted: false }));
+
+function getStats() {
+  let answered=0,correct=0,wrong=0;
+  state.forEach((s,i)=>{ if(s.submitted){ answered++; if(s.chosen===QA[i].ans) correct++; else wrong++; } });
+  return { answered, correct, wrong, remaining: QA.length - answered };
+}
+
+function updateMeta() {
+  const { answered, correct, wrong, remaining } = getStats();
+  const total = QA.length;
+  document.getElementById('prog-label').textContent = `${answered} / ${total} answered`;
+  document.getElementById('prog-pct').textContent = Math.round(answered/total*100) + '%';
+  document.getElementById('prog-fill').style.width = (answered/total*100) + '%';
+  document.getElementById('sc-total').textContent = answered;
+  document.getElementById('sc-correct').textContent = correct;
+  document.getElementById('sc-wrong').textContent = wrong;
+  document.getElementById('sc-skip').textContent = remaining;
+  document.querySelectorAll('.nav-dot').forEach((dot,i)=>{
+    dot.className='nav-dot';
+    if(state[i].submitted) dot.classList.add(state[i].chosen===QA[i].ans?'answered-correct':'answered-wrong');
+  });
+  if(answered===total) showResults();
+}
+
+function selectOption(qIdx, optIdx) {
+  if(state[qIdx].submitted) return;
+  state[qIdx].chosen = optIdx;
+  const card = document.getElementById(`q-${qIdx}`);
+  card.querySelectorAll('.option').forEach((el,i) => el.classList.toggle('selected', i===optIdx));
+  card.querySelector('.btn-submit').disabled = false;
+}
+
+function submitQuestion(qIdx) {
+  if(state[qIdx].submitted || state[qIdx].chosen===null) return;
+  state[qIdx].submitted = true;
+  const card = document.getElementById(`q-${qIdx}`);
+  const chosen = state[qIdx].chosen;
+  const correct = QA[qIdx].ans;
+  const isCorrect = chosen === correct;
+  card.querySelectorAll('.option').forEach((el,i)=>{
+    el.classList.add('locked'); el.style.cursor='default';
+    if(i===chosen && isCorrect) el.classList.add('correct');
+    else if(i===chosen && !isCorrect) el.classList.add('wrong');
+    if(i===correct && !isCorrect) el.classList.add('show-correct');
+  });
+  const fb = card.querySelector('.feedback');
+  fb.classList.add('show', isCorrect?'correct':'wrong');
+  fb.textContent = isCorrect
+    ? `✓ Correct! The answer is ${letters[correct]}. ${QA[qIdx].opts[correct]}.`
+    : `✗ Wrong. The correct answer is ${letters[correct]}. ${QA[qIdx].opts[correct]}.`;
+  const btn = card.querySelector('.btn-submit');
+  btn.textContent='Submitted'; btn.classList.add('answered'); btn.disabled=true;
+  updateMeta();
+}
+
+function showResults() {
+  const { correct, wrong } = getStats();
+  const pct = Math.round(correct/QA.length*100);
+  const color = pct>=70?'var(--green)':pct>=50?'var(--amber)':'var(--red)';
+  const label = pct>=70?'Solid performance! Keep it up 🎉':pct>=50?'Fair attempt — review weak areas.':'Needs more revision — you got this!';
+  document.getElementById('res-pct').textContent = pct+'%';
+  document.getElementById('res-pct').style.color = color;
+  document.getElementById('res-label').textContent = label;
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = wrong;
+  document.getElementById('res-score').textContent = correct+' / '+QA.length;
+  const bar = document.getElementById('res-bar');
+  bar.style.background = color;
+  setTimeout(()=> bar.style.width = pct+'%', 100);
+  document.getElementById('results-panel').classList.add('show');
+  document.getElementById('results-panel').scrollIntoView({behavior:'smooth'});
+}
+
+function restart() {
+  state = QA.map(()=>({chosen:null,submitted:false}));
+  document.getElementById('results-panel').classList.remove('show');
+  renderAll(); updateMeta();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function scrollToQ(i) {
+  document.getElementById(`q-${i}`).scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function renderAll() {
+  const container = document.getElementById('questions-container');
+  container.innerHTML='';
+  const dotsEl = document.getElementById('nav-dots');
+  dotsEl.innerHTML='';
+
+  let qIdx = 0;
+  let currentModule = '';
+
+  QA.forEach((item, i) => {
+    // Nav dot
+    const dot = document.createElement('div');
+    dot.className='nav-dot'; dot.textContent=i+1; dot.id=`dot-${i}`;
+    dot.onclick=()=>scrollToQ(i);
+    dotsEl.appendChild(dot);
+
+    // Module divider
+    if(item.m && item.m !== currentModule) {
+      currentModule = item.m;
+      const div = document.createElement('div');
+      div.className='module-divider';
+      div.innerHTML=`<span>${item.m}</span><div style="flex:1;height:1px;background:var(--border)"></div>`;
+      container.appendChild(div);
+    }
+
+    const card = document.createElement('div');
+    card.className='question-card'; card.id=`q-${i}`;
+
+    const optsHTML = item.opts.map((opt,j)=>`
+      <div class="option" onclick="selectOption(${i},${j})">
+        <div class="opt-letter">${letters[j]}</div>
+        <div class="opt-text">${opt}</div>
+      </div>`).join('');
+
+    card.innerHTML=`
+      <div class="q-number">QUESTION ${i+1} OF ${QA.length}</div>
+      <div class="q-text">${i+1}. ${item.q}</div>
+      <div class="options">${optsHTML}</div>
+      <div class="feedback"></div>
+      <div class="q-footer">
+        <button class="btn-submit" onclick="submitQuestion(${i})" disabled>Submit Answer</button>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+renderAll();
+updateMeta();
+</script>
+</body>
+</html>
