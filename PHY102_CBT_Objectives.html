@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PHY 102 CBT Practice Exam</title>
+<style>
+  :root{
+    --bg:#0b1224;
+    --panel:#101a33;
+    --panel2:#0d162c;
+    --accent:#3b82f6;
+    --accent2:#22d3ee;
+    --good:#22c55e;
+    --bad:#ef4444;
+    --warn:#f59e0b;
+    --text:#e6ecff;
+    --muted:#92a0c4;
+    --border:#1f2c4d;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Segoe UI',Roboto,Arial,sans-serif;
+    background:linear-gradient(135deg,#0b1224 0%,#101a33 100%);
+    color:var(--text);
+    min-height:100vh;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:20px 16px 60px;}
+
+  header.top{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 18px;background:var(--panel);border-radius:14px;
+    margin-bottom:18px;border:1px solid var(--border);
+    box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  header.top h1{font-size:18px;margin:0;color:var(--accent2);letter-spacing:.5px;}
+  header.top .sub{font-size:12px;color:var(--muted);margin-top:2px;}
+  .pill{
+    background:var(--panel2);border:1px solid var(--border);
+    padding:6px 12px;border-radius:999px;font-size:13px;color:var(--muted);
+  }
+
+  /* ---- Start screen ---- */
+  .card{
+    background:var(--panel);border:1px solid var(--border);
+    border-radius:16px;padding:26px;box-shadow:0 8px 24px rgba(0,0,0,.25);
+  }
+  .card h2{margin-top:0;color:var(--accent2);}
+  .card p{color:var(--muted);line-height:1.6;}
+  .start-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+  .stat-box{
+    background:var(--panel2);border:1px solid var(--border);
+    border-radius:12px;padding:14px 16px;
+  }
+  .stat-box .num{font-size:24px;font-weight:700;color:var(--accent2);}
+  .stat-box .lab{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  label.opt-row{display:flex;align-items:center;gap:10px;}
+  .qcount-input{
+    width:70px;background:var(--panel2);border:1px solid var(--border);
+    color:var(--text);padding:8px 10px;border-radius:8px;font-size:15px;text-align:center;
+  }
+
+  button{
+    cursor:pointer;border:none;font-family:inherit;font-weight:600;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#06122b;padding:13px 22px;border-radius:10px;font-size:16px;
+    width:100%;margin-top:10px;transition:transform .15s,box-shadow .15s;
+  }
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(59,130,246,.4);}
+  .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none;}
+  .btn-secondary{
+    background:var(--panel2);color:var(--text);border:1px solid var(--border);
+    padding:11px 18px;border-radius:10px;font-size:14px;
+  }
+  .btn-secondary:hover{border-color:var(--accent);}
+
+  /* ---- Quiz screen ---- */
+  .progress-wrap{margin-bottom:14px;}
+  .progress-bar{
+    height:8px;background:var(--panel2);border-radius:999px;overflow:hidden;
+    border:1px solid var(--border);
+  }
+  .progress-fill{
+    height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));
+    transition:width .25s ease;
+  }
+  .progress-text{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px;}
+
+  .timer{
+    font-weight:700;font-size:14px;color:var(--accent2);
+    display:flex;align-items:center;gap:6px;
+  }
+  .timer.low{color:var(--bad);animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+
+  .q-card{
+    background:var(--panel);border:1px solid var(--border);border-radius:16px;
+    padding:24px;box-shadow:0 8px 24px rgba(0,0,0,.25);min-height:300px;
+    display:flex;flex-direction:column;
+  }
+  .q-num{font-size:12px;color:var(--accent2);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+  .q-text{font-size:17px;line-height:1.55;margin-bottom:20px;}
+
+  .options{display:flex;flex-direction:column;gap:10px;flex:1;}
+  .option{
+    background:var(--panel2);border:1.5px solid var(--border);border-radius:10px;
+    padding:13px 16px;display:flex;align-items:flex-start;gap:12px;
+    transition:border-color .15s,background .15s;
+  }
+  .option:hover{border-color:var(--accent);cursor:pointer;}
+  .option.selected{border-color:var(--accent);background:rgba(59,130,246,.12);}
+  .option.correct{border-color:var(--good);background:rgba(34,197,94,.14);}
+  .option.incorrect{border-color:var(--bad);background:rgba(239,68,68,.14);}
+  .opt-letter{
+    flex-shrink:0;width:28px;height:28px;border-radius:7px;background:var(--panel);
+    border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:var(--muted);
+  }
+  .option.selected .opt-letter{background:var(--accent);color:#06122b;border-color:var(--accent);}
+  .option.correct .opt-letter{background:var(--good);color:#06122b;border-color:var(--good);}
+  .option.incorrect .opt-letter{background:var(--bad);color:#06122b;border-color:var(--bad);}
+  .opt-text{font-size:15px;line-height:1.4;padding-top:3px;}
+
+  .nav-row{display:flex;gap:10px;margin-top:18px;}
+  .nav-row button{flex:1;padding:12px;border-radius:10px;font-size:15px;}
+  .nav-row .btn-next{
+    background:linear-gradient(135deg,var(--accent),var(--accent2));color:#06122b;
+  }
+  .nav-row .btn-prev{background:var(--panel2);color:var(--text);border:1px solid var(--border);}
+  .nav-row .btn-prev:disabled{opacity:.4;cursor:not-allowed;}
+
+  /* Question palette / jump grid */
+  .palette{
+    display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:16px;
+  }
+  .palette button{
+    aspect-ratio:1;border-radius:6px;background:var(--panel2);border:1px solid var(--border);
+    color:var(--muted);font-size:11px;font-weight:600;
+  }
+  .palette button.answered{background:rgba(34,197,94,.18);border-color:var(--good);color:var(--good);}
+  .palette button.current{background:var(--accent);border-color:var(--accent);color:#06122b;}
+  .palette-title{font-size:12px;color:var(--muted);margin:14px 0 6px;text-transform:uppercase;letter-spacing:1px;}
+
+  /* ---- Result screen ---- */
+  .score-circle{
+    width:170px;height:170px;border-radius:50%;margin:10px auto 18px;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    border:10px solid var(--panel2);position:relative;
+  }
+  .score-circle .big{font-size:38px;font-weight:800;}
+  .score-circle .small{font-size:12px;color:var(--muted);margin-top:2px;}
+  .grade-badge{
+    display:inline-block;padding:6px 16px;border-radius:999px;font-weight:700;
+    font-size:14px;margin-top:6px;
+  }
+  .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0;}
+  .summary-grid .box{
+    background:var(--panel2);border:1px solid var(--border);border-radius:12px;
+    padding:14px;text-align:center;
+  }
+  .summary-grid .box .v{font-size:22px;font-weight:700;}
+  .summary-grid .box .l{font-size:11px;color:var(--muted);margin-top:4px;text-transform:uppercase;letter-spacing:.5px;}
+
+  .review-item{
+    background:var(--panel2);border:1px solid var(--border);border-radius:12px;
+    padding:16px;margin-bottom:12px;
+  }
+  .review-item .rq{font-size:14px;margin-bottom:10px;line-height:1.5;}
+  .review-item .ra{font-size:13px;display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;}
+  .tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;}
+  .tag.ok{background:rgba(34,197,94,.18);color:var(--good);}
+  .tag.bad{background:rgba(239,68,68,.18);color:var(--bad);}
+  .tag.skip{background:rgba(245,158,11,.18);color:var(--warn);}
+
+  .hidden{display:none !important;}
+  .center{text-align:center;}
+  .small-muted{font-size:12px;color:var(--muted);}
+
+  ::-webkit-scrollbar{width:8px;}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+  @media (max-width:520px){
+    .start-grid{grid-template-columns:1fr 1fr;}
+    .palette{grid-template-columns:repeat(8,1fr);}
+    .summary-grid{grid-template-columns:1fr 1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>⚡ PHY 102 CBT</h1>
+      <div class="sub">Electromagnetism, AC Circuits &amp; Atomic Physics — Objective Practice</div>
+    </div>
+    <div class="pill" id="headerStatus">Not started</div>
+  </header>
+
+  <!-- ===================== START SCREEN ===================== -->
+  <div id="startScreen" class="card">
+    <h2>Welcome, ready to test yourself?</h2>
+    <p>This computer-based test pulls from a bank of <strong id="bankSizeText">102</strong> objective (multiple-choice) questions covering magnetic dipoles, EMF/Faraday/Lenz's laws, inductance &amp; transformers, Maxwell's equations, AC circuits/resonance, atomic structure, and circuit calculations — all extracted from the PHY 102 question bank. Each attempt is graded over <strong>70 marks</strong>.</p>
+
+    <div class="start-grid">
+      <div class="stat-box">
+        <div class="num" id="totalBankNum">102</div>
+        <div class="lab">Questions in bank</div>
+      </div>
+      <div class="stat-box">
+        <div class="num">70</div>
+        <div class="lab">Total marks</div>
+      </div>
+    </div>
+
+    <div class="stat-box" style="margin-bottom:16px;">
+      <label class="opt-row">
+        <span style="font-size:14px;">Number of questions this attempt:</span>
+        <input type="number" id="qCountInput" class="qcount-input" min="10" max="102" value="50">
+      </label>
+      <div class="small-muted" style="margin-top:8px;">Questions are randomly selected and shuffled each attempt. Min 10, max 102.</div>
+    </div>
+
+    <button class="btn-primary" id="startBtn">Start CBT ▶</button>
+  </div>
+
+  <!-- ===================== QUIZ SCREEN ===================== -->
+  <div id="quizScreen" class="hidden">
+    <div class="progress-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div class="timer" id="timerDisplay">⏱ 00:00</div>
+        <button class="btn-secondary" id="submitEarlyBtn" style="padding:8px 14px;font-size:13px;">Submit Test</button>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div>
+      <div class="progress-text">
+        <span id="progressLabel">Question 1 of 50</span>
+        <span id="answeredLabel">0 answered</span>
+      </div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-num" id="qNum">QUESTION 1</div>
+      <div class="q-text" id="qText">Loading...</div>
+      <div class="options" id="optionsContainer"></div>
+
+      <div class="nav-row">
+        <button class="btn-prev" id="prevBtn">◀ Previous</button>
+        <button class="btn-next" id="nextBtn">Next ▶</button>
+      </div>
+    </div>
+
+    <div class="palette-title">Question Navigator</div>
+    <div class="palette" id="paletteContainer"></div>
+  </div>
+
+  <!-- ===================== RESULT SCREEN ===================== -->
+  <div id="resultScreen" class="hidden">
+    <div class="card center">
+      <h2 style="margin-bottom:0;">Test Complete</h2>
+      <div class="small-muted" id="resultSubtitle">Here's how you performed</div>
+
+      <div class="score-circle" id="scoreCircle">
+        <div class="big" id="scoreBig">0/70</div>
+        <div class="small" id="scorePercent">0%</div>
+      </div>
+      <div id="gradeBadge" class="grade-badge">—</div>
+
+      <div class="summary-grid">
+        <div class="box"><div class="v" id="sumCorrect" style="color:var(--good);">0</div><div class="l">Correct</div></div>
+        <div class="box"><div class="v" id="sumWrong" style="color:var(--bad);">0</div><div class="l">Wrong</div></div>
+        <div class="box"><div class="v" id="sumSkipped" style="color:var(--warn);">0</div><div class="l">Skipped</div></div>
+      </div>
+
+      <div style="display:flex;gap:10px;">
+        <button class="btn-secondary" id="reviewBtn" style="flex:1;">Review Answers</button>
+        <button class="btn-primary" id="retakeBtn" style="margin-top:0;">Retake Test</button>
+      </div>
+    </div>
+
+    <div id="reviewSection" class="hidden" style="margin-top:18px;">
+      <h3 style="color:var(--accent2);">Answer Review</h3>
+      <div id="reviewList"></div>
+    </div>
+  </div>
+
+</div>
+
+<script id="questionData" type="application/json">[{"q":"The magnetic dipole moment (m⃗) of a current loop is mathematically defined as:","options":["m = I/A","m = I × perimeter","m = I × A","m = B × A"],"answer":2},{"q":"When a magnetic dipole is placed in a uniform magnetic field, the torque experienced is:","options":["τ⃗ = m⃗ · B⃗","τ⃗ = m⃗ × B⃗","τ⃗ = mB","τ⃗ = IA⃗B⃗"],"answer":1},{"q":"In a diamagnetic material, the induced magnetic field is:","options":["Parallel to the applied field","Opposite to the applied field","Non-existent","Perpendicular to the applied field"],"answer":1},{"q":"Which of the following materials is characterized by permanent magnetic dipoles that align partially with an external field?","options":["Superconducting","Diamagnetic","Paramagnetic","Dielectric"],"answer":2},{"q":"Ferromagnetic materials differ from paramagnetic materials primarily because they:","options":["Only respond to AC fields","Repel all magnetic fields","Have no spontaneous alignment","Exhibit strong spontaneous alignment of dipoles"],"answer":3},{"q":"The energy density (u_B) of a magnetic field is proportional to:","options":["The magnetic field strength B","The permeability μ₀","The inverse of the magnetic field 1/B","The square of the magnetic field B²"],"answer":3},{"q":"The total energy (U) stored in an inductor with inductance L carrying current I is:","options":["U = LI","U = ½L²I","U = LI²","U = ½LI²"],"answer":3},{"q":"The unit for magnetic energy density is:","options":["Joule/meter","Joule/cubic meter (J/m³)","Tesla²","Henry/meter"],"answer":1},{"q":"If the current in an inductor is doubled, the stored magnetic energy increases by a factor of:","options":["2","4","0.5","8"],"answer":1},{"q":"The energy stored in a magnetic field is primarily located in:","options":["The resistive wires of the inductor","The space surrounding the conductor","The voltage source","The core material only"],"answer":1},{"q":"Electromotive force (EMF) is best defined as:","options":["The force that pushes electrons through a wire","The energy provided per unit charge","The magnetic flux through a loop","The total electrical resistance in a loop"],"answer":1},{"q":"Faraday's Law states that the induced EMF is equal to:","options":["The rate of change of magnetic flux","The resistance of the circuit","The magnetic field strength","The area of the loop"],"answer":0},{"q":"Lenz's Law describes the:","options":["Rate of change of magnetic flux","Direction of induced current","Speed of electromagnetic waves","Magnitude of induced EMF"],"answer":1},{"q":"If the magnetic flux through a stationary loop is increasing, the induced magnetic field will:","options":["Become zero","Be in the same direction as the external field","Strengthen the external field","Oppose the change in the external field"],"answer":3},{"q":"Which of the following will NOT induce an EMF in a loop?","options":["Rotating a coil in a constant magnetic field","Keeping a coil stationary in a constant magnetic field","Moving a magnet toward a coil","Changing the area of a coil in a constant magnetic field"],"answer":1},{"q":"The negative sign in the equation ε = -N(dΦ/dt) represents:","options":["The number of turns","The loss of energy","The direction of the field","Lenz's Law"],"answer":3},{"q":"Magnetic flux (Φ_B) is the dot product of:","options":["B⃗ and dt⃗","I⃗ and A⃗","B⃗ and A⃗","E⃗ and B⃗"],"answer":2},{"q":"In a coil with N turns, the induced EMF is:","options":["Independent of the number of turns","Equal to the flux change","Inversely proportional to the number of turns","Proportional to the number of turns"],"answer":3},{"q":"Lenz's Law is a direct consequence of which conservation law?","options":["Conservation of Charge","Conservation of Momentum","Conservation of Energy","Conservation of Mass"],"answer":2},{"q":"An increase in the angle between the magnetic field and the area vector of a loop will:","options":["Decrease the flux","Increase the flux","Have no effect on flux","Increase the EMF only if the field is constant"],"answer":0},{"q":"Self-inductance is the property of a coil to:","options":["Store electric charge","Convert AC to DC","Oppose changes in its own current","Induce voltage in a second coil"],"answer":2},{"q":"The phenomenon where a changing current in one coil induces a voltage in a second, nearby coil is:","options":["Self-inductance","Capacitive reactance","Dielectric polarization","Mutual inductance"],"answer":3},{"q":"In a step-up transformer, the secondary voltage is:","options":["Always constant regardless of turns","Higher than the primary voltage","Lower than the primary voltage","Equal to the primary voltage"],"answer":1},{"q":"In a step-up transformer, the secondary current is:","options":["Lower than the primary current","Equal to the primary current","Higher than the primary current","Twice the primary current"],"answer":0},{"q":"The primary principle behind the transformer is:","options":["Self-induction","Mutual induction","Resistance heating","Electrostatic induction"],"answer":1},{"q":"An ideal transformer has an efficiency of:","options":["75%","100%","0%","50%"],"answer":1},{"q":"To reduce energy loss due to eddy currents, transformer cores are:","options":["Laminated","Made of solid iron","Coated in plastic","Made of copper"],"answer":0},{"q":"Hysteresis loss in a transformer core is caused by:","options":["Air gaps in the core","Reversal of magnetic domains","Friction in the windings","Resistance in the wires"],"answer":1},{"q":"If a transformer has a turns ratio N_s/N_p = 5, this is a:","options":["Step-up transformer","Autotransformer","Isolation transformer","Step-down transformer"],"answer":0},{"q":"The relationship between voltage and current in an ideal transformer is:","options":["V_pI_p = V_s/I_s","V_p/V_s = I_p/I_s","V_pV_s = I_pI_s","V_pI_p = V_sI_s"],"answer":3},{"q":"Gauss's Law for Magnetism (∇·B = 0) implies that:","options":["Magnetic flux is always positive","Magnetic fields are always constant","Magnetic monopoles do not exist","Electric charges produce magnetic fields"],"answer":2},{"q":"Which equation describes how a changing electric field creates a magnetic field?","options":["Ampere-Maxwell Law","Gauss's Law","Faraday's Law","Gauss's Law for Magnetism"],"answer":0},{"q":"\"Displacement current\" is associated with:","options":["Changing electric fields","Changing magnetic fields","Moving electrons in a wire","Static charges"],"answer":0},{"q":"Electromagnetic waves are classified as:","options":["Transverse waves","Surface waves","Longitudinal waves","Sound waves"],"answer":0},{"q":"In an EM wave, the Electric field (E) and Magnetic field (B) are:","options":["Perpendicular to each other","Anti-parallel to each other","Parallel to each other","Both parallel to the direction of propagation"],"answer":0},{"q":"The speed of light (c) is related to μ₀ and ε₀ by:","options":["c = ε₀/μ₀","c = √(μ₀ε₀)","c = μ₀/ε₀","c = 1/√(μ₀ε₀)"],"answer":3},{"q":"The Poynting vector represents:","options":["The direction of the electric field","The frequency of the wave","The energy flux (power per unit area)","The total charge in a wave"],"answer":2},{"q":"The direction of propagation of an EM wave is given by the direction of:","options":["E⃗ · B⃗","E⃗ + B⃗","E⃗ - B⃗","E⃗ × B⃗"],"answer":3},{"q":"Maxwell's equations unified:","options":["Light and Sound","Gravity and Magnetism","Electricity and Magnetism","Motion and Energy"],"answer":2},{"q":"If the electric field amplitude in an EM wave increases, the magnetic field amplitude must:","options":["Decrease","Become zero","Increase proportionally","Stay the same"],"answer":2},{"q":"Impedance (Z) in an AC circuit is a combination of:","options":["Inductance and Capacitance","Resistance and Reactance","Frequency and Time","Voltage and Current"],"answer":1},{"q":"Inductive reactance (X_L) is calculated as:","options":["ωL","L/ω","1/(ωC)","R·ω"],"answer":0},{"q":"Capacitive reactance (X_C) is calculated as:","options":["ωC","1/(ωC)","C/ω","1/(ωL)"],"answer":1},{"q":"As the frequency of an AC source increases, the capacitive reactance (X_C):","options":["Remains constant","Decreases","Becomes equal to X_L","Increases"],"answer":1},{"q":"In a series RLC circuit, resonance occurs when:","options":["X_L > X_C","R is zero","X_L = X_C","X_C > X_L"],"answer":2},{"q":"At the resonant frequency of an RLC circuit, the impedance Z is:","options":["At its minimum value (equal to R)","At its maximum value","Zero","Infinite"],"answer":0},{"q":"The phase angle (φ) in an AC circuit is the angle between:","options":["Current and Magnetic field","Voltage and Current","Resistance and Reactance","Electric and Magnetic fields"],"answer":1},{"q":"The power factor is defined as:","options":["tan φ","cos φ","sin φ","1/Z"],"answer":1},{"q":"In a purely capacitive circuit, the current:","options":["Leads the voltage by 90°","Lags the voltage by 90°","Is in phase with the voltage","Lags the voltage by 180°"],"answer":0},{"q":"The formula for average power in an AC circuit is:","options":["P = V_rms I_rms","P = I_rms² Z","P = V_rms I_rms sin φ","P = V_rms I_rms cos φ"],"answer":3},{"q":"Calculate the output voltage of a transformer with primary voltage 100V, and the number of turns on the primary coil is 10. If the number of turns on the secondary coil is 20, determine if it is a step up or step down transformer.","options":["200V, Step up transformer","50V, Step up transformer","200V, Step down transformer","50V, Step down transformer"],"answer":0},{"q":"Given R = 20Ω; ΔΦ_B/Δt = 0.25 Wb/s. Calculate the current that passes through the circular loop.","options":["1.25 mA","12.5 mA","0.125 mA","125 mA"],"answer":1},{"q":"Calculate the motional emf induced along a 25 km conductor moving at an orbital speed of 4.2 km/s perpendicular to the earth's magnetic field of 2×10⁻⁵ T.","options":["0.21 kV","2.1×10⁻⁵ V","2.1 kV","21 kV"],"answer":2},{"q":"Rutherford and Thompson used the following experiments respectively to explain atomic structure.","options":["Cathode Ray Experiment/Alpha Scattering Experiment","Milliken Oil drop Experiment/Alpha Scattering Experiment","Quantum Theory Experiment/Cathode Ray Experiment","Alpha Scattering Experiment/Cathode Ray Experiment"],"answer":3},{"q":"In the spectral emission lines of Hydrogen atom, emissions to the line n=2 is also known as?","options":["Paschen Series","Hydrogen Series","Lyman Series","Balmer Series"],"answer":3},{"q":"The electronic configuration in an atom is arranged in the following order:","options":["s, p, d, f","p, d, s, f","d, f, p, s","a, b, c, d"],"answer":0},{"q":"A series circuit consists of a 100Ω resistor, a coil of 0.8H and a 20μF capacitor, connected across a 110V, 60Hz power source. Calculate the impedance to nearest sf.","options":["133Ω","196Ω","318Ω","16,859Ω"],"answer":1},{"q":"Given that the power loss over a transmission line is 200W and the current that passes through it is 25A, calculate the resistance in the wires.","options":["0.125Ω","8Ω","0.32Ω","3.125Ω"],"answer":0},{"q":"A solenoid has 300 turns wound around a cylinder of diameter 1.2cm and length 14cm. If the current passing through the coil is 0.41A, calculate the magnetic field. (μ₀ = 4π×10⁻⁷ Tm/A)","options":["110 T","1.1×10⁻⁴ T","1.1×10⁻³ T","1.1×10⁻⁵ T"],"answer":3},{"q":"The combined effect of R, X_L, and X_C in an AC circuit is called ______","options":["Capacitive Inductance","Resistance of an AC Circuit","Capacitive Reactance","Impedance"],"answer":3},{"q":"All of the following operate based on the principle of Electromagnetic Induction except ______","options":["Generators","Electric Stoves","Transformers","Metal Doors"],"answer":3},{"q":"Not only voltage is induced when a magnet is thrust in a coil of wire but _______ also is induced.","options":["All of the above","Power","Current","Energy"],"answer":2},{"q":"Which of the following statements is incorrect?","options":["In Fleming's right hand rule, the second finger shows the direction of the Motion.","Motion is one of the major causes of Induction.","Lenz's law gives the direction of the induced current.","The magnetic flux through a surface is proportional to the number of field lines passing through the surface."],"answer":0},{"q":"Which of the following is not an advantage of the AC generator over the DC generator?","options":["AC generators are safer to use than DC generators.","AC generators can be easily stepped up or down using transformers.","Losses are lesser in the AC generator as compared to the DC generator.","AC generators are smaller in size than the DC generators."],"answer":0},{"q":"When an emf is induced in a coil as a result of changing magnetic flux produced in a second coil, the phenomenon is called _____","options":["Capacitive Inductance","Mutual Inductance","Self-Inductance","Induced Current"],"answer":1},{"q":"The first man to propose that matter is made up of atoms is ____","options":["Democritus","Niels Bohr","Rutherford","Thompson"],"answer":0},{"q":"Consider the atom ᴬ_Z X. A represents?","options":["Quantum Number","Proton Number","Mass Number","Atomic Number"],"answer":2},{"q":"The current I in a circuit is given by the equation: I = 30 sin(100πt). Calculate the frequency, peak value and the rms value of the current.","options":["100Hz, 30A and 15√2 A","15√2 Hz, 50Hz and 30A","50Hz, 30A and 15√2 A","30Hz, 15√2 A and 50A"],"answer":2},{"q":"At resonance in an AC, RLC series circuit, which of the following is incorrect?","options":["X_C > X_L","ω₀ = 1/√(LC)","X_C = X_L","f₀ = 1/(2π√LC)"],"answer":0},{"q":"The following are part of Bohr's postulates except:","options":["Electrons can jump to higher levels by absorbing energy and move to lower levels by emitting or losing its energy.","Most of the charge and mass of the atom resides inside the nucleus","As long as an electron stays in its own stationary orbit, there will be no absorption or emission of energy.","The electrons inside the atom are placed in discrete orbits called \"stationary orbits\""],"answer":1},{"q":"The resistance of an electrical conductor depends on the following except:","options":["Temperature of the material","Length","Permeability","Nature of the material / resistivity"],"answer":2},{"q":"The resistance of a wire of length 100cm and diameter 0.3mm is found to be 3.0Ω. Calculate the conductivity of the wire.","options":["4.71×10⁻⁶ (Ωm)⁻¹","2.12×10⁻⁶ Ωm","4.71×10⁻⁶ Ωm","2.12×10⁻⁶ (Ωm)⁻¹"],"answer":0},{"q":"A parallel plate capacitor is connected across a potential difference of 10.0V and stores 5.0C of charge. The capacitor has a plate separation of 1.00mm. The area of the plate is","options":["1.05×10⁵ m²","2.15×10⁵ m²","5.65×10⁵ m²","3.05×10⁵ m²"],"answer":2},{"q":"Work done in charging a capacitor is","options":["QV","½QV","½QV²","2QV"],"answer":1},{"q":"The four factors determining inductance are the number of turns, coil length, core area and ?","options":["Coefficient of Coupling","Counter EMF","Permeability","Reluctance"],"answer":2},{"q":"Calculate the current in an inductor if the energy stored is 240J and the inductance is 24H.","options":["1 A","4 A","3.4 A","2.4 A"],"answer":1},{"q":"Suppose that two point charges each with a charge of +1.00C are separated by a distance of 1.00m, determine the magnitude of electrical force (F) of repulsion between them.","options":["9.0×10⁹ N","9.0×10⁹ C²","9.0×10⁹ m²","9.0×10⁹ N·m²/C²"],"answer":0},{"q":"An instrument used to measure a smaller unit of current is known as?","options":["None of the above","Volt-meter","Micro-ammeter","Generator"],"answer":2},{"q":"A device used to measure an EMF of a cell or the potential difference across a resistor in a circuit is","options":["Galvanometer","Potentiometer","Ammeter","Voltammeter"],"answer":1},{"q":"Determine the potential difference which must be applied to a 2KΩ resistor in order that a current of 10mA may flow.","options":["20 V","2000 V","200 V","2 V"],"answer":0},{"q":"Calculate the power dissipated when a current of 4mA flows through a resistance of 5KΩ.","options":["0.08 W","0.8 W","8 W","80 W"],"answer":1},{"q":"Wound coils of wire that function as magnets when an electrical current is passed through them are called?","options":["Electromagnets","Diamagnet","Temporary Magnets","Permanent Magnets"],"answer":0},{"q":"The electrical energy consumed by a coil is stored in the form of?","options":["Force Field","Electric Field","Electrostatic Field","Magnetic Field"],"answer":3},{"q":"The resistors R₁ = 1Ω, R₂ = 2Ω and R₃ = 2Ω are connected in parallel. The equivalent resistance is","options":["2Ω","1.5Ω","5Ω","0.5Ω"],"answer":3},{"q":"Find the total capacitance for three capacitors connected in series, given their individual capacitances are 1.00, 5.00, and 8.00μF.","options":["1.325μF","0.755μF","14.0F","14.00μF"],"answer":0},{"q":"A kilo-ampere per hour is a unit of:","options":["Charge","Power","Charge per time","Current"],"answer":0},{"q":"In a circuit diagram, the symbol for a Battery is commonly represented as option:","options":["Diode","Transformer","Transistor","Battery"],"answer":3},{"q":"In a circuit diagram, a device used to convert AC to DC is represented by:","options":["A device to measure current","A device to convert voltage to current","A device to convert DC to AC","A device to convert AC to DC"],"answer":3},{"q":"Find the decay constant of a radioactive substance having a half-life of 0.04 sec.","options":["34.7 s⁻¹","17.3 s⁻¹","0.04 s⁻¹","69.3 s⁻¹"],"answer":1},{"q":"The half-life of radium is 1699 years. Its average (mean) life is approximately?","options":["1178 years","2452 years","850 years","3398 years"],"answer":1},{"q":"Determine the resistance of 1200m of copper cable having a diameter of 12mm if the resistivity of copper is 1.7×10⁻⁸ Ωm.","options":["0.28Ω","0.18Ω","0.15Ω","0.12Ω"],"answer":1},{"q":"If the force between two charges is 80 N, and the distance between the charges is doubled, the force will be","options":["10 N","30 N","20 N","40 N"],"answer":2},{"q":"Determine the distance between two point charges of magnitude 26.0μC and 47.0μC when the mutual force of attraction between them is 5.70 N.","options":["1.29 m","3.39 m","2.35 m","1.39 m"],"answer":2},{"q":"Two small spheres carry charges of -2 nC and 8 nC and are 20 cm apart in air. Calculate the force between the charges when the distance is doubled.","options":["0.60 μN","2.03 μN","0.90 μN","3.60 μN"],"answer":2},{"q":"Electric field intensity at a distance d away from a point charge Q. If the distance (d) is reduced to ½d, the field intensity will be","options":["Quadrupled","The same","Doubled","Half"],"answer":0},{"q":"To increase the capacitance of a capacitor, its dielectric must have","options":["permittivity same as that of air","permittivity slightly more than that of air","high permittivity","low permittivity"],"answer":2},{"q":"Determine the separating distance of a parallel-plate capacitor of radius 7.0mm and capacitance of 39 nF. (ε₀ = 8.85×10⁻¹² C²/N·m²)","options":["2.7×10⁻⁴ m","2.7×10⁻⁵ m","3.5×10⁻⁵ m","3.5×10⁻⁴ m"],"answer":2},{"q":"Magnetizing steel is normally difficult because……..","options":["it has high specific gravity","it corrodes easily","it has low permeability","it has high permeability"],"answer":2},{"q":"A soft iron bar is introduced inside a current-carrying solenoid. The magnetic field inside the solenoid","options":["will become zero","will remain the same","will increase","will decrease"],"answer":2},{"q":"A battery of three cells in series, each of e.m.f. 3.0V and internal resistance 1.2Ω, is connected to a 4Ω resistor in series with a parallel combination of two 2Ω resistors. Determine the current in the circuit.","options":["1.50 A","0.83 A","0.35 A","1.05 A"],"answer":3},{"q":"A loop of wire moves rapidly through a uniform magnetic field (Figure A): is there a non-zero emf induced? Another loop spins rapidly about a stationary axis in a uniform magnetic field (Figure B): is there a non-zero emf induced?","options":["TF","FF","FT","TT"],"answer":3},{"q":"Two loops of wire, A and B, are placed near each other. A large current I in loop A is suddenly turned on. This causes an induced current in loop B which causes ____________","options":["No net force","A net attractive force - the two loops attract","Whether the force is attractive or repulsive depends on whether the current in loop A is CW or CCW","A net repulsive force - the two loops repel"],"answer":3}]</script>
+<script>(function(){
+  "use strict";
+
+  const TOTAL_MARKS = 70;
+
+  const BANK = JSON.parse(document.getElementById('questionData').textContent);
+
+  // ---------- DOM refs ----------
+  const startScreen   = document.getElementById('startScreen');
+  const quizScreen     = document.getElementById('quizScreen');
+  const resultScreen   = document.getElementById('resultScreen');
+  const headerStatus   = document.getElementById('headerStatus');
+
+  const qCountInput    = document.getElementById('qCountInput');
+  const startBtn       = document.getElementById('startBtn');
+  const totalBankNum   = document.getElementById('totalBankNum');
+  const bankSizeText   = document.getElementById('bankSizeText');
+
+  const timerDisplay   = document.getElementById('timerDisplay');
+  const submitEarlyBtn = document.getElementById('submitEarlyBtn');
+  const progressFill   = document.getElementById('progressFill');
+  const progressLabel  = document.getElementById('progressLabel');
+  const answeredLabel  = document.getElementById('answeredLabel');
+
+  const qNumEl         = document.getElementById('qNum');
+  const qTextEl        = document.getElementById('qText');
+  const optionsContainer = document.getElementById('optionsContainer');
+  const prevBtn         = document.getElementById('prevBtn');
+  const nextBtn         = document.getElementById('nextBtn');
+  const paletteContainer = document.getElementById('paletteContainer');
+
+  const resultSubtitle = document.getElementById('resultSubtitle');
+  const scoreBig        = document.getElementById('scoreBig');
+  const scorePercent    = document.getElementById('scorePercent');
+  const gradeBadge      = document.getElementById('gradeBadge');
+  const scoreCircle     = document.getElementById('scoreCircle');
+  const sumCorrect      = document.getElementById('sumCorrect');
+  const sumWrong        = document.getElementById('sumWrong');
+  const sumSkipped      = document.getElementById('sumSkipped');
+  const reviewBtn       = document.getElementById('reviewBtn');
+  const retakeBtn       = document.getElementById('retakeBtn');
+  const reviewSection   = document.getElementById('reviewSection');
+  const reviewList      = document.getElementById('reviewList');
+
+  totalBankNum.textContent = BANK.length;
+  bankSizeText.textContent = BANK.length;
+  qCountInput.max = BANK.length;
+
+  // ---------- State ----------
+  let questions = [];     // active set for this attempt (shuffled subset, options reshuffled per-attempt too)
+  let userAnswers = [];    // index of chosen option per question, or null
+  let currentIndex = 0;
+  let timerInterval = null;
+  let secondsElapsed = 0;
+
+  // ---------- Helpers ----------
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  function buildAttemptQuestions(count){
+    const pool = shuffle(BANK);
+    const chosen = pool.slice(0, count);
+    // Reshuffle options within each question so memorized letter positions don't help on retakes
+    return chosen.map(item => {
+      const correctText = item.options[item.answer];
+      const opts = shuffle(item.options);
+      const newAnswer = opts.indexOf(correctText);
+      return { q: item.q, options: opts, answer: newAnswer };
+    });
+  }
+
+  function formatTime(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = (s%60).toString().padStart(2,'0');
+    return m+":"+sec;
+  }
+
+  function letterFor(i){ return String.fromCharCode(65+i); }
+
+  // ---------- Start ----------
+  startBtn.addEventListener('click', () => {
+    let count = parseInt(qCountInput.value, 10);
+    if (isNaN(count) || count < 10) count = 10;
+    if (count > BANK.length) count = BANK.length;
+    qCountInput.value = count;
+
+    questions = buildAttemptQuestions(count);
+    userAnswers = new Array(questions.length).fill(null);
+    currentIndex = 0;
+    secondsElapsed = 0;
+
+    startScreen.classList.add('hidden');
+    resultScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+    headerStatus.textContent = "In progress";
+
+    buildPalette();
+    renderQuestion();
+    startTimer();
+  });
+
+  function startTimer(){
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      secondsElapsed++;
+      timerDisplay.textContent = "⏱ " + formatTime(secondsElapsed);
+      // Soft visual warning after 25 minutes of continuous attempt (just a UX nudge, no hard cutoff)
+      if (secondsElapsed > 25*60) {
+        timerDisplay.classList.add('low');
+      }
+    }, 1000);
+  }
+
+  function stopTimer(){
+    clearInterval(timerInterval);
+  }
+
+  // ---------- Render question ----------
+  function renderQuestion(){
+    const item = questions[currentIndex];
+    qNumEl.textContent = "QUESTION " + (currentIndex+1) + " OF " + questions.length;
+    qTextEl.textContent = item.q;
+
+    optionsContainer.innerHTML = "";
+    item.options.forEach((opt, idx) => {
+      const div = document.createElement('div');
+      div.className = "option";
+      if (userAnswers[currentIndex] === idx) div.classList.add('selected');
+      div.innerHTML = '<div class="opt-letter">' + letterFor(idx) + '</div><div class="opt-text"></div>';
+      div.querySelector('.opt-text').textContent = opt;
+      div.addEventListener('click', () => selectOption(idx));
+      optionsContainer.appendChild(div);
+    });
+
+    prevBtn.disabled = currentIndex === 0;
+    nextBtn.textContent = currentIndex === questions.length - 1 ? "Finish ✔" : "Next ▶";
+
+    updateProgress();
+    updatePalette();
+  }
+
+  function selectOption(idx){
+    userAnswers[currentIndex] = idx;
+    renderQuestion();
+  }
+
+  function updateProgress(){
+    const answeredCount = userAnswers.filter(a => a !== null).length;
+    const pct = Math.round(((currentIndex+1)/questions.length)*100);
+    progressFill.style.width = pct + "%";
+    progressLabel.textContent = "Question " + (currentIndex+1) + " of " + questions.length;
+    answeredLabel.textContent = answeredCount + " answered";
+  }
+
+  // ---------- Palette / navigator ----------
+  function buildPalette(){
+    paletteContainer.innerHTML = "";
+    questions.forEach((_, idx) => {
+      const btn = document.createElement('button');
+      btn.textContent = idx+1;
+      btn.addEventListener('click', () => {
+        currentIndex = idx;
+        renderQuestion();
+      });
+      paletteContainer.appendChild(btn);
+    });
+  }
+
+  function updatePalette(){
+    const btns = paletteContainer.children;
+    for(let i=0;i<btns.length;i++){
+      btns[i].classList.remove('current','answered');
+      if (userAnswers[i] !== null) btns[i].classList.add('answered');
+      if (i === currentIndex) btns[i].classList.add('current');
+    }
+  }
+
+  // ---------- Navigation ----------
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) { currentIndex--; renderQuestion(); }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex < questions.length - 1) {
+      currentIndex++;
+      renderQuestion();
+    } else {
+      finishTest();
+    }
+  });
+
+  submitEarlyBtn.addEventListener('click', () => {
+    const answeredCount = userAnswers.filter(a => a !== null).length;
+    const unanswered = questions.length - answeredCount;
+    if (unanswered > 0) {
+      const ok = confirm("You have " + unanswered + " unanswered question(s). Submit anyway?");
+      if (!ok) return;
+    }
+    finishTest();
+  });
+
+  // ---------- Scoring ----------
+  function finishTest(){
+    stopTimer();
+
+    let correct = 0, wrong = 0, skipped = 0;
+    questions.forEach((item, idx) => {
+      const ans = userAnswers[idx];
+      if (ans === null) skipped++;
+      else if (ans === item.answer) correct++;
+      else wrong++;
+    });
+
+    const rawTotal = questions.length;
+    const scoreOver70 = (correct / rawTotal) * TOTAL_MARKS;
+    const scoreRounded = Math.round(scoreOver70 * 10) / 10; // 1 decimal place
+    const pct = Math.round((correct/rawTotal)*100);
+
+    quizScreen.classList.add('hidden');
+    resultScreen.classList.remove('hidden');
+    headerStatus.textContent = "Completed";
+
+    scoreBig.textContent = scoreRounded + " / " + TOTAL_MARKS;
+    scorePercent.textContent = pct + "%  (" + correct + "/" + rawTotal + " correct)";
+    resultSubtitle.textContent = "Time taken: " + formatTime(secondsElapsed);
+
+    sumCorrect.textContent = correct;
+    sumWrong.textContent = wrong;
+    sumSkipped.textContent = skipped;
+
+    // Grade badge + circle color
+    let grade, color;
+    if (pct >= 70)      { grade = "EXCELLENT (A)"; color = "var(--good)"; }
+    else if (pct >= 60) { grade = "VERY GOOD (B)"; color = "#84cc16"; }
+    else if (pct >= 50) { grade = "GOOD (C)"; color = "var(--warn)"; }
+    else if (pct >= 45) { grade = "PASS (D)"; color = "#fb923c"; }
+    else                { grade = "NEEDS IMPROVEMENT (F)"; color = "var(--bad)"; }
+
+    gradeBadge.textContent = grade;
+    gradeBadge.style.background = "rgba(255,255,255,.08)";
+    gradeBadge.style.color = color;
+    gradeBadge.style.border = "1px solid " + color;
+    scoreCircle.style.borderColor = color;
+
+    buildReview();
+  }
+
+  function buildReview(){
+    reviewList.innerHTML = "";
+    questions.forEach((item, idx) => {
+      const ans = userAnswers[idx];
+      const wrapper = document.createElement('div');
+      wrapper.className = "review-item";
+
+      let tagHtml;
+      if (ans === null) tagHtml = '<span class="tag skip">Skipped</span>';
+      else if (ans === item.answer) tagHtml = '<span class="tag ok">Correct</span>';
+      else tagHtml = '<span class="tag bad">Wrong</span>';
+
+      const qDiv = document.createElement('div');
+      qDiv.className = "rq";
+      qDiv.innerHTML = "<strong>Q" + (idx+1) + ".</strong> ";
+      qDiv.appendChild(document.createTextNode(item.q));
+      qDiv.insertAdjacentHTML('beforeend', ' ' );
+      const tagSpan = document.createElement('span');
+      tagSpan.innerHTML = tagHtml;
+      qDiv.appendChild(tagSpan);
+
+      wrapper.appendChild(qDiv);
+
+      item.options.forEach((opt, oIdx) => {
+        const row = document.createElement('div');
+        row.className = "ra";
+        let marker = "";
+        if (oIdx === item.answer) marker = " ✅";
+        if (oIdx === ans && ans !== item.answer) marker = " ❌ (your answer)";
+        else if (oIdx === ans && ans === item.answer) marker = " ✅ (your answer)";
+
+        const letterSpan = document.createElement('span');
+        letterSpan.style.fontWeight = "700";
+        letterSpan.style.color = (oIdx === item.answer) ? "var(--good)" : (oIdx === ans ? "var(--bad)" : "var(--muted)");
+        letterSpan.textContent = letterFor(oIdx) + ".";
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = opt + marker;
+        textSpan.style.color = (oIdx === item.answer) ? "var(--good)" : (oIdx === ans ? "var(--bad)" : "var(--text)");
+
+        row.appendChild(letterSpan);
+        row.appendChild(textSpan);
+        wrapper.appendChild(row);
+      });
+
+      reviewList.appendChild(wrapper);
+    });
+  }
+
+  reviewBtn.addEventListener('click', () => {
+    reviewSection.classList.toggle('hidden');
+    reviewBtn.textContent = reviewSection.classList.contains('hidden') ? "Review Answers" : "Hide Review";
+  });
+
+  retakeBtn.addEventListener('click', () => {
+    resultScreen.classList.add('hidden');
+    reviewSection.classList.add('hidden');
+    reviewBtn.textContent = "Review Answers";
+    startScreen.classList.remove('hidden');
+    headerStatus.textContent = "Not started";
+  });
+
+})();
+</script>
+</body>
+</html>
