@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 114 — Comprehensive Exam | AFIT Kaduna</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --card: #f3ead3;
+    --card-line: #c9b896;
+    --drawer: #8a6a4b;
+    --drawer-dark: #6b4f36;
+    --wood: #5c4530;
+    --ink: #1f2d3d;
+    --ink-soft: #3a4a5c;
+    --maroon: #8b2635;
+    --maroon-dark: #6e1c28;
+    --brass: #a98a4a;
+    --green-felt: #2f4a3c;
+    --paper-shadow: rgba(40,28,12,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--green-felt);
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,0.03), transparent 40%),
+      repeating-linear-gradient(45deg, rgba(0,0,0,0.04) 0 2px, transparent 2px 6px);
+    font-family: 'Libre Baskerville', serif;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 32px 16px 80px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+
+  .drawer-frame{
+    width: 100%;
+    max-width: 760px;
+    background: linear-gradient(180deg, var(--drawer), var(--drawer-dark));
+    border-radius: 6px 6px 10px 10px;
+    box-shadow: 0 20px 50px var(--paper-shadow), inset 0 2px 0 rgba(255,255,255,0.15);
+    padding: 14px 14px 22px;
+    position: relative;
+  }
+  .drawer-frame::before{
+    content:"";
+    position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:64px; height:18px; border-radius:3px;
+    background: linear-gradient(180deg,#cbb178,var(--brass));
+    box-shadow: inset 0 -2px 3px rgba(0,0,0,0.3), 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .label-slot{
+    margin: 16px auto 10px;
+    width: fit-content;
+    background: #fffdf6;
+    border: 1px solid #00000022;
+    padding: 4px 18px;
+    font-family: 'Courier Prime', monospace;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    font-size: 12px;
+    color: var(--maroon-dark);
+    text-transform: uppercase;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.25);
+  }
+
+  .card-well{
+    background: var(--card);
+    border-radius: 3px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(0,0,0,0.06);
+    padding: 28px 28px 24px;
+    position: relative;
+    background-image: linear-gradient(var(--card-line) 1px, transparent 1px);
+    background-size: 100% 32px;
+    background-position: 0 78px;
+  }
+  .card-well.no-rules{ background-image:none; }
+  .punch-hole{
+    position:absolute; left:14px; top:50%; transform:translateY(-50%);
+    width:10px; height:10px; border-radius:50%;
+    background: var(--green-felt);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
+  }
+
+  header.masthead{
+    text-align:center;
+    margin-bottom: 10px;
+  }
+  header.masthead .eyebrow{
+    font-family:'Courier Prime',monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  header.masthead h1{
+    font-family:'Special Elite', monospace;
+    font-size: 26px;
+    margin: 4px 0 2px;
+    color: var(--maroon-dark);
+    letter-spacing: 0.01em;
+  }
+  header.masthead .sub{
+    font-size: 13px;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .rule{
+    border:none;
+    border-top: 1px dashed #00000033;
+    margin: 14px 0;
+  }
+
+  /* ---------- START SCREEN ---------- */
+  .start-screen p{ font-size: 15px; line-height:1.6; }
+  .stamp-row{
+    display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin: 16px 0 6px;
+  }
+  .stamp{
+    font-family:'Courier Prime',monospace;
+    font-size:11px; letter-spacing:0.05em;
+    border: 2px solid var(--maroon);
+    color: var(--maroon);
+    padding: 4px 10px;
+    border-radius: 3px;
+    transform: rotate(-2deg);
+    text-transform: uppercase;
+  }
+  .stamp:nth-child(2){ transform: rotate(1.5deg); border-color: var(--ink-soft); color: var(--ink-soft); }
+  .stamp:nth-child(3){ transform: rotate(-1deg); border-color: var(--brass); color: #7a5e22; }
+
+  .btn{
+    font-family:'Special Elite', monospace;
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    background: var(--maroon);
+    color: #fdf6e8;
+    border: none;
+    padding: 12px 22px;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 var(--maroon-dark), 0 4px 8px rgba(0,0,0,0.3);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .btn:hover{ filter: brightness(1.05); }
+  .btn:active{ transform: translateY(2px); box-shadow: 0 1px 0 var(--maroon-dark); }
+  .btn.secondary{
+    background: #fffdf6; color: var(--ink); border: 1px solid var(--card-line);
+    box-shadow: 0 2px 0 var(--card-line);
+  }
+  .btn.ghost{
+    background: transparent; color: var(--ink-soft); border: 1px solid var(--ink-soft);
+    box-shadow:none;
+  }
+  .btn:disabled{ opacity:0.4; cursor:not-allowed; }
+  .btn-row{ display:flex; justify-content:center; gap:12px; margin-top: 18px; flex-wrap:wrap; }
+
+  .mode-grid{
+    display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0;
+  }
+  @media (max-width:520px){ .mode-grid{ grid-template-columns: 1fr; } }
+  .mode-card{
+    background:#fffdf6; border:1px solid var(--card-line); border-radius:4px;
+    padding: 12px 14px; cursor:pointer; text-align:left;
+  }
+  .mode-card.selected{ outline: 2px solid var(--maroon); }
+  .mode-card h3{ margin:0 0 4px; font-family:'Special Elite',monospace; font-size:14px; color:var(--maroon-dark); }
+  .mode-card p{ margin:0; font-size: 12px; color:var(--ink-soft); }
+
+  /* ---------- EXAM SCREEN ---------- */
+  .exam-top{ display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
+  .progress-tag, .timer-tag{
+    font-family:'Courier Prime',monospace; font-size:12px;
+    background:#fffdf6; border:1px solid var(--card-line);
+    padding:4px 10px; border-radius:3px; color:var(--ink-soft);
+  }
+  .timer-tag.low{ color: var(--maroon); border-color: var(--maroon); font-weight:700; }
+  .progress-bar-outer{
+    height:6px; background:#00000018; border-radius:4px; margin: 10px 0 18px; overflow:hidden;
+  }
+  .progress-bar-inner{ height:100%; background: var(--maroon); width:0%; transition: width 0.25s ease; }
+
+  .q-index{
+    font-family:'Courier Prime',monospace; font-size:11px; color: var(--brass);
+    letter-spacing:0.1em; text-transform:uppercase; margin-bottom:4px;
+  }
+  .q-text{
+    font-size: 17px; line-height:1.5; margin: 4px 0 18px; color: var(--ink);
+  }
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .option{
+    display:flex; align-items:flex-start; gap:10px;
+    background:#fffdf6; border:1px solid var(--card-line); border-radius:4px;
+    padding: 10px 12px; cursor:pointer; font-size:14px; line-height:1.45;
+    transition: border-color 0.1s, background 0.1s;
+  }
+  .option:hover{ border-color: var(--brass); }
+  .option.selected{ border-color: var(--maroon); background: #fbeede; }
+  .option .letter{
+    font-family:'Courier Prime',monospace; font-weight:700; color: var(--maroon-dark);
+    flex-shrink:0; width:18px;
+  }
+  .option input{ display:none; }
+
+  .nav-grid-wrap{ margin-top: 20px; }
+  .nav-grid-label{ font-family:'Courier Prime',monospace; font-size:11px; color:var(--ink-soft); margin-bottom:6px; text-transform:uppercase; letter-spacing:0.08em; }
+  .nav-grid{ display:flex; flex-wrap:wrap; gap:6px; }
+  .nav-dot{
+    width:26px; height:26px; border-radius:3px; border:1px solid var(--card-line);
+    background:#fffdf6; font-family:'Courier Prime',monospace; font-size:11px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--ink-soft);
+  }
+  .nav-dot.answered{ background: #e7dcc4; border-color: var(--brass); color: var(--ink); }
+  .nav-dot.current{ outline: 2px solid var(--maroon); }
+
+  .exam-bottom-nav{ display:flex; justify-content:space-between; margin-top: 18px; gap:10px; }
+
+  /* ---------- RESULTS SCREEN ---------- */
+  .grade-stamp{
+    text-align:center; margin: 6px 0 18px;
+  }
+  .grade-stamp .big{
+    display:inline-block;
+    font-family:'Special Elite', monospace;
+    font-size: 58px;
+    color: var(--maroon);
+    border: 6px double var(--maroon);
+    padding: 6px 26px;
+    transform: rotate(-3deg);
+    border-radius: 6px;
+  }
+  .grade-stamp .score-line{
+    margin-top: 10px; font-family:'Courier Prime',monospace; font-size:13px; color: var(--ink-soft);
+  }
+  .review-item{
+    border-bottom: 1px dashed #00000022; padding: 12px 0;
+  }
+  .review-item:last-child{ border-bottom:none; }
+  .review-q{ font-size:14px; margin-bottom:6px; }
+  .review-q .tag{
+    font-family:'Courier Prime',monospace; font-size:10px; padding:2px 6px; border-radius:3px; margin-right:6px;
+  }
+  .tag.correct{ background:#dcead9; color:#2f4a3c; }
+  .tag.wrong{ background:#f4dada; color:var(--maroon-dark); }
+  .review-answer{ font-size:13px; color: var(--ink-soft); margin: 2px 0; }
+  .review-answer.user-wrong{ color: var(--maroon); text-decoration: line-through; }
+  .review-answer.correct-answer{ color: #2f4a3c; font-weight:700; }
+  .review-explain{ font-size:12.5px; font-style:italic; color:#6b5b3f; margin-top:4px; }
+
+  .hidden{ display:none !important; }
+  footer.note{
+    text-align:center; color: #cdbfa0; font-size: 11px; margin-top: 14px; font-family:'Courier Prime',monospace;
+  }
+</style>
+</head>
+<body>
+
+<div class="drawer-frame">
+  <div class="label-slot" id="labelSlot">CSC 114 · Cyber &amp; Digital Libraries</div>
+
+  <div class="card-well no-rules" id="cardWell">
+
+    <!-- ============ START SCREEN ============ -->
+    <div id="startScreen">
+      <header class="masthead">
+        <div class="eyebrow">Air Force Institute of Technology &middot; Kaduna</div>
+        <h1>CSC 114 Comprehensive Exam</h1>
+        <div class="sub">Cyber Security &amp; Ethics &middot; Digital &amp; Virtual Libraries &middot; Cloud &middot; AI</div>
+      </header>
+      <hr class="rule">
+      <div class="start-screen">
+        <p>This exam draws from all eight units of the course guide — cyber security and ethics, digital library software, cloud computing, virtual libraries and emerging trends, AI in digital libraries, existing digital libraries, software vs. platforms, and metadata/digitisation technology.</p>
+        <div class="stamp-row">
+          <span class="stamp">50 Questions</span>
+          <span class="stamp">All 8 Units</span>
+          <span class="stamp">Timed</span>
+        </div>
+        <p>Choose how you'd like to sit the exam:</p>
+        <div class="mode-grid" id="modeGrid">
+          <div class="mode-card selected" data-mode="exam">
+            <h3>Full Exam — 45 min</h3>
+            <p>All 50 questions, countdown timer, answers revealed only at the end. Closest to the real thing.</p>
+          </div>
+          <div class="mode-card" data-mode="practice">
+            <h3>Practice Run — Untimed</h3>
+            <p>All 50 questions, no clock. Answers and explanations shown after you submit.</p>
+          </div>
+          <div class="mode-card" data-mode="quick">
+            <h3>Quick Drill — 15 min</h3>
+            <p>20 random questions, lighter timer. Good for a fast self-check before class.</p>
+          </div>
+          <div class="mode-card" data-mode="unit">
+            <h3>Single Unit</h3>
+            <p>Pick one unit and drill only its questions, untimed.</p>
+          </div>
+        </div>
+        <div id="unitPicker" class="hidden" style="margin-bottom:14px;">
+          <label class="nav-grid-label" for="unitSelect">Choose a unit</label><br>
+          <select id="unitSelect" style="font-family:'Courier Prime',monospace; padding:8px; border-radius:3px; border:1px solid var(--card-line); width:100%;">
+            <option value="1">Unit 1 — Cyber Security &amp; Ethics</option>
+            <option value="2">Unit 2 — Digital Library Software</option>
+            <option value="3">Unit 3 — Cloud Computing</option>
+            <option value="4">Unit 4 — Virtual Libraries &amp; Trends</option>
+            <option value="5">Unit 5 — AI in Digital Libraries</option>
+            <option value="6">Unit 6 — Exploring Existing Digital Libraries</option>
+            <option value="7">Unit 7 — Software &amp; Platforms</option>
+            <option value="8">Unit 8 — Technologies, Metadata &amp; Digitisation</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <button class="btn" id="beginBtn">Begin Exam</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ EXAM SCREEN ============ -->
+    <div id="examScreen" class="hidden">
+      <div class="exam-top">
+        <span class="progress-tag" id="progressTag">Question 1 of 50</span>
+        <span class="timer-tag" id="timerTag">45:00</span>
+      </div>
+      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progressBar"></div></div>
+
+      <div class="q-index" id="qIndexLabel">Unit 1 &middot; Cyber Security &amp; Ethics</div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="optionsWrap"></div>
+
+      <div class="exam-bottom-nav">
+        <button class="btn ghost" id="prevBtn">&larr; Previous</button>
+        <button class="btn secondary" id="nextBtn">Next &rarr;</button>
+        <button class="btn hidden" id="submitBtn">Submit Exam</button>
+      </div>
+
+      <div class="nav-grid-wrap">
+        <div class="nav-grid-label">Card Index — jump to a question</div>
+        <div class="nav-grid" id="navGrid"></div>
+      </div>
+    </div>
+
+    <!-- ============ RESULTS SCREEN ============ -->
+    <div id="resultsScreen" class="hidden">
+      <header class="masthead">
+        <div class="eyebrow">Results Card</div>
+        <h1>Exam Returned</h1>
+      </header>
+      <div class="grade-stamp">
+        <div class="big" id="gradeLetter">A</div>
+        <div class="score-line" id="scoreLine">42 / 50 correct (84%)</div>
+      </div>
+      <hr class="rule">
+      <div id="reviewList"></div>
+      <div class="btn-row">
+        <button class="btn secondary" id="retakeBtn">Retake</button>
+        <button class="btn ghost" id="homeBtn">Back to Start</button>
+      </div>
+    </div>
+
+  </div>
+  <footer class="note">AFIT KADUNA &middot; FACULTY OF COMPUTING &middot; SESSION 2025/2026</footer>
+</div>
+
+<script>
+/* ====================== QUESTION BANK ====================== */
+const QUESTIONS = [
+// ---------------- UNIT 1 ----------------
+{u:1, q:"Which framework underlies almost all cyber security decision-making, including in digital libraries?", o:["The OSI Model","The CIA Triad","The SPI Stack","The DIKW Pyramid"], a:1, e:"The CIA Triad (Confidentiality, Integrity, Availability) is the foundational security framework referenced throughout Unit 1."},
+{u:1, q:"A library encrypts its server logs and authentication histories mainly to uphold which principle?", o:["Availability","Integrity","Confidentiality","Interoperability"], a:2, e:"Encrypting logs and access records protects confidentiality — what a person reads or accesses is considered private."},
+{u:1, q:"Which threat involves overwhelming a system with traffic so legitimate users cannot get through?", o:["Phishing","SQL Injection","DoS / DDoS","Spear phishing"], a:2, e:"DoS/DDoS attacks flood systems with traffic to deny service, and are especially damaging during exam season."},
+{u:1, q:"Spear phishing aimed at library administrators using fake publisher emails is an example of which threat category?", o:["Malware Attack","Phishing Attack","Data Breach","Unauthorized Access"], a:1, e:"Spear phishing is a targeted form of phishing — deceptive emails designed to trick specific individuals into revealing credentials."},
+{u:1, q:"Role-Based Access Control (RBAC) is best described as:", o:["Encrypting data while it is in transit","Granting each user only the minimum access necessary for their role","A second authentication channel beyond a password","A firewall rule that blocks known malware signatures"], a:1, e:"RBAC restricts access according to role, ensuring users only get the minimum permissions needed."},
+{u:1, q:"Which of these is an ETHICAL principle rather than a technical security measure?", o:["Multi-Factor Authentication","Fair & Equal Access","Endpoint Detection & Response","Transport Layer Security"], a:1, e:"Fair & Equal Access is one of the ethical principles in Unit 1 — access should not depend on economic status or location."},
+{u:1, q:"According to the guide, what is the correct relationship between cyber security and ethics?", o:["They are unrelated fields with no overlap","Ethics replaces the need for technical security","Security enables ethical commitments to be honoured, while ethics constrains how security tools are used","Security is only relevant after an ethical breach has occurred"], a:2, e:"Security provides the technical means to fulfil ethical promises (like privacy), while ethics limits how invasive security monitoring may become."},
+
+// ---------------- UNIT 2 ----------------
+{u:2, q:"Which of the following is an Integrated Library System (ILS) used for day-to-day operations like circulation and cataloguing?", o:["DSpace","Koha","Omeka","CONTENTdm"], a:1, e:"Koha, the world's first open-source ILS, is built for cataloguing, circulation, acquisitions, and OPAC — day-to-day library operations."},
+{u:2, q:"Which digital library platform is specifically designed for low-bandwidth, offline deployments and is highly relevant to AFIT's connectivity context?", o:["EPrints","Greenstone","JSTOR","Ex Libris Alma"], a:1, e:"Greenstone (Waikato/UNESCO) can run fully offline and supports 20+ languages, making it ideal for intermittent-connectivity institutions."},
+{u:2, q:"OAI-PMH is best described as:", o:["A 15-element descriptive metadata schema","A protocol for harvesting metadata between repositories","A digital asset management system","A persistent identifier system"], a:1, e:"OAI-PMH (Open Archives Initiative Protocol for Metadata Harvesting) is the most widely implemented protocol for exchanging metadata between repositories."},
+{u:2, q:"Which metadata schema uses just 15 simple, universally supported elements (title, creator, subject, etc.)?", o:["MARC21","METS","Dublin Core","EAD"], a:2, e:"Dublin Core is the simple 15-element schema supported almost universally across digital library platforms."},
+{u:2, q:"Which is NOT one of the core functions of digital library software listed in Unit 2?", o:["Ingest","Discovery","Monetisation","Interoperability"], a:2, e:"The six core functions are Ingest, Metadata Management, Storage & Preservation, Discovery, Access Control, and Interoperability — monetisation is not among them."},
+{u:2, q:"What is a major ongoing challenge for digital library software even after adopting open-source repositories?", o:["Open-source software cannot be customised","Infrastructure costs such as servers and maintenance remain even without licensing fees","Open-source tools cannot support metadata","Digital libraries no longer need quality control"], a:1, e:"Even though open-source eliminates licensing costs, servers and ongoing maintenance still cost money."},
+
+// ---------------- UNIT 3 ----------------
+{u:3, q:"Which NIST cloud characteristic allows a consortium of libraries to share a single multi-tenant ILS?", o:["Rapid Elasticity","Measured Service","Resource Pooling","On-Demand Self-Service"], a:2, e:"Resource Pooling allows many member libraries to share the same underlying cloud infrastructure in a multi-tenant model."},
+{u:3, q:"A library that uses AWS S3 for archival storage but must manage its own OS, applications, and data is using which service model?", o:["SaaS","PaaS","IaaS","FaaS only"], a:2, e:"IaaS (Infrastructure as a Service) gives virtualized servers and storage while the customer manages the OS, apps, and data."},
+{u:3, q:"Ex Libris Alma and EBSCO Discovery Service are examples of which cloud service model?", o:["IaaS","PaaS","SaaS","Private Cloud only"], a:2, e:"SaaS delivers fully managed applications via a browser on a subscription basis — Alma and EBSCO Discovery are classic SaaS examples."},
+{u:3, q:"Under the Shared Responsibility Model, who is responsible for 'security IN the cloud'?", o:["The cloud provider only","The library/customer","Neither party — it is automatic","A third-party auditor"], a:1, e:"The provider secures 'the cloud' (hardware, hypervisor); the customer secures 'in the cloud' (data, access, configuration)."},
+{u:3, q:"Which deployment model is most associated with classified government collections needing strict data sovereignty?", o:["Public Cloud","Private Cloud","Hybrid Cloud","Multi-Cloud"], a:1, e:"Private Cloud is exclusive to one institution or consortium, offering the greatest control — suited to sensitive, sovereignty-sensitive data."},
+{u:3, q:"Kubernetes is most closely associated with which underlying cloud technology?", o:["Virtualization of physical hardware only","Containerization and automated scaling/self-healing","Persistent identifier assignment","Metadata harvesting"], a:1, e:"Kubernetes automates scaling and self-healing for containerized applications, which package apps with all dependencies."},
+{u:3, q:"Which is listed as a genuine challenge of cloud computing for digital libraries?", o:["Vendor lock-in from proprietary APIs complicating long-term preservation","Cloud computing eliminates the need for any data protection laws","Cloud storage cannot scale during digitisation projects","Cloud computing always costs more than on-premise solutions"], a:0, e:"Vendor lock-in is a key challenge — proprietary APIs can make migrating away from a provider expensive and risky for long-term preservation."},
+
+// ---------------- UNIT 4 ----------------
+{u:4, q:"What is the key distinction between a 'digital library' and a 'virtual library'?", o:["A digital library is always free, a virtual library is always paid","Digital library refers to the collection itself; virtual library refers to the access platform/system","Virtual libraries only exist in Africa","There is no real difference between the two terms"], a:1, e:"Digital = the organised collection; Virtual = the online platform/gateway giving access to that collection."},
+{u:4, q:"Which of the five emerging trends in Unit 4 is centred on removing financial and subscription barriers to knowledge?", o:["Mobile & Smart Library Access","Cybersecurity","Open Access Movement","Cloud Computing"], a:2, e:"The Open Access Movement promotes free, unrestricted access to research, removing subscription barriers."},
+{u:4, q:"According to Unit 4, how has the role of librarians shifted as digital and virtual libraries have grown?", o:["Librarians are no longer needed at all","From custodians of books to modern information managers navigating databases and digital tools","Librarians now only manage physical shelving","Librarian roles have not changed at all"], a:1, e:"This is listed explicitly as an implication: librarians have shifted from book custodians to information managers."},
+{u:4, q:"Which is identified as a persistent challenge alongside the growth of digital/virtual libraries?", o:["The Digital Divide — unequal access to internet, devices, and digital skills","Excess of physical shelf space","Too few e-books being published","Decreasing demand for research databases"], a:0, e:"The Digital Divide is explicitly listed as a challenge: unequal access limits who can benefit equitably."},
+{u:4, q:"Mobile access being especially important in Africa is tied to which trend?", o:["Open Access Movement","Mobile & Smart Library Access","Cybersecurity","Cloud Computing"], a:1, e:"Unit 4 notes that mobile internet access significantly outpaces desktop usage in Africa, making mobile/smart access a key trend."},
+
+// ---------------- UNIT 5 ----------------
+{u:5, q:"AI-powered semantic search improves on traditional keyword search mainly by:", o:["Always returning the same results for the same query","Understanding intent so 'vehicle' can match a search for 'car'","Requiring users to know exact technical terminology","Removing the need for any indexing"], a:1, e:"Semantic search via NLP interprets user intent and meaning, not just literal keyword matches."},
+{u:5, q:"Recommending an item because 'people like you also liked this' describes which recommendation approach?", o:["Content-Based Filtering","Collaborative Filtering","Hybrid Systems","Federated Search"], a:1, e:"Collaborative Filtering recommends based on what similar users liked — the 'people like you' approach used by Netflix and Amazon."},
+{u:5, q:"What is a key LIMITATION of AI chatbots in library reference services?", o:["They are never available outside library hours","They cannot handle multiple users simultaneously","They rely on a fixed knowledge base and cannot answer unlisted queries","They eliminate the need for any human staff entirely"], a:2, e:"Chatbots are efficient and scalable, but their fixed knowledge base means they struggle with queries outside that base."},
+{u:5, q:"Which technology allows historical handwritten manuscripts to be converted into searchable digital text?", o:["RBAC","ICR (Intelligent Character Recognition)","OAI-PMH","LOCKSS"], a:1, e:"ICR, part of AI OCR / Intelligent Document Processing, interprets handwriting through contextual understanding."},
+{u:5, q:"AI's role in cybersecurity for digital libraries includes all of the following EXCEPT:", o:["Detecting unusual patterns indicative of attacks","Recognising new malware variants from past attack data","Scanning emails for phishing indicators","Replacing the need for the CIA Triad entirely"], a:3, e:"AI strengthens threat detection, malware recognition, and phishing prevention — it does not replace the CIA Triad, which remains foundational."},
+{u:5, q:"Algorithmic bias in AI recommendation systems is an ethical concern because it can:", o:["Improve data backup schedules","Create 'echo chambers' by over-personalising results toward certain publications","Increase the accuracy of OCR scanning","Encrypt data more effectively"], a:1, e:"Over-personalisation can favour certain sources repeatedly, narrowing the range of material a user is exposed to."},
+{u:5, q:"In an AI + Blockchain digital rights management system, what role does blockchain specifically play?", o:["It performs OCR on scanned documents","It timestamps and records ownership with tamper-proof, transparent records enforced via smart contracts","It generates personalised reading recommendations","It translates content into multiple languages"], a:1, e:"Blockchain provides tamper-proof ownership records and transaction history, enforcing rights through smart contracts, while AI handles detection and analysis."},
+
+// ---------------- UNIT 6 ----------------
+{u:6, q:"Which digital library is best known for its Wayback Machine and a maximalist 'archive everything' philosophy?", o:["JSTOR","HathiTrust","Internet Archive","Project Gutenberg"], a:2, e:"Internet Archive's Wayback Machine and broad, maximalist scope distinguish it from the other major platforms."},
+{u:6, q:"Which library limits access mainly to patrons of its 200+ member research institutions?", o:["Google Scholar","HathiTrust","Project Gutenberg","ResearchGate"], a:1, e:"HathiTrust is a consortium of 200+ research libraries; full access is generally limited to member-institution patrons."},
+{u:6, q:"Project Gutenberg's main limitation, according to the guide, is that it is:", o:["Subscription-only","Limited to public domain works only","Restricted to medical literature","Available only through institutional logins"], a:1, e:"As the oldest digital library focused on free e-books, Project Gutenberg's content is limited strictly to public domain works."},
+{u:6, q:"Compared to the past, present-day digital library search and retrieval is best characterised by:", o:["Manual catalogue browsing only","Basic keyword search with no filters","AI-powered semantic search with metadata filtering and personalised results","No change at all from earlier decades"], a:2, e:"Unit 6's evolution table shows search moving from basic keyword matching to AI-powered semantic search and personalisation."},
+{u:6, q:"Why are exploration and digital libraries described as 'mutually dependent'?", o:["Exploration requires no digital library infrastructure at all","Digital libraries provide the structure and content, while exploration is the active user behaviour that brings them to life","Digital libraries only function once exploration ends","Exploration replaces the need for metadata"], a:1, e:"Without exploration, digital libraries are underused; without digital libraries, exploration has no structured platform to work with."},
+
+// ---------------- UNIT 7 ----------------
+{u:7, q:"What is the key difference between 'software' and a 'platform' as defined in Unit 7?", o:["Software is always free; platforms are always paid","Software is a standalone, single-purpose tool; a platform is an ecosystem where software, users, and services interact","There is no real difference","Platforms cannot have APIs"], a:1, e:"Software (e.g. a PDF reader) performs one task; a platform (e.g. DSpace) is an ecosystem supporting hosting, search, and user accounts together."},
+{u:7, q:"Which of the three major global platforms is described as having a 'preservation-first' philosophy?", o:["Internet Archive","JSTOR","HathiTrust","Google Scholar"], a:2, e:"HathiTrust's philosophy is explicitly preservation-first, focused on collaborative stewardship among research libraries."},
+{u:7, q:"For an AFIT thesis collection, which platform model is recommended as the best fit?", o:["A purely social-media-style platform","HathiTrust's consortium/institutional repository model","A platform with no metadata standards","A platform restricted to medical literature"], a:1, e:"The exam tip specifically recommends HathiTrust's consortium/institutional repository model for AFIT's thesis collection."},
+{u:7, q:"Which factor most favours an on-premise (rather than cloud-based) platform for AFIT Kaduna?", o:["AFIT has unlimited internet bandwidth at all times","On-premise systems are critical for offline/intranet use during intermittent connectivity","On-premise systems require no IT staff","Cloud platforms cannot offer high availability"], a:1, e:"Unit 7 notes on-premise platforms are critical when connectivity is intermittent, since they don't depend on a stable internet connection."},
+{u:7, q:"A small institution with limited IT staff wanting quick deployment is best matched to which approach in the decision matrix?", o:["Self-hosted DSpace or Fedora Commons","A cloud-managed platform such as OCLC CONTENTdm","HathiTrust membership","Submission to PubMed Central only"], a:1, e:"The decision matrix recommends a cloud-managed platform for small institutions with limited IT staff needing fast deployment."},
+
+// ---------------- UNIT 8 ----------------
+{u:8, q:"Which technology layer uses tools like Apache Solr and Elasticsearch?", o:["Digital Preservation Layer","Search & Indexing","Access Control & Identity","AI & Machine Learning Layer"], a:1, e:"Apache Solr and Elasticsearch power faceted search, relevance ranking, and multilingual indexing in the Search & Indexing layer."},
+{u:8, q:"Which type of metadata describes how a digital object is organised, such as page order or chapter structure?", o:["Descriptive Metadata","Structural Metadata","Administrative Metadata","Persistent Metadata"], a:1, e:"Structural metadata describes organisation — page order, chapters, multimedia compilation structure."},
+{u:8, q:"In the digitisation workflow, what comes immediately after 'Digitisation/Capture'?", o:["Ingest into Repository","Metadata Creation","Processing & OCR","Selection & Preparation"], a:2, e:"The workflow order is: Selection & Preparation, Registration, Digitisation/Capture, Processing & OCR, Quality Control, Metadata Creation, Ingest."},
+{u:8, q:"LOCKSS ('Lots of Copies Keeps Stuff Safe') is a strategy for:", o:["Encrypting data in transit","Replicating multiple copies across different geographic locations for preservation","Harvesting metadata between repositories","Managing role-based access control"], a:1, e:"LOCKSS preserves digital content through geographically distributed replication, guarding against data loss."},
+{u:8, q:"What is the main difference between Access Control and Digital Rights Management (DRM)?", o:["Access Control governs usage after entry; DRM governs who may enter","Access Control governs who may enter; DRM governs how content is used after access is granted","They are exactly the same concept","DRM only applies to physical books"], a:1, e:"Access Control answers 'can this person enter?'; DRM answers 'what can they do with the content once inside?'"},
+{u:8, q:"Which international reference model underpins digital preservation strategy?", o:["OAIS (Open Archival Information System)","OAI-PMH","RBAC","Z39.50"], a:0, e:"OAIS is the international reference model specifically for digital preservation, distinct from OAI-PMH (a metadata harvesting protocol)."},
+{u:8, q:"BIBFRAME is best described as:", o:["A cloud deployment model","A Library of Congress framework replacing MARC for linked data publishing","A digitisation hardware tool","An access control technology"], a:1, e:"BIBFRAME is the Library of Congress's bibliographic framework intended to replace MARC, enabling linked data publishing."},
+{u:8, q:"Why is quantum computing listed as a future concern for digital preservation?", o:["It will make digitisation hardware obsolete immediately","It poses a long-term threat to current encryption standards, requiring planning for quantum-safe cryptography","It eliminates the need for metadata","It will replace all librarians"], a:1, e:"Quantum computing threatens current encryption; libraries with long preservation mandates must plan quantum-safe cryptography migration now."},
+];
+
+/* ====================== STATE ====================== */
+let activeQuestions = [];
+let answers = {};
+let current = 0;
+let mode = "exam";
+let timerInterval = null;
+let timeLeft = 0;
+let examFinished = false;
+
+const UNIT_NAMES = {
+  1:"Cyber Security &amp; Ethics", 2:"Digital Library Software", 3:"Cloud Computing",
+  4:"Virtual Libraries &amp; Trends", 5:"AI in Digital Libraries", 6:"Existing Digital Libraries",
+  7:"Software &amp; Platforms", 8:"Technologies, Metadata &amp; Digitisation"
+};
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* ====================== MODE SELECTION ====================== */
+const modeGrid = document.getElementById('modeGrid');
+const unitPicker = document.getElementById('unitPicker');
+modeGrid.addEventListener('click', (e)=>{
+  const card = e.target.closest('.mode-card');
+  if(!card) return;
+  document.querySelectorAll('.mode-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  mode = card.dataset.mode;
+  unitPicker.classList.toggle('hidden', mode !== 'unit');
+});
+
+/* ====================== BEGIN EXAM ====================== */
+document.getElementById('beginBtn').addEventListener('click', ()=>{
+  answers = {};
+  current = 0;
+  examFinished = false;
+
+  if(mode === 'exam' || mode === 'practice'){
+    activeQuestions = QUESTIONS.map((q,i)=>({...q, idx:i}));
+    timeLeft = mode === 'exam' ? 45*60 : 0;
+  } else if(mode === 'quick'){
+    activeQuestions = shuffle(QUESTIONS.map((q,i)=>({...q, idx:i}))).slice(0,20);
+    timeLeft = 15*60;
+  } else if(mode === 'unit'){
+    const u = parseInt(document.getElementById('unitSelect').value,10);
+    activeQuestions = QUESTIONS.map((q,i)=>({...q, idx:i})).filter(q=>q.u===u);
+    timeLeft = 0;
+  }
+
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('examScreen').classList.remove('hidden');
+  document.getElementById('submitBtn').classList.add('hidden');
+
+  buildNavGrid();
+  renderQuestion();
+
+  if(timeLeft > 0){
+    document.getElementById('timerTag').classList.remove('hidden');
+    startTimer();
+  } else {
+    document.getElementById('timerTag').textContent = "Untimed";
+  }
+});
+
+function startTimer(){
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      finishExam();
+    }
+  },1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  const tag = document.getElementById('timerTag');
+  tag.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  tag.classList.toggle('low', timeLeft <= 60);
+}
+
+/* ====================== RENDER QUESTION ====================== */
+function buildNavGrid(){
+  const grid = document.getElementById('navGrid');
+  grid.innerHTML = '';
+  activeQuestions.forEach((q,i)=>{
+    const dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    dot.textContent = i+1;
+    dot.addEventListener('click', ()=>{ current = i; renderQuestion(); });
+    grid.appendChild(dot);
+  });
+}
+
+function renderQuestion(){
+  const q = activeQuestions[current];
+  document.getElementById('progressTag').textContent = `Question ${current+1} of ${activeQuestions.length}`;
+  document.getElementById('progressBar').style.width = `${((current+1)/activeQuestions.length)*100}%`;
+  document.getElementById('qIndexLabel').innerHTML = `Unit ${q.u} &middot; ${UNIT_NAMES[q.u]}`;
+  document.getElementById('qText').textContent = q.q;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.o.forEach((opt,i)=>{
+    const div = document.createElement('div');
+    div.className = 'option' + (answers[q.idx]===i ? ' selected' : '');
+    div.innerHTML = `<span class="letter">${letters[i]}</span><span>${opt}</span>`;
+    div.addEventListener('click', ()=>{
+      answers[q.idx] = i;
+      renderQuestion();
+      updateNavGrid();
+    });
+    wrap.appendChild(div);
+  });
+
+  document.getElementById('prevBtn').disabled = current === 0;
+  const isLast = current === activeQuestions.length - 1;
+  document.getElementById('nextBtn').classList.toggle('hidden', isLast);
+  document.getElementById('submitBtn').classList.toggle('hidden', !isLast);
+
+  updateNavGrid();
+}
+
+function updateNavGrid(){
+  const dots = document.querySelectorAll('.nav-dot');
+  dots.forEach((d,i)=>{
+    d.classList.toggle('current', i===current);
+    d.classList.toggle('answered', answers[activeQuestions[i].idx] !== undefined);
+  });
+}
+
+document.getElementById('prevBtn').addEventListener('click', ()=>{
+  if(current>0){ current--; renderQuestion(); }
+});
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  if(current < activeQuestions.length-1){ current++; renderQuestion(); }
+});
+document.getElementById('submitBtn').addEventListener('click', ()=>{
+  finishExam();
+});
+
+/* ====================== RESULTS ====================== */
+function finishExam(){
+  if(examFinished) return;
+  examFinished = true;
+  clearInterval(timerInterval);
+
+  let correctCount = 0;
+  activeQuestions.forEach(q=>{
+    if(answers[q.idx] === q.a) correctCount++;
+  });
+  const pct = Math.round((correctCount/activeQuestions.length)*100);
+  let grade = 'F';
+  if(pct>=80) grade='A';
+  else if(pct>=70) grade='B';
+  else if(pct>=60) grade='C';
+  else if(pct>=50) grade='D';
+
+  document.getElementById('gradeLetter').textContent = grade;
+  document.getElementById('scoreLine').textContent = `${correctCount} / ${activeQuestions.length} correct (${pct}%)`;
+
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  activeQuestions.forEach((q,i)=>{
+    const userAns = answers[q.idx];
+    const isCorrect = userAns === q.a;
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `
+      <div class="review-q"><span class="tag ${isCorrect?'correct':'wrong'}">${isCorrect?'CORRECT':'MISSED'}</span>Q${i+1}. ${q.q}</div>
+      <div class="review-answer ${isCorrect?'':'user-wrong'}">Your answer: ${userAns!==undefined ? letters[userAns]+'. '+q.o[userAns] : '(no answer given)'}</div>
+      ${!isCorrect ? `<div class="review-answer correct-answer">Correct answer: ${letters[q.a]}. ${q.o[q.a]}</div>` : ''}
+      <div class="review-explain">${q.e}</div>
+    `;
+    reviewList.appendChild(div);
+  });
+
+  document.getElementById('examScreen').classList.add('hidden');
+  document.getElementById('resultsScreen').classList.remove('hidden');
+}
+
+document.getElementById('retakeBtn').addEventListener('click', ()=>{
+  document.getElementById('resultsScreen').classList.add('hidden');
+  document.getElementById('startScreen').classList.remove('hidden');
+});
+document.getElementById('homeBtn').addEventListener('click', ()=>{
+  document.getElementById('resultsScreen').classList.add('hidden');
+  document.getElementById('startScreen').classList.remove('hidden');
+});
+</script>
+</body>
+</html>
