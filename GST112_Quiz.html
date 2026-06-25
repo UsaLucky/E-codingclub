@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GST 112 Master Quiz | @levite_aerospace</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #050a14;
+    --surface: #0a1628;
+    --card: #0d1f3c;
+    --border: #1a3a6b;
+    --accent: #00d4ff;
+    --accent2: #7b2fff;
+    --accent3: #ff6b35;
+    --gold: #ffd700;
+    --text: #e8f4ff;
+    --muted: #7a9ec0;
+    --correct: #00ff88;
+    --wrong: #ff3366;
+    --hard: #ff6b35;
+    --medium: #00d4ff;
+    --vhard: #ff3366;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Starfield */
+  #starfield {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+    background: radial-gradient(ellipse at 20% 50%, #0a1628 0%, #050a14 70%);
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: 0.1; } to { opacity: 0.9; } }
+
+  /* SCREEN MANAGEMENT */
+  .screen { position: relative; z-index: 1; min-height: 100vh; }
+  .hidden { display: none !important; }
+
+  /* ── INTRO SCREEN ── */
+  #intro {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center; padding: 40px 20px;
+  }
+  .logo-tag {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem; color: var(--accent);
+    letter-spacing: 4px; text-transform: uppercase;
+    margin-bottom: 16px;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
+
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--accent), var(--accent2), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1; margin-bottom: 12px;
+    filter: drop-shadow(0 0 30px rgba(0,212,255,0.3));
+  }
+  .subtitle {
+    font-size: 1rem; color: var(--muted);
+    letter-spacing: 2px; margin-bottom: 40px;
+  }
+
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; max-width: 480px; margin: 0 auto 40px;
+  }
+  .stat-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 10px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 2rem; font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-top: 4px;
+  }
+
+  .diff-legend {
+    display: flex; gap: 20px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center;
+  }
+  .diff-pill {
+    padding: 6px 16px; border-radius: 20px; font-size: 0.8rem;
+    font-weight: 600; letter-spacing: 1px;
+  }
+  .diff-pill.medium { background: rgba(0,212,255,0.15); color: var(--medium); border: 1px solid var(--medium); }
+  .diff-pill.hard { background: rgba(255,107,53,0.15); color: var(--hard); border: 1px solid var(--hard); }
+  .diff-pill.vhard { background: rgba(255,51,102,0.15); color: var(--vhard); border: 1px solid var(--vhard); }
+
+  .mode-select { display: flex; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
+  .mode-btn {
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--text); padding: 14px 28px; border-radius: 10px;
+    cursor: pointer; font-family: 'Exo 2', sans-serif; font-size: 0.95rem;
+    font-weight: 600; transition: all 0.2s; letter-spacing: 1px;
+  }
+  .mode-btn:hover, .mode-btn.active {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(0,212,255,0.08);
+    box-shadow: 0 0 20px rgba(0,212,255,0.2);
+  }
+
+  .start-btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem; font-weight: 700;
+    padding: 18px 60px; border-radius: 50px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white; letter-spacing: 2px; text-transform: uppercase;
+    transition: all 0.3s;
+    box-shadow: 0 0 30px rgba(0,212,255,0.3);
+    animation: glowpulse 2s infinite;
+  }
+  @keyframes glowpulse {
+    0%,100% { box-shadow: 0 0 30px rgba(0,212,255,0.3); }
+    50% { box-shadow: 0 0 50px rgba(0,212,255,0.6), 0 0 80px rgba(123,47,255,0.3); }
+  }
+  .start-btn:hover { transform: scale(1.05); }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz { padding: 20px; max-width: 820px; margin: 0 auto; }
+
+  .quiz-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+  }
+  .quiz-brand {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem; color: var(--accent); letter-spacing: 3px;
+  }
+  .progress-info { text-align: center; }
+  .q-counter {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.4rem; font-weight: 700; color: var(--text);
+  }
+  .q-counter span { color: var(--accent); }
+  .score-live {
+    font-size: 0.8rem; color: var(--muted); letter-spacing: 1px;
+  }
+
+  /* Progress bar */
+  .progress-bar-wrap {
+    height: 4px; background: var(--border);
+    border-radius: 2px; margin-bottom: 24px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 0.5s ease;
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  /* Timer */
+  .timer-wrap {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+  }
+  .timer-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 1rem;
+    border: 2px solid var(--accent);
+    background: rgba(0,212,255,0.08);
+    transition: all 0.3s;
+  }
+  .timer-circle.warning { border-color: var(--hard); color: var(--hard); }
+  .timer-circle.danger { border-color: var(--wrong); color: var(--wrong); animation: shake 0.3s infinite; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-3px)} 75%{transform:translateX(3px)} }
+
+  /* Difficulty badge */
+  .diff-badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .diff-badge.medium { background: rgba(0,212,255,0.15); color: var(--medium); }
+  .diff-badge.hard { background: rgba(255,107,53,0.15); color: var(--hard); }
+  .diff-badge.very-hard { background: rgba(255,51,102,0.15); color: var(--vhard); }
+
+  /* Question card */
+  .question-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px;
+    margin-bottom: 20px;
+    position: relative; overflow: hidden;
+    animation: fadeSlide 0.4s ease;
+  }
+  @keyframes fadeSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .question-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2));
+  }
+  .q-topic {
+    font-size: 0.7rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;
+  }
+  .q-text {
+    font-size: 1.1rem; line-height: 1.7;
+    font-weight: 600; color: var(--text);
+  }
+
+  /* Options */
+  .options-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 20px;
+  }
+  @media (max-width: 560px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .option-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text); padding: 14px 18px;
+    border-radius: 10px; cursor: pointer;
+    font-family: 'Exo 2', sans-serif; font-size: 0.95rem;
+    text-align: left; transition: all 0.2s;
+    display: flex; align-items: flex-start; gap: 10px;
+    line-height: 1.4;
+  }
+  .option-letter {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem; font-weight: 700;
+    color: var(--accent); min-width: 18px;
+    margin-top: 2px;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: var(--accent); background: rgba(0,212,255,0.06);
+    transform: translateX(4px);
+  }
+  .option-btn.correct {
+    background: rgba(0,255,136,0.1); border-color: var(--correct);
+    color: var(--correct);
+  }
+  .option-btn.correct .option-letter { color: var(--correct); }
+  .option-btn.wrong {
+    background: rgba(255,51,102,0.1); border-color: var(--wrong);
+    color: var(--wrong);
+  }
+  .option-btn.wrong .option-letter { color: var(--wrong); }
+  .option-btn.selected-wrong {
+    background: rgba(255,51,102,0.15); border-color: var(--wrong);
+    color: var(--wrong);
+  }
+  .option-btn:disabled { cursor: default; }
+
+  /* Explanation */
+  .explanation {
+    background: rgba(123,47,255,0.08);
+    border: 1px solid rgba(123,47,255,0.3);
+    border-radius: 10px; padding: 16px 20px;
+    margin-bottom: 20px;
+    font-size: 0.9rem; line-height: 1.6; color: #c5b8ff;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .explanation strong { color: var(--gold); }
+
+  /* Result feedback */
+  .result-flash {
+    text-align: center; font-family: 'Orbitron', monospace;
+    font-size: 1.1rem; font-weight: 700; padding: 12px;
+    border-radius: 8px; margin-bottom: 16px;
+    animation: fadeIn 0.2s ease;
+  }
+  .result-flash.correct-flash { color: var(--correct); background: rgba(0,255,136,0.08); }
+  .result-flash.wrong-flash { color: var(--wrong); background: rgba(255,51,102,0.08); }
+  .result-flash.timeout-flash { color: var(--hard); background: rgba(255,107,53,0.08); }
+
+  .next-btn {
+    width: 100%; padding: 16px;
+    font-family: 'Orbitron', monospace; font-size: 1rem; font-weight: 700;
+    border: none; border-radius: 10px; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: white; letter-spacing: 2px; transition: all 0.2s;
+  }
+  .next-btn:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,212,255,0.3); }
+
+  .skip-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 10px 24px; border-radius: 8px;
+    cursor: pointer; font-family: 'Exo 2', sans-serif; font-size: 0.85rem;
+    margin-right: 10px; transition: all 0.2s;
+  }
+  .skip-btn:hover { border-color: var(--muted); color: var(--text); }
+
+  /* Streak */
+  .streak-display {
+    text-align: center; font-family: 'Orbitron', monospace;
+    font-size: 0.8rem; color: var(--gold); letter-spacing: 1px;
+    margin-bottom: 8px; min-height: 20px;
+  }
+
+  /* ── RESULTS SCREEN ── */
+  #results {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 40px 20px; text-align: center;
+  }
+  .results-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 900; margin-bottom: 8px;
+  }
+  .grade-display {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(4rem, 12vw, 8rem);
+    font-weight: 900; line-height: 1;
+    margin: 20px 0;
+    filter: drop-shadow(0 0 40px currentColor);
+  }
+  .grade-label { font-size: 1rem; color: var(--muted); margin-bottom: 30px; }
+
+  .results-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; max-width: 480px; width: 100%; margin: 0 auto 30px;
+  }
+  .r-stat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 10px; }
+  .r-stat-num { font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 700; }
+  .r-stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  .breakdown {
+    display: flex; gap: 20px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center;
+  }
+  .bk-item { text-align: center; }
+  .bk-num { font-family: 'Orbitron', monospace; font-size: 1.3rem; font-weight: 700; }
+  .bk-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 1px; }
+
+  .result-message {
+    max-width: 480px; margin: 0 auto 30px;
+    font-size: 1rem; line-height: 1.7; color: var(--muted);
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+
+  .action-btns { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+  .action-btn {
+    padding: 14px 32px; border-radius: 10px; border: none;
+    cursor: pointer; font-family: 'Orbitron', monospace;
+    font-size: 0.85rem; font-weight: 700; letter-spacing: 1px; transition: all 0.2s;
+  }
+  .action-btn.primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: white;
+  }
+  .action-btn.secondary {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .action-btn:hover { transform: scale(1.05); }
+
+  /* Confetti */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px;
+    pointer-events: none; z-index: 9999;
+    animation: confetti-fall 3s linear forwards;
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* Watermark */
+  .watermark {
+    position: fixed; bottom: 10px; right: 14px;
+    font-family: 'Orbitron', monospace; font-size: 0.6rem;
+    color: rgba(0,212,255,0.25); letter-spacing: 2px; z-index: 2;
+  }
+</style>
+</head>
+<body>
+<canvas id="starfield"></canvas>
+<div class="watermark">@levite_aerospace</div>
+
+<!-- INTRO -->
+<div id="intro" class="screen">
+  <div class="logo-tag">@levite_aerospace presents</div>
+  <h1>GST 112<br>MASTER QUIZ</h1>
+  <p class="subtitle">Nigerian Peoples, Culture &amp; National Development</p>
+
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-num">120</div><div class="stat-label">Questions</div></div>
+    <div class="stat-box"><div class="stat-num">30s</div><div class="stat-label">Per Question</div></div>
+    <div class="stat-box"><div class="stat-num">6</div><div class="stat-label">Topics</div></div>
+  </div>
+
+  <div class="diff-legend">
+    <div class="diff-pill medium">⚡ Medium</div>
+    <div class="diff-pill hard">🔥 Hard</div>
+    <div class="diff-pill vhard">💀 Very Hard</div>
+  </div>
+
+  <p style="color:var(--muted);font-size:0.85rem;margin-bottom:16px;">Choose your mode:</p>
+  <div class="mode-select">
+    <button class="mode-btn active" onclick="setMode('all')" id="mode-all">All 120 Questions</button>
+    <button class="mode-btn" onclick="setMode('random40')" id="mode-random40">Random 40</button>
+    <button class="mode-btn" onclick="setMode('hard')" id="mode-hard">Hard Mode Only</button>
+  </div>
+
+  <button class="start-btn" onclick="startQuiz()">LAUNCH QUIZ 🚀</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="screen hidden">
+  <div class="quiz-header">
+    <div class="quiz-brand">@levite_aerospace · GST 112</div>
+    <div class="progress-info">
+      <div class="q-counter">Q<span id="qnum">1</span>/<span id="qtotal">120</span></div>
+      <div class="score-live">Score: <span id="livescore">0</span></div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer-circle" id="timer">30</div>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progbar" style="width:0%"></div>
+  </div>
+
+  <div class="streak-display" id="streakdisp"></div>
+
+  <div class="question-card" id="qcard">
+    <div class="q-topic" id="qtopic"></div>
+    <div class="diff-badge" id="qdiff"></div>
+    <div class="q-text" id="qtext"></div>
+  </div>
+
+  <div class="options-grid" id="optgrid"></div>
+  <div id="resultflash" class="hidden"></div>
+  <div id="explanation" class="explanation hidden"></div>
+
+  <div style="display:flex;align-items:center;justify-content:center;margin-top:8px;">
+    <button class="skip-btn" id="skipbtn" onclick="skipQuestion()">Skip</button>
+    <button class="next-btn hidden" id="nextbtn" onclick="nextQuestion()">NEXT QUESTION →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="results" class="screen hidden">
+  <div class="logo-tag">@levite_aerospace</div>
+  <div class="results-title" id="rtitle">MISSION COMPLETE</div>
+  <div class="grade-display" id="grade">A</div>
+  <div class="grade-label" id="gradelabel">Outstanding!</div>
+
+  <div class="results-stats">
+    <div class="r-stat">
+      <div class="r-stat-num" id="rscore" style="color:var(--correct)">0</div>
+      <div class="r-stat-label">Correct</div>
+    </div>
+    <div class="r-stat">
+      <div class="r-stat-num" id="rwrong" style="color:var(--wrong)">0</div>
+      <div class="r-stat-label">Wrong</div>
+    </div>
+    <div class="r-stat">
+      <div class="r-stat-num" id="rskip" style="color:var(--muted)">0</div>
+      <div class="r-stat-label">Skipped</div>
+    </div>
+  </div>
+
+  <div class="breakdown">
+    <div class="bk-item">
+      <div class="bk-num" id="bk-pct" style="color:var(--gold)">0%</div>
+      <div class="bk-label">Accuracy</div>
+    </div>
+    <div class="bk-item">
+      <div class="bk-num" id="bk-streak" style="color:var(--accent)">0</div>
+      <div class="bk-label">Best Streak</div>
+    </div>
+  </div>
+
+  <div class="result-message" id="rmessage"></div>
+
+  <div class="action-btns">
+    <button class="action-btn primary" onclick="restartQuiz()">RETRY MISSION</button>
+    <button class="action-btn secondary" onclick="goHome()">CHANGE MODE</button>
+  </div>
+</div>
+
+<script>
+// ── STARFIELD ──
+(function(){
+  const c=document.getElementById('starfield');
+  c.width=window.innerWidth; c.height=window.innerHeight;
+  // just CSS background, canvas for future use
+})();
+
+// Generate stars via CSS
+(function(){
+  const f=document.getElementById('starfield');
+  for(let i=0;i<150;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2.5+0.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--dur:${(Math.random()*3+1).toFixed(1)}s;opacity:${Math.random()}`;
+    document.body.appendChild(s);
+  }
+})();
+
+// ── ALL 120 QUESTIONS ──
+const ALL_QUESTIONS = [
+  // ── TOPIC 1: YORUBA ──
+  {topic:"Yoruba Origins",diff:"medium",q:"According to Rev. Samuel Johnson's version, where did the Yoruba originally come from?",opts:["West Africa","North-Eastern Africa (Egypt)","The Arabian Peninsula","Central Africa"],ans:1,exp:"Johnson traced the Yoruba to the 'East', specifically North-Eastern Africa, arguing similarities between Yoruba and Egyptian cultures as evidence."},
+  {topic:"Yoruba Origins",diff:"medium",q:"Oduduwa is believed to be the first leader who led the Yoruba to which location?",opts:["Oyo","Lagos","Ile-Ife","Ibadan"],ans:2,exp:"Oduduwa led the Yoruba to Ile-Ife and subsequently sent his sons and grandsons to found other Yoruba kingdoms."},
+  {topic:"Yoruba Origins",diff:"hard",q:"In the Oke Oramfe version of Yoruba origin, who seized the symbol of authority from Obatala?",opts:["Oranmiyan","Oduduwa","Sango","Ogun"],ans:1,exp:"When Obatala got drunk on palm wine, Oduduwa seized the symbol of authority and led the party to the world."},
+  {topic:"Yoruba Origins",diff:"hard",q:"What did Oduduwa place on the five pieces of iron at Oke Oramfe according to Yoruba legend?",opts:["A pot of water","A lump of earth","A sacred stone","A calabash"],ans:1,exp:"Oduduwa set down the five pieces of iron and placed a lump of earth on them. The cockerel then spread its toes on the earth to form it."},
+  {topic:"Yoruba Origins",diff:"very-hard",q:"Which scholar co-authored 'Yorubaland up to 1800' that described the Oke Oramfe version of Yoruba origins?",opts:["Johnson and Smith","Akinjogbin and Ayandele","Hodgkin and Egharevba","Onwuejeogwu and Igbafe"],ans:1,exp:"Akinjogbin & Ayandele (1980) authored the paper 'Yorubaland up to 1800' which gives a full account of the Oke Oramfe origin version."},
+  {topic:"Yoruba Polity",diff:"medium",q:"What was the head of the Oyo Empire called?",opts:["Sarki","Oba","Alaafin","Etsu"],ans:2,exp:"The Alaafin was the head of the Oyo Empire and was regarded as 'Lord of many lands'."},
+  {topic:"Yoruba Polity",diff:"medium",q:"The Oyomesi was a council of how many members in the Oyo Empire?",opts:["Five","Seven","Nine","Twelve"],ans:1,exp:"The Oyomesi was a council of seven members headed by Bashorun, who acted as prime minister and had power to check the Alaafin."},
+  {topic:"Yoruba Polity",diff:"hard",q:"What title was given to the head of the Yoruba army in the Oyo Empire?",opts:["Bashorun","Galadima","Are-Ona-Kankanfo","Ilari"],ans:2,exp:"The head of the army was conferred with the title Are-Ona-Kankanfo and was expected to live outside the capital."},
+  {topic:"Yoruba Polity",diff:"hard",q:"The Alaafin used which festival period to acknowledge renewal of allegiance from provincial governors?",opts:["Egungun festival","Bere annual festival","Osun festival","Sango festival"],ans:1,exp:"The Bere annual festival was when the Alaafin acknowledged renewal of allegiance from provincial governors (Baales)."},
+  {topic:"Yoruba Polity",diff:"very-hard",q:"The Oyo Empire was founded in the middle of which century?",opts:["13th century","14th century","15th century","16th century"],ans:2,exp:"Oyo Empire was founded in the middle of the 15th century by Oranmiyan, the son of Oduduwa."},
+  {topic:"Yoruba Polity",diff:"very-hard",q:"What role did the Ogboni cult play in Oyo governance?",opts:["It was the Alaafin's personal bodyguard","It mediated conflicts between Oyomesi and the Alaafin","It managed the empire's trade routes","It organized military campaigns"],ans:1,exp:"The Ogboni cult played a mediatory role in any conflict between the Oyomesi and the Alaafin, serving as a counter power."},
+  {topic:"Yoruba Polity",diff:"very-hard",q:"What happened to a deposed Alaafin under traditional Oyo political norms?",opts:["He was exiled to a foreign land","He was expected to commit suicide","He was demoted to a village head","He was imprisoned"],ans:1,exp:"Usually the deposed Alaafin was expected to commit suicide after being removed by the Oyomesi for being dictatorial or transgressing laws."},
+  // ── TOPIC 2: BENIN ──
+  {topic:"Benin Kingdom",diff:"medium",q:"The Benin Kingdom was first visited by Europeans in which year?",opts:["1450","1472","1492","1510"],ans:1,exp:"The Benin were first visited by the Europeans as early as 1472 AD. A Portuguese, Ruy de Sequeira, arrived during Ewuare's reign."},
+  {topic:"Benin Kingdom",diff:"medium",q:"The Benin Kingdom was the first in West Africa to exchange ambassadors with which European power?",opts:["Spain","Britain","France","Portugal"],ans:3,exp:"The Benin Kingdom was the first in the West Coast of Africa to exchange ambassadors with the Portuguese, between 1481 and 1504."},
+  {topic:"Benin Kingdom",diff:"hard",q:"According to Egharevba (1968), the Benin people emigrated from Egypt and settled at which place before reaching their current location?",opts:["Oyo","Nri","Ile-Ife","Idah"],ans:2,exp:"Egharevba claimed that the Benin people emigrated from Egypt and settled at Ile-Ife before finally arriving at their present location."},
+  {topic:"Benin Kingdom",diff:"hard",q:"What does the Ogiso era mean in Benin history?",opts:["Era of great warriors","Era of kings of the sky","Era of divine priests","Era of merchant kings"],ans:1,exp:"The first period of pre-colonial Benin history is the Ogiso era. The rulers were called Ogisos, meaning 'kings of the sky'."},
+  {topic:"Benin Kingdom",diff:"hard",q:"Who was the first Ogiso of Benin?",opts:["Ere","Owodo","Orire","Igbodo"],ans:3,exp:"The first Ogiso was known as Igbodo. He was succeeded by Ere, who is credited with forming the guild system."},
+  {topic:"Benin Kingdom",diff:"very-hard",q:"Ekaladeran, the banished son of Owodo, founded which town?",opts:["Ughoton","Idah","Biran","Aguleri"],ans:0,exp:"Ekaladeran (Owodo's banished son) founded Ughoton, a port-town in Benin, before later moving to Ife."},
+  {topic:"Benin Kingdom",diff:"very-hard",q:"Who established the Eweka dynasty in Benin?",opts:["Ekaladeran","Owodo","Oranmiyan","Ere"],ans:2,exp:"Oranmiyan (called Omonoyan, meaning 'pampered child'), the youngest son of Ekaladeran, came and established the Eweka dynasty."},
+  {topic:"Benin Kingdom",diff:"very-hard",q:"In the Igbafe version of Benin origin, Bini was described as the youngest child of whom?",opts:["Oduduwa","Obatala","Osanobua (the High God)","Bayajida"],ans:2,exp:"In Benin mythology, Bini was the youngest child of Osanobua (the High God). He chose a snail shell while others chose wealth and magic."},
+  {topic:"Benin Kingdom",diff:"hard",q:"Succession to the Benin throne was based on which principle?",opts:["Election by nobles","Conquest","Primogeniture (first surviving son)","Appointment by priests"],ans:2,exp:"Succession to the Benin throne was by primogeniture — the first surviving son succeeded his father."},
+  {topic:"Benin Kingdom",diff:"medium",q:"The Benin nobility was organized into how many groups of title holders?",opts:["Two","Three","Four","Five"],ans:1,exp:"The nobility was organized into three groups: the Uzama, the Eghaevbo n'Ogbe (palace chiefs), and the Eghaevbo n'ore (town chiefs)."},
+  {topic:"Benin Kingdom",diff:"hard",q:"Which Portuguese navigator arrived during Ozolua's reign in 1484?",opts:["Ruy de Sequeira","Alfonso de Aviero","Vasco da Gama","Pedro Álvares Cabral"],ans:1,exp:"Alfonso de Aviero arrived during Ozolua's reign in 1484. Ruy de Sequeira had come earlier during Ewuare's reign in 1472."},
+  // ── TOPIC 3: IGBO ──
+  {topic:"Igbo People",diff:"medium",q:"The Igbo social structure is described as acephalous. What does this mean?",opts:["Ruled by a king","No centralized political authority","Military governance","Theocratic rule"],ans:1,exp:"Acephalous (or segmentary) means the Igbo had no centralized states — they operated a kind of government without kings."},
+  {topic:"Igbo People",diff:"medium",q:"How many sub-cultures are the Igbo grouped into?",opts:["Three","Four","Five","Six"],ans:2,exp:"The Igbo are grouped into five sub-cultures: Eastern, South-eastern, North-eastern, Western, and Northern Igbo."},
+  {topic:"Igbo People",diff:"hard",q:"In Igbo political organization, what was the Amala Oha?",opts:["A secret cult","A form of general assembly for male adults","A council of appointed chiefs","A military command unit"],ans:1,exp:"The Amala Oha was a form of general assembly where all male adult members met to perform legislative functions. Decisions were absolute and final."},
+  {topic:"Igbo People",diff:"hard",q:"According to the Nri version of Igbo origin, the ancestor Eri descended from the sky and sailed down which river?",opts:["River Niger","River Benue","River Anambra","River Cross"],ans:2,exp:"According to Prof. Onwuejeogwu, Eri descended from the sky and sailed down River Anambra, arriving at Aguleri."},
+  {topic:"Igbo People",diff:"hard",q:"Who regards the Nri version as the only authentic version of Igbo oral tradition of origin?",opts:["R.S. Smith","Akinjogbin","Professor M.A. Onwuejeogwu","Egharevba"],ans:2,exp:"Professor M.A. Onwuejeogwu (2000) regards the Nri version as the only authentic version of origin in Igbo oral tradition."},
+  {topic:"Igbo People",diff:"very-hard",q:"The Onitsha and Delta Igbo (on the other side of River Niger) claim origins from which group?",opts:["Idah","Nri","Benin","Israel"],ans:2,exp:"The Onitsha and the Igbo on the other side of River Niger (Delta Igbo) claim Benin origin."},
+  {topic:"Igbo People",diff:"very-hard",q:"The Israeli version of Igbo origin links them to which biblical group?",opts:["The Philistines","The lost tribes of the Hebrews","The tribe of Judah","The Canaanites"],ans:1,exp:"The Israeli version assumes similarities between Igbo and ancient Hebrew cultures, with some scholars considering Igbo as offshoots of the lost tribes of the Hebrews."},
+  {topic:"Igbo People",diff:"medium",q:"In traditional Igbo society, individual recognition was based on what?",opts:["Family background and wealth","Individual capability and age","Political connections","Priestly lineage"],ans:1,exp:"In Igbo democratic society, recognition was based on individual capability and age rather than family background."},
+  {topic:"Igbo People",diff:"hard",q:"The staff of authority called the Ofo represents what in Igbo political system?",opts:["Kingship","Power delegated by the Amala Oha","The decentralized authority exercised by its holders","Judicial authority"],ans:2,exp:"The Igbo shared a common political system based on decentralization of power and delegation of authority exercised by the holders of the Ofo."},
+  // ── TOPIC 4: HAUSA / NORTHERN NIGERIA ──
+  {topic:"Hausa People",diff:"medium",q:"What is the most widely accepted oral tradition explaining the origin of Hausa states?",opts:["The Nri version","The Bayajida story","The Zaghawa invasion story","The Islamic migration story"],ans:1,exp:"Most scholars agree the Bayajida story is the most authentic oral tradition in Hausa land explaining the origin of the Hausa states."},
+  {topic:"Hausa People",diff:"medium",q:"Where is Bayajida believed to have originated from?",opts:["Mecca","Cairo","Baghdad","Kanem"],ans:2,exp:"Bayajida is believed to have come from Baghdad to Kanem-Bornu and then to Hausa land in present Nigeria."},
+  {topic:"Hausa People",diff:"hard",q:"Bayajida helped the people of Daura by doing what?",opts:["Building a well","Killing a snake that blocked the well","Defeating a foreign army","Bringing Islamic law"],ans:1,exp:"While in Daura, Bayajida killed a snake which had long prevented people from taking water from a well. This impressed the queen who married him."},
+  {topic:"Hausa People",diff:"hard",q:"What was the son of Bayajida and the queen of Daura named?",opts:["Biran","Bawo","Bornu","Bokwai"],ans:1,exp:"Bayajida and the queen of Daura had a son named Bawo, whose six children (plus Bayajida's son at Biran) founded the seven original Hausa states."},
+  {topic:"Hausa People",diff:"very-hard",q:"The original seven Hausa states are referred to as what?",opts:["Hausa Bakwai","Hausa Bokwai","Hausa Salifawa","Hausa Bayajida"],ans:1,exp:"The original seven Hausa states are referred to as the 'Hausa Bokwai', founded by the children of Bawo and Bayajida's other son at Biran."},
+  {topic:"Hausa People",diff:"very-hard",q:"The full title given to an effective head of a Hausa State meaning 'ruler of the land' was?",opts:["Sarkin Yari","Sarkin Fada","Sarkin Kasar","Galadima"],ans:2,exp:"'Sarkin Kasar' literally means 'ruler of the land' — the full title given to any effective and efficient head of a Hausa State."},
+  {topic:"Hausa People",diff:"hard",q:"The adoption of Islam in Hausa states led to the introduction of which legal system?",opts:["Common law","Sharia law","Customary law","Roman law"],ans:1,exp:"Islamization of Hausaland influenced its judicial system. Sharia law started taking shape, with new titles like Alkali and Qadi's (judges) introduced."},
+  {topic:"Hausa People",diff:"very-hard",q:"Which new political offices emerged in Hausa states between the 14th and 15th centuries due to Islamization?",opts:["Bashorun, Ilari, Bere","Galadima, Madawaki, Magaji, Dogari","Zitzu, Shaba, Maku","Uzama, Nokena, Kaigama"],ans:1,exp:"Islam gave birth to new political institutions including the offices of the Galadima, Madawaki, Magaji, Dogari, Sarki Yari, and Sarki fada."},
+  // ── TOPIC 5: KANEM-BORNU & NUPE ──
+  {topic:"Kanem-Bornu",diff:"medium",q:"What language unites the Kanem-Bornu people?",opts:["Hausa","Kanuri","Igala","Fulfulde"],ans:1,exp:"Kanuri is the language that unites all the Kanem-Bornu people."},
+  {topic:"Kanem-Bornu",diff:"hard",q:"In Kanem-Bornu political structure, the 'Nokena' was what?",opts:["The head judge","An imperial state council of twelve","The queen mother's council","The army commander"],ans:1,exp:"The 'Nokena' was an imperial state council known as the 'council of the twelve', whose principal duty was to offer the king useful advice."},
+  {topic:"Kanem-Bornu",diff:"hard",q:"What was the nucleus of the Kanem-Bornu socio-political organization based on?",opts:["Religious authority","Trade guilds","Kinship","Military power"],ans:2,exp:"The nucleus of the socio-political organization of the Kanem-Bornu people was based on kinship, with the Mai (king) as highest authority."},
+  {topic:"Kanem-Bornu",diff:"very-hard",q:"Who is credited with establishing the Saifawa dynasty in Kanem-Bornu?",opts:["Zaghawa leaders","Saif b. Dhiyazan (Yazan)","Bayajida","The So people"],ans:1,exp:"Saif b. Dhiyazan (Yazan) is credited with establishing the Saifawa dynasty between 9th and 10th centuries AD."},
+  {topic:"Kanem-Bornu",diff:"very-hard",q:"The most important titled nobility positions in Kanem-Bornu included which of the following?",opts:["Bashorun, Ogboni, Ilari","Galadima, Kaigama, Yerima, Meshema","Alkali, Qadi, Dogari","Zitzu, Shaba, Kpotuh"],ans:1,exp:"The most important titled nobility were the Galadima, Kaigama, Yerima, and Meshema in the Kanem-Bornu structure."},
+  {topic:"Nupe People",diff:"medium",q:"Where was the Nupe state located?",opts:["South bank of the River Niger","North bank of the Niger at its confluence with River Kaduna","Along the River Benue","Near Lake Chad"],ans:1,exp:"The Nupe state was located on the north bank of the Niger at its confluence with the River Kaduna."},
+  {topic:"Nupe People",diff:"hard",q:"What was the capital of the Nupe kingdom and where was it located?",opts:["Idah on River Benue","Gbara on the Kaduna River","Aguleri on River Anambra","Daura in Northern Nigeria"],ans:1,exp:"Gbara was the capital of the Nupe kingdom, located on the bank of the Kaduna River. It functioned as an important trading center and entrepôt."},
+  {topic:"Nupe People",diff:"hard",q:"Tsoede, considered the founder of the Nupe state, is believed to have arrived in what century?",opts:["14th century","Early 16th century","18th century","12th century"],ans:1,exp:"According to Nupe tradition, Tsoede might have arrived in the early 16th century from Idah."},
+  {topic:"Nupe People",diff:"very-hard",q:"Tsoede (Edegi) is believed to have had which parentage?",opts:["Hausa father and Nupe mother","Igala father and Nupe mother","Yoruba father and Benin mother","Bornu father and Igbo mother"],ans:1,exp:"Tsoede is believed to have had an Igala father and a Nupe mother, linking the Nupe to both the Igala state and their indigenous heritage."},
+  {topic:"Nupe People",diff:"very-hard",q:"The head of each Nupe village was called what, and who appointed them?",opts:["The Shaba, appointed by nobles","The Zitzu, appointed by the Etsu Nupe","The Maku, appointed by elders","The Kpotuh, self-selected"],ans:1,exp:"Each village was headed by the Zitzu, who was an appointee of the Etsu Nupe. The Zitzu was assisted by a council of elders."},
+  // ── TOPIC 6: NORMS & VALUES ──
+  {topic:"Norms & Values",diff:"medium",q:"What are norms defined as in the lecture material?",opts:["Written constitutional laws","Informal unwritten rules that govern behaviors within a society","Personal beliefs about right and wrong","Religious doctrines"],ans:1,exp:"Norms are informal, unwritten rules that govern behaviors within a society — general codes of behavior guiding particular activities and institutions."},
+  {topic:"Norms & Values",diff:"medium",q:"Which of the following is NOT listed as a type of norm?",opts:["Folkways","Mores","Taboos","Customs"],ans:3,exp:"The four types of norms listed are folkways, mores, laws, and taboos. 'Customs' is not separately listed as a type."},
+  {topic:"Norms & Values",diff:"medium",q:"Values are described as serving as what for norms?",opts:["Replacements for norms","The enforcement mechanism of norms","The foundation for norms","The historical origin of norms"],ans:2,exp:"Values are deeply ingrained beliefs that guide behavior and serve as the foundation for norms in a society."},
+  {topic:"Norms & Values",diff:"hard",q:"Which characteristic of values indicates they apply beyond a single culture or individual?",opts:["Abstract","Enduring","Universal and Particular","Subjective"],ans:2,exp:"One key characteristic of values is that they are Universal and Particular — they can transcend individual cultures while also being specific to them."},
+  {topic:"Norms & Values",diff:"hard",q:"Nigeria has over how many ethnic groups contributing to its cultural diversity?",opts:["100","150","200","250"],ans:3,exp:"Nigeria is described as having over 250 ethnic groups, each contributing to a rich tapestry of norms and values."},
+  {topic:"Norms & Values",diff:"medium",q:"Which of these is listed as a basic Nigerian norm or value?",opts:["Individualism","Secularism","Respect for elders","Academic competition"],ans:2,exp:"Respect for Elders is listed as one of the basic Nigerian norms and values, alongside hospitality, communal living, religious observance, hard work, and patriotism."},
+  {topic:"Norms & Values",diff:"hard",q:"Through which processes are Nigerian norms and values transmitted?",opts:["Only through religion","Only through formal education","Family upbringing, education, religious institutions and cultural practices","Media and social networks only"],ans:2,exp:"According to Okoro (2022), these norms and values are transmitted through socialization processes such as family upbringing, education, religious institutions, and cultural practices."},
+  {topic:"Norms & Values",diff:"hard",q:"Moral values are described as forming the foundation of what?",opts:["National laws","Ethical behavior","Economic policies","Political systems"],ans:1,exp:"Moral values are the principles guiding decisions about right and wrong, forming the foundation of ethical behavior."},
+  {topic:"Norms & Values",diff:"very-hard",q:"Which example of a moral value involves recognizing and accepting consequences of one's actions?",opts:["Honesty","Compassion","Responsibility","Respect"],ans:2,exp:"Responsibility is defined as recognizing and accepting the consequences of one's actions — one of the key moral values listed."},
+  {topic:"Norms & Values",diff:"hard",q:"National values are described as shaping what within a nation?",opts:["Individual academic performance","The identity of the country and its citizens, influencing laws and policies","Only the constitution","Military strategy"],ans:1,exp:"National values shape the identity of a country and its citizens, influencing laws, policies, and societal norms."},
+  // ── TOPIC 7: REORIENTATION PROGRAMMES ──
+  {topic:"Reorientation Strategies",diff:"medium",q:"Operation Feed the Nation (OFN) was launched in which year?",opts:["1980","1982","1976","1984"],ans:2,exp:"OFN was launched in 1976 under General Obasanjo to promote food self-sufficiency, employment, and reduced food imports."},
+  {topic:"Reorientation Strategies",diff:"medium",q:"The Green Revolution was launched in 1980 under which Nigerian leader?",opts:["Obasanjo","Shagari","Buhari","Babangida"],ans:1,exp:"The Green Revolution was launched in 1980 under President Shagari to modernize agriculture and improve rural livelihoods."},
+  {topic:"Reorientation Strategies",diff:"medium",q:"What does WAI stand for?",opts:["Work And Industry","War Against Indiscipline","Women's Agricultural Initiative","Western Alliance Integration"],ans:1,exp:"WAI stands for War Against Indiscipline, a 1984 campaign promoting orderliness, work ethic, national unity, anti-corruption, and sanitation."},
+  {topic:"Reorientation Strategies",diff:"hard",q:"MAMSER was launched in which year and stood for what?",opts:["1985 — Mass Alignment for Social and Economic Reform","1987 — Mass Mobilization for Self-Reliance, Social Justice and Economic Recovery","1989 — Moral Adjustment for Modern Social and Economic Recovery","1990 — Mass Movement for Self-Reliance and Economic Reconstruction"],ans:1,exp:"MAMSER was launched in 1987 and stood for Mass Mobilization for Self-Reliance, Social Justice and Economic Recovery."},
+  {topic:"Reorientation Strategies",diff:"hard",q:"The National Orientation Agency (NOA) was established in which year?",opts:["1987","1990","1993","1999"],ans:2,exp:"The National Orientation Agency (NOA) was established in 1993 to promote civic responsibility, patriotism, and national unity."},
+  {topic:"Reorientation Strategies",diff:"hard",q:"Austerity Measures were introduced in Nigeria in which year and for what primary purpose?",opts:["1980, to fund the Green Revolution","1982, to reduce expenditure, inflation and import dependence","1984, as part of WAI","1987, to support MAMSER"],ans:1,exp:"Austerity Measures were introduced in 1982 to reduce expenditure, inflation, and import dependence."},
+  {topic:"Reorientation Strategies",diff:"very-hard",q:"WAIC focused specifically on what, distinguishing it from WAI?",opts:["Sanitation and public hygiene","Food production and agriculture","Accountability, transparency and discipline (anti-corruption focus)","Religious harmony"],ans:2,exp:"WAIC (War Against Indiscipline and Corruption) had a specific focus on accountability, transparency, and discipline, adding the anti-corruption dimension to WAI."},
+  {topic:"Reorientation Strategies",diff:"very-hard",q:"Reorientation ensures long-term stability by doing what?",opts:["Providing military oversight","Shifting perspectives and behaviors to adapt to new realities","Distributing wealth equally","Enforcing religious norms"],ans:1,exp:"Reorientation ensures long-term stability by shifting perspectives and behaviors to adapt to new realities."},
+  {topic:"Reorientation Strategies",diff:"very-hard",q:"Which of these is NOT listed as a current political development challenge in Nigeria?",opts:["Electoral reforms","Governance challenges","Corruption","Excessive economic growth"],ans:3,exp:"The political developments listed include electoral reforms, governance challenges, insecurity, corruption, and democratic consolidation. Excessive economic growth is not a challenge listed."},
+  {topic:"Reorientation Strategies",diff:"hard",q:"Which of the following reorientation programmes is primarily associated with agricultural development?",opts:["WAI","NOA","Green Revolution","MAMSER"],ans:2,exp:"The Green Revolution (1980) is primarily associated with agricultural development — modernizing agriculture and improving rural livelihoods."},
+  // ── TOPIC 8: COLONIAL NIGERIA ──
+  {topic:"Colonial Nigeria",diff:"medium",q:"The amalgamation of Nigeria took place in which year?",opts:["1900","1906","1914","1920"],ans:2,exp:"The amalgamation of Nigeria occurred in 1914, as listed in the course outline under Week 3."},
+  {topic:"Colonial Nigeria",diff:"medium",q:"The course outline mentions which two major aspects of Colonial Administration?",opts:["Advent of Colonial Rule and Military Governance","Advent of Colonial Rule and Colonial Administration","Trade policies and Missionary activities","Constitutional reforms and Nationalism"],ans:1,exp:"Week 2 of the course covers Nigeria Under Colonial Rule with topics: Advent of Colonial Rule in Nigeria and Colonial Administration."},
+  {topic:"Colonial Nigeria",diff:"hard",q:"National Movements and Struggle for Independence are covered under which week of the GST 112 course outline?",opts:["Week 2","Week 3","Week 4","Week 5"],ans:1,exp:"Week 3 covers Evolution of Nigeria as a Political Unit, including the Amalgamation, Formation of Political Parties, National Movements, and Struggle for Independence."},
+  {topic:"Colonial Nigeria",diff:"hard",q:"Week 4 of the GST 112 course deals with which broad theme?",opts:["Indigenous Languages","Nigeria and Challenges of Nation-Building","Social Justice and Development","Concept of Trade"],ans:1,exp:"Week 4 is titled 'Nigeria and Challenges of Nation-Building', covering Military Intervention in Nigeria Politics and the Nigeria Civil War."},
+  {topic:"Colonial Nigeria",diff:"very-hard",q:"Which week specifically covers 'Social Justice and National Development' in the GST 112 course?",opts:["Week 5","Week 6","Week 7","Week 8"],ans:2,exp:"Week 7 is dedicated to Social Justice and National Development, as shown in the course outline."},
+  // ── TOPIC 9: RECONSTRUCTION & REHABILITATION ──
+  {topic:"Reconstruction & Rehabilitation",diff:"medium",q:"What does Physical Reconstruction primarily focus on?",opts:["Changing individual attitudes","Rebuilding infrastructure like homes, schools and roads","Recovering from psychological trauma","Training of military personnel"],ans:1,exp:"Physical reconstruction focuses on the physical rebuilding of infrastructure such as homes, schools, roads, and utilities, alongside restoring economic activities."},
+  {topic:"Reconstruction & Rehabilitation",diff:"medium",q:"Rehabilitation is defined as helping individuals do what?",opts:["Change their political views","Recover, regain, or improve physical, emotional, cognitive, or social abilities","Learn new professional skills only","Migrate to better communities"],ans:1,exp:"Rehabilitation refers to helping individuals recover, regain, or improve their physical, emotional, cognitive, or social abilities, often after an injury, illness, or traumatic event."},
+  {topic:"Reconstruction & Rehabilitation",diff:"hard",q:"Which of the following professionals is part of an effective rehabilitation multidisciplinary team?",opts:["Engineers and architects","Physicians, therapists, psychologists, nurses and social workers","Economists and financial analysts","Politicians and policy makers"],ans:1,exp:"Effective rehabilitation involves physicians, specialists, therapists (physical, occupational, speech), psychologists, counselors, nurses, and social workers."},
+  {topic:"Reconstruction & Rehabilitation",diff:"hard",q:"Which type of reconstruction focuses on restoring historical records and cultural heritage?",opts:["Economic reconstruction","Social reconstruction","Historical reconstruction","Personal reconstruction"],ans:2,exp:"Historical reconstruction is one of the five types, focusing on restoring historical records and cultural heritage alongside the other types."},
+  {topic:"Reconstruction & Rehabilitation",diff:"very-hard",q:"What is the ultimate goal of reconstruction, rehabilitation and reorientation collectively?",opts:["To achieve military supremacy","To create a renewed sense of normalcy and opportunity enabling individuals and communities to thrive","To establish a new government system","To promote a single national culture"],ans:1,exp:"The ultimate goal is to create a renewed sense of normalcy and opportunity, enabling individuals and communities to thrive and prevent future vulnerabilities."},
+  // ── TOPIC 10: CURRENT DEVELOPMENTS ──
+  {topic:"Current Developments",diff:"medium",q:"Which of these is listed as a current cultural development in Nigeria?",opts:["Decline of Nollywood","Growth of Nollywood, Afrobeats, and digital culture","Collapse of traditional music","Rejection of Western influence"],ans:1,exp:"Cultural developments include growth of Nollywood, Afrobeats, digital culture, and evolving national identity."},
+  {topic:"Current Developments",diff:"hard",q:"Which security threats are specifically mentioned as affecting Nigeria's development?",opts:["Al-Qaeda and Taliban","Boko Haram, ISWAP, banditry, kidnapping and communal conflicts","Pirates and drug cartels","Cyber terrorism only"],ans:1,exp:"Boko Haram, ISWAP, banditry, kidnapping, and communal conflicts are mentioned as security challenges affecting development."},
+  {topic:"Current Developments",diff:"hard",q:"The Digital Revolution in Nigeria is characterized by which of the following?",opts:["Only government-driven IT projects","Social media, fintech, entrepreneurship and technology-driven innovation","Traditional broadcasting expansion","Mining and oil digitization"],ans:1,exp:"The Digital Revolution is characterized by social media, fintech, entrepreneurship, and technology-driven innovation."},
+  {topic:"Current Developments",diff:"very-hard",q:"According to the presentation, Nigeria's development ultimately depends on which combination of factors?",opts:["Natural resources and foreign aid","Military strength and political stability","Discipline, accountability, civic responsibility and sustainable policies","Economic growth and population size"],ans:2,exp:"The conclusion states: 'Nigeria's development depends on discipline, accountability, civic responsibility and sustainable policies.'"},
+  // ── TOPIC 11: MIXED ADVANCED ──
+  {topic:"Comparative Analysis",diff:"very-hard",q:"Which ethnic group is described as the first in the history of Nigeria to be visited by Europeans?",opts:["Yoruba","Igbo","Benin","Hausa"],ans:2,exp:"It is stated that 'the Benin, more than any other ethnic group, have played major roles in the history of Nigeria' — they were first visited by Europeans in 1472."},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"Which precolonial Nigerian society is described as having in-built 'checks and balances' as early as the 16th century?",opts:["Benin Kingdom","Igbo society","Hausa states","Oyo Empire"],ans:3,exp:"In the 16th century, Oyo was described as one of the rare empires with in-built checks and balances (Alaafin, Oyomesi, and Ogboni), contributing to its stability."},
+  {topic:"Comparative Analysis",diff:"hard",q:"The Yoruba ethnic group is believed to have come into existence between which dates?",opts:["1000–500 BC","2000–1000 BC","3000–2000 BC","500 BC–500 AD"],ans:1,exp:"The Yoruba ethnic group is believed to have come into existence between 2000-1000 BC."},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"What connects Oranmiyan to both the Yoruba and Benin historical traditions?",opts:["He introduced Islam to both regions","He is credited with founding Oyo and establishing the Benin monarchy","He authored the first written history of both peoples","He unified both kingdoms under one ruler"],ans:1,exp:"Oranmiyan, son of Oduduwa, is credited with founding Oyo and also with establishing the present Benin monarchy."},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"The Hausa by year 2000 had a population estimated at approximately how many people?",opts:["Five million","Ten million","Twenty million","Fifty million"],ans:2,exp:"By the year 2000, the Hausa population was estimated at about twenty million, making them one of the largest linguistic groups in Africa."},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"Which pre-colonial Nigerian ethnic group operated what is described as 'direct democracy' at the village level?",opts:["Yoruba","Benin","Hausa","Igbo"],ans:3,exp:"The Igbo's village-centered administration, where every male adult participated in political processes, has been described as direct democracy."},
+  {topic:"Comparative Analysis",diff:"hard",q:"Gbara functioned as an entrepôt connecting trade between which areas?",opts:["Hausaland and the Niger Delta","Benin and Oyo trade with Nupe","Igboland and Kanem-Bornu","Yorubaland and the Sahara"],ans:1,exp:"Gbara functioned as an entrepôt connecting Benin and Oyo trade with Nupe, given its location at trade crossroads."},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"What made the Saifawa dynasty historically significant in West Africa?",opts:["It was the first Islamic dynasty in Africa","It was one of the longest ruling dynasties in pre-colonial West African sub-region","It had the largest army in Africa","It established the first university in Nigeria"],ans:1,exp:"The Saifawa dynasty was one of the longest ruling dynasties in the pre-colonial West African sub-region."},
+  // ── MORE MEDIUM-HARD QUESTIONS ──
+  {topic:"Yoruba Polity",diff:"medium",q:"What is the Alaafin's personal agents spread across provinces called?",opts:["Bashorun","Ilari","Baales","Bere"],ans:1,exp:"The Alaafin had personal agents called Ilari spread all over the provinces to monitor governance."},
+  {topic:"Benin Kingdom",diff:"medium",q:"Which class of people in Benin were organized into professional guilds?",opts:["Nobles","Priests","Ordinary/common people","Women only"],ans:2,exp:"The ordinary people within the city were organized into guilds — professional groups including carvers, brass-workers, blacksmiths, doctors, butchers, etc."},
+  {topic:"Hausa People",diff:"medium",q:"At the district level, Hausa governance was modeled after what?",opts:["The village assembly","The national level government","The Islamic caliphate","Foreign colonial systems"],ans:1,exp:"At the district level, Hausa government was modeled after that at the national level, replicating the Sarki structure."},
+  {topic:"Kanem-Bornu",diff:"hard",q:"What was the role of the Maini Kanendi in Kanem-Bornu?",opts:["Army commander","Chief judge and legal adviser to the Mai","Queen mother's representative","Head of the nobility"],ans:1,exp:"The Maini Kanendi was the chief judge of the State and also served as the Mai's legal adviser."},
+  {topic:"Kanem-Bornu",diff:"hard",q:"The army of traditional Kanem-Bornu was strategically divided into how many divisions?",opts:["Three divisions","Two divisions: home and bush garrison","Four regional commands","One central command"],ans:1,exp:"The Kanem-Bornu army was divided into two divisions: a home division and a bush garrison."},
+  {topic:"Norms & Values",diff:"hard",q:"Reorientation in a personal context refers to what?",opts:["Changing nationality","Reassessing one's goals, beliefs, or methods in response to new information","Adopting foreign cultural practices","Converting to a new religion"],ans:1,exp:"In a personal context, reorientation involves reassessing one's goals, beliefs, or methods in response to new information or experiences."},
+  {topic:"Reorientation Strategies",diff:"medium",q:"The process of reorientation begins with which first step?",opts:["Implementing changes","Developing new skills","Self-reflection and awareness","Exploring new perspectives"],ans:2,exp:"The process of reorientation starts with self-reflection and awareness, followed by identifying and challenging assumptions."},
+  {topic:"Reorientation Strategies",diff:"hard",q:"Which of the following is listed as a positive outcome of successful reorientation?",opts:["Increased dependency on authority","Decreased social interactions","Increased self-awareness and improved adaptability","Reduction in cultural identity"],ans:2,exp:"Positive outcomes of reorientation include increased self-awareness, improved adaptability and resilience, enhanced creativity, better decision-making, and increased effectiveness."},
+  {topic:"Current Developments",diff:"medium",q:"Energy insecurity in Nigeria primarily constrains what?",opts:["Agricultural output only","Industrialization and economic growth","Educational attainment","Military power"],ans:1,exp:"Power shortages and energy insecurity constrain industrialization and economic growth in Nigeria."},
+  {topic:"Comparative Analysis",diff:"hard",q:"According to the Kanem-Bornu political structure, who was a 'very important and respected personage' besides the Mai?",opts:["The army general","The Queen Mother (Magira)","The chief judge","The council of twelve leader"],ans:1,exp:"The Mai's mother, the Queen Mother or Magira, was a very important and respected personage in the Kanem political structure."},
+  {topic:"Igbo People",diff:"very-hard",q:"Why is it difficult to reconcile the various versions of Igbo origin?",opts:["Because foreign historians destroyed records","Because the Igbo had no equivalent of Oba or Alaafin, limited professional historians, and no palaces","Because the Igbo actively suppressed their oral tradition","Because colonial rule eliminated all records"],ans:1,exp:"The Igbo's acephalous nature (no Oba, no Alaafin, no palaces over most of Igboland) and limited professional historians made reconciling origin stories extremely difficult."},
+  {topic:"Benin Kingdom",diff:"very-hard",q:"European visitor Hodgkin, writing in 1975 about his 1604 visit, compared Benin city's main street width to what?",opts:["The width of Paris's Champs-Élysées","Seven to eight times broader than Warmoes Street in Amsterdam","Twice the width of London's main street","Similar to Lisbon's trade routes"],ans:1,exp:"Hodgkin described the great broad street as 'seven to eight times broader than the Warmoes Street in Amsterdam'."},
+  {topic:"Yoruba Origins",diff:"very-hard",q:"Rev. Samuel Johnson's book 'History of the Yoruba' was published in which year?",opts:["1920","1935","1950","1960"],ans:2,exp:"Johnson's book 'History of the Yoruba' was published in 1950, providing one of the key documented versions of Yoruba origin."},
+  {topic:"Norms & Values",diff:"very-hard",q:"Which scholar is cited in the lecture for the transmission of Nigerian norms and values through socialization?",opts:["Hodgkin (1975)","Egharevba (1968)","Okoro (2022)","Onwuejeogwu (2000)"],ans:2,exp:"Okoro (2022) is cited as the source for the statement that Nigerian norms and values are transmitted through family upbringing, education, religious institutions, and cultural practices."},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"In the Igbafe version of Benin origin, what did the youngest child choose when departing for the world, and what was the result?",opts:["Chose a pot of water — formed rivers","Chose a snail shell — sand poured out creating land","Chose a lump of iron — made weapons","Chose wealth — became the richest king"],ans:1,exp:"The youngest child chose a snail shell on a bird's advice. On arrival, he overturned it, sand poured out, covered water to form land, making him the first ruler and owner of the land."},
+  {topic:"Reorientation Strategies",diff:"very-hard",q:"What does the philosophical introduction to Nigeria's reorientation programmes suggest nations are transformed by?",opts:["Military power and economic size","Values, discipline, self-reliance and collective action","Foreign investment and international relations","Natural resources and population"],ans:1,exp:"The philosophical introduction states: 'Nations are transformed not only by resources but by values, discipline, self-reliance and collective action.'"},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"Which reorientation programme specifically targeted 'mobilization' as its core function?",opts:["OFN","WAI","NOA","MAMSER"],ans:3,exp:"MAMSER (Mass Mobilization for Self-Reliance, Social Justice and Economic Recovery) had mobilization as its core function — the name itself makes this explicit."},
+  {topic:"Comparative Analysis",diff:"hard",q:"The Nupe land was located at the crossroads of trade from which key areas?",opts:["Sahara to Niger Delta","Borno-Kano axis in the Northeast, and Yorubaland, Ganga and Benin in the Southwest","Igboland and Hausaland","Lagos coast and Kanem-Bornu"],ans:1,exp:"Nupe land was located at crossroads of trade from the Borno-Kano axis in the Northeast, and Yorubaland, Ganga, and Benin in the Southwest."},
+  {topic:"Yoruba Polity",diff:"hard",q:"What functions did the Oyo Empire's army perform?",opts:["Only defense of the capital","Stability of the empire, expansion, and keeping dissident territories in check","Tax collection and trade regulation","Religious ceremonies and coronation"],ans:1,exp:"The Army performed important functions: stability of the empire, expansion, and keeping dissident territories in check."},
+  {topic:"Kanem-Bornu",diff:"very-hard",q:"The servile institution in Kanem-Bornu held offices called what?",opts:["Maini, Nokena, Magira","Mushemu, Yuroma, Kachella","Galadima, Kaigama, Yerima","Alkali, Qadi, Dogari"],ans:1,exp:"The servile institution (slaves and eunuchs) held offices like 'Mushemu', 'Yuroma', and 'Kachella' in Kanem-Bornu administration."},
+  {topic:"Nupe People",diff:"very-hard",q:"The Nupe state's independence was re-established by Tsoede, who gave himself the title of what?",opts:["Sarkin Nupe","Etsu Nupe","Oba of Nupe","Mai of Nupe"],ans:1,exp:"Tsoede re-established Nupe's independence with himself as the 'ETSU NUPE' — king of Nupeland."},
+  {topic:"Comparative Analysis",diff:"very-hard",q:"Three reorientation programmes of Nigeria that can be mapped to 'agricultural focus', 'discipline focus', and 'national civic orientation' respectively are:",opts:["WAI, OFN, MAMSER","OFN/Green Revolution, WAI/WAIC, NOA","MAMSER, NOA, WAI","NOA, OFN, WAIC"],ans:1,exp:"OFN and Green Revolution = agricultural focus; WAI and WAIC = discipline/anti-corruption focus; NOA = national civic orientation/patriotism. This maps to option B."},
+];
+
+let mode = 'all';
+let questions = [];
+let curr = 0;
+let score = 0;
+let wrong = 0;
+let skipped = 0;
+let streak = 0;
+let bestStreak = 0;
+let answered = false;
+let timerInterval = null;
+let timeLeft = 30;
+
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('mode-' + m).classList.add('active');
+}
+
+function shuffleArr(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startQuiz() {
+  let pool = shuffleArr(ALL_QUESTIONS);
+  if (mode === 'random40') pool = pool.slice(0, 40);
+  else if (mode === 'hard') pool = pool.filter(q => q.diff === 'hard' || q.diff === 'very-hard');
+  questions = pool;
+  curr = 0; score = 0; wrong = 0; skipped = 0; streak = 0; bestStreak = 0;
+  document.getElementById('qtotal').textContent = questions.length;
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  loadQuestion();
+}
+
+function loadQuestion() {
+  if (curr >= questions.length) { showResults(); return; }
+  answered = false;
+  const q = questions[curr];
+  document.getElementById('qnum').textContent = curr + 1;
+  document.getElementById('livescore').textContent = score;
+  document.getElementById('progbar').style.width = ((curr / questions.length) * 100) + '%';
+
+  // Topic & difficulty
+  document.getElementById('qtopic').textContent = q.topic;
+  const db = document.getElementById('qdiff');
+  db.textContent = q.diff === 'very-hard' ? '💀 VERY HARD' : q.diff === 'hard' ? '🔥 HARD' : '⚡ MEDIUM';
+  db.className = 'diff-badge ' + (q.diff === 'very-hard' ? 'very-hard' : q.diff);
+
+  document.getElementById('qtext').textContent = q.q;
+
+  // Options
+  const grid = document.getElementById('optgrid');
+  grid.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('resultflash').className = 'hidden';
+  document.getElementById('explanation').className = 'explanation hidden';
+  document.getElementById('nextbtn').classList.add('hidden');
+  document.getElementById('skipbtn').classList.remove('hidden');
+  document.getElementById('streakdisp').textContent = streak >= 3 ? `🔥 ${streak} streak!` : '';
+
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = 30;
+  const el = document.getElementById('timer');
+  el.textContent = timeLeft;
+  el.className = 'timer-circle';
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    el.textContent = timeLeft;
+    if (timeLeft <= 10) el.className = 'timer-circle warning';
+    if (timeLeft <= 5) el.className = 'timer-circle danger';
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      timeOut();
+    }
+  }, 1000);
+}
+
+function timeOut() {
+  if (answered) return;
+  answered = true;
+  const q = questions[curr];
+  skipped++;
+  streak = 0;
+  // Show correct
+  const btns = document.getElementById('optgrid').querySelectorAll('.option-btn');
+  btns.forEach((b, i) => { b.disabled = true; if (i === q.ans) b.classList.add('correct'); });
+  showFlash('⏱ TIME UP! — Correct: ' + q.opts[q.ans], 'timeout-flash');
+  showExplanation(q);
+  document.getElementById('nextbtn').classList.remove('hidden');
+  document.getElementById('skipbtn').classList.add('hidden');
+}
+
+function selectAnswer(i) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+  const q = questions[curr];
+  const btns = document.getElementById('optgrid').querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+
+  if (i === q.ans) {
+    score++;
+    streak++;
+    if (streak > bestStreak) bestStreak = streak;
+    btns[i].classList.add('correct');
+    showFlash(streak >= 3 ? `✅ CORRECT! 🔥 ${streak} in a row!` : '✅ CORRECT!', 'correct-flash');
+    document.getElementById('livescore').textContent = score;
+  } else {
+    wrong++;
+    streak = 0;
+    btns[i].classList.add('selected-wrong');
+    btns[q.ans].classList.add('correct');
+    showFlash('❌ WRONG — Correct: ' + String.fromCharCode(65 + q.ans), 'wrong-flash');
+  }
+
+  showExplanation(q);
+  document.getElementById('streakdisp').textContent = streak >= 3 ? `🔥 ${streak} streak!` : '';
+  document.getElementById('nextbtn').classList.remove('hidden');
+  document.getElementById('skipbtn').classList.add('hidden');
+}
+
+function skipQuestion() {
+  if (answered) return;
+  clearInterval(timerInterval);
+  answered = true;
+  skipped++;
+  streak = 0;
+  const q = questions[curr];
+  const btns = document.getElementById('optgrid').querySelectorAll('.option-btn');
+  btns.forEach((b,i) => { b.disabled = true; if(i===q.ans) b.classList.add('correct'); });
+  showFlash('⏭ SKIPPED', 'timeout-flash');
+  showExplanation(q);
+  document.getElementById('nextbtn').classList.remove('hidden');
+  document.getElementById('skipbtn').classList.add('hidden');
+}
+
+function showFlash(msg, cls) {
+  const el = document.getElementById('resultflash');
+  el.textContent = msg;
+  el.className = 'result-flash ' + cls;
+}
+
+function showExplanation(q) {
+  const el = document.getElementById('explanation');
+  el.innerHTML = `<strong>📖 Explanation:</strong> ${q.exp}`;
+  el.className = 'explanation';
+}
+
+function nextQuestion() {
+  curr++;
+  loadQuestion();
+}
+
+function showResults() {
+  clearInterval(timerInterval);
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+
+  const total = questions.length;
+  const pct = Math.round((score / total) * 100);
+
+  document.getElementById('rscore').textContent = score;
+  document.getElementById('rwrong').textContent = wrong;
+  document.getElementById('rskip').textContent = skipped;
+  document.getElementById('bk-pct').textContent = pct + '%';
+  document.getElementById('bk-streak').textContent = bestStreak;
+
+  let grade, gcolor, glabel, msg, title;
+  if (pct >= 90) { grade='A+'; gcolor=getComputedStyle(document.documentElement).getPropertyValue('--correct'); glabel='Extraordinary! You dominate this course.'; msg='Outstanding performance! You have mastered GST 112. Keep this level and you\'ll ace your exams. @levite_aerospace is proud!'; title='MISSION COMPLETE'; confetti(); }
+  else if (pct >= 80) { grade='A'; gcolor='#ffd700'; glabel='Excellent! Top-tier knowledge.'; msg='Impressive! You clearly understand Nigerian peoples, culture and national development. Small gaps to close — review the questions you missed.'; title='EXCELLENT MISSION'; }
+  else if (pct >= 70) { grade='B'; gcolor='var(--accent)'; glabel='Good performance!'; msg='Good work! You have solid understanding of the core material. Focus on the harder questions around political structures and reorientation programmes to push to A level.'; title='MISSION SUCCESS'; }
+  else if (pct >= 60) { grade='C'; gcolor='var(--hard)'; glabel='Satisfactory — you can do better.'; msg='You have the basics but need deeper study. Review the origins of ethnic groups and the socio-political structures especially. Retry with Hard Mode!'; title='MISSION PARTIAL'; }
+  else { grade='D'; gcolor='var(--wrong)'; glabel='Needs more study.'; msg='Don\'t be discouraged! GST 112 has a lot of detail. Go back to the lecture notes and PowerPoints, then retry this quiz. You\'ll get there!'; title='MISSION INCOMPLETE'; }
+
+  document.getElementById('rtitle').textContent = title;
+  document.getElementById('grade').textContent = grade;
+  document.getElementById('grade').style.color = gcolor;
+  document.getElementById('gradelabel').textContent = glabel;
+  document.getElementById('rmessage').textContent = msg;
+}
+
+function confetti() {
+  const colors = ['#00d4ff','#7b2fff','#ffd700','#00ff88','#ff6b35'];
+  for (let i = 0; i < 80; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.style.cssText = `
+        left: ${Math.random() * 100}%;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+        width: ${Math.random() * 10 + 5}px;
+        height: ${Math.random() * 10 + 5}px;
+        border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+        animation-delay: ${Math.random() * 1}s;
+        animation-duration: ${Math.random() * 2 + 2}s;
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }, i * 30);
+  }
+}
+
+function restartQuiz() {
+  document.getElementById('results').classList.add('hidden');
+  startQuiz();
+}
+
+function goHome() {
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
+}
+</script>
+</body>
+</html>
