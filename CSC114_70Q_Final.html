@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 114 — CBT Exam Drill | AFIT</title>
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --surface: #13131a;
+    --surface2: #1a1a24;
+    --border: #2a2a3a;
+    --border-bright: #3a3a55;
+    --text: #e2e2ec;
+    --text-soft: #888899;
+    --text-muted: #55556a;
+    --green: #00e87a;
+    --green-dim: #00e87a22;
+    --green-mid: #00c060;
+    --red: #ff4466;
+    --red-dim: #ff446622;
+    --yellow: #ffcc44;
+    --yellow-dim: #ffcc4422;
+    --blue: #5599ff;
+    --blue-dim: #5599ff22;
+    --purple: #aa77ff;
+    --radius: 8px;
+    --radius-sm: 5px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ── STICKY HEADER ── */
+  #sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(13,13,15,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+  }
+  .header-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .course-tag {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--green);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  #timer-display {
+    font-family: 'Courier New', monospace;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 4px 12px;
+    border-radius: var(--radius-sm);
+    letter-spacing: 2px;
+    min-width: 80px;
+    text-align: center;
+    transition: color 0.3s, border-color 0.3s;
+  }
+  #timer-display.warn { color: var(--yellow); border-color: var(--yellow); }
+  #timer-display.crit { color: var(--red); border-color: var(--red); animation: pulse 0.8s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* progress strip */
+  #prog-wrap {
+    flex: 1;
+    min-width: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  #prog-bar-bg {
+    height: 5px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  #prog-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-mid), var(--green));
+    border-radius: 99px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  #prog-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.5px; }
+
+  /* stat pills */
+  .stats-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 3px 10px;
+    font-size: 12px;
+  }
+  .stat-pill .sv { font-weight: 700; }
+  .stat-pill .sl { color: var(--text-muted); font-size: 10px; }
+  .sv.green { color: var(--green); }
+  .sv.red   { color: var(--red); }
+  .sv.yellow{ color: var(--yellow); }
+  .sv.blue  { color: var(--blue); }
+
+  /* ── MAIN BODY ── */
+  #main { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+
+  /* ── INTRO CARD ── */
+  #intro-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    margin-bottom: 28px;
+  }
+  #intro-card h1 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    background: linear-gradient(90deg, var(--green), var(--blue));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #intro-card .sub { color: var(--text-soft); font-size: 13px; margin-bottom: 20px; }
+  .meta-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 99px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: var(--text-soft);
+    letter-spacing: 0.5px;
+  }
+  .chip.accent { border-color: var(--green); color: var(--green); }
+
+  /* ── INTERNET ARCHIVE CALLOUT ── */
+  #ia-card {
+    background: linear-gradient(135deg, #0d1a2a 0%, #0d1520 100%);
+    border: 1px solid #1a3a5a;
+    border-left: 3px solid var(--blue);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 28px;
+  }
+  #ia-card .ia-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  #ia-card .ia-icon {
+    width: 36px; height: 36px;
+    background: var(--blue-dim);
+    border: 1px solid var(--blue);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  #ia-card h3 { font-size: 13px; font-weight: 700; color: var(--blue); letter-spacing: 0.5px; }
+  #ia-card .ia-subtitle { font-size: 11px; color: var(--text-muted); }
+  #ia-card p { font-size: 13px; color: var(--text-soft); line-height: 1.65; margin-bottom: 10px; }
+  #ia-card p:last-child { margin-bottom: 0; }
+  #ia-card strong { color: var(--text); }
+  .ia-facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .ia-fact {
+    background: #0a1520;
+    border: 1px solid #1a3050;
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+  .ia-fact .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .ia-fact .value { font-size: 13px; color: var(--text); font-weight: 600; }
+
+  /* ── CONTROLS ── */
+  #controls-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { border-color: var(--green); color: var(--green); }
+  .btn.primary {
+    background: var(--green);
+    color: #000;
+    border-color: var(--green);
+    font-weight: 700;
+  }
+  .btn.primary:hover { background: var(--green-mid); }
+  .btn.danger { border-color: var(--red); color: var(--red); }
+  .btn.danger:hover { background: var(--red-dim); }
+
+  /* ── SECTION LABEL ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 28px 0 14px;
+  }
+  .section-divider .sd-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .section-divider .sd-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .section-divider .sd-count {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 99px;
+    white-space: nowrap;
+  }
+
+  /* ── CHECKPOINT CARD ── */
+  .checkpoint-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .checkpoint-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--purple), var(--blue));
+  }
+  .checkpoint-card h4 {
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--purple);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cp-score-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .cp-big-score {
+    font-size: 2.5rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .cp-big-score.good { color: var(--green); }
+  .cp-big-score.mid  { color: var(--yellow); }
+  .cp-big-score.bad  { color: var(--red); }
+  .cp-score-meta { color: var(--text-soft); font-size: 12px; line-height: 1.6; }
+  .focus-areas { margin-top: 4px; }
+  .focus-areas .fa-title {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .topic-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+  }
+  .topic-bar .t-name { color: var(--text-soft); min-width: 160px; }
+  .topic-bar .t-track {
+    flex: 1;
+    height: 6px;
+    background: var(--surface2);
+    border-radius: 99px;
+    overflow: hidden;
+    max-width: 200px;
+  }
+  .topic-bar .t-fill { height: 100%; border-radius: 99px; transition: width 0.5s ease; }
+  .t-fill.good { background: var(--green); }
+  .t-fill.mid  { background: var(--yellow); }
+  .t-fill.bad  { background: var(--red); }
+  .topic-bar .t-pct { font-size: 11px; min-width: 36px; text-align: right; }
+  .cp-advice {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: 6px;
+    border-left: 2px solid var(--purple);
+    font-size: 12px;
+    color: var(--text-soft);
+    line-height: 1.65;
+  }
+  .cp-advice strong { color: var(--text); }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 10px;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .q-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+  .q-card.state-correct::before { background: var(--green); }
+  .q-card.state-wrong::before   { background: var(--red); }
+  .q-card.state-correct { border-color: #00e87a33; }
+  .q-card.state-wrong   { border-color: #ff446633; }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .q-num-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 99px;
+    color: var(--text-muted);
+  }
+  .q-topic-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 99px;
+    background: var(--blue-dim);
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    letter-spacing: 0.5px;
+  }
+  .status-icon {
+    margin-left: auto;
+    font-size: 16px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .q-card.state-correct .status-icon,
+  .q-card.state-wrong   .status-icon { opacity: 1; }
+
+  .q-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.65;
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+
+  /* Options */
+  .options-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 0;
+  }
+  @media(max-width: 560px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .opt-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    color: var(--text-soft);
+    text-align: left;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    line-height: 1.45;
+    transition: all 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .opt-btn .opt-letter {
+    font-weight: 700;
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 16px;
+    padding-top: 1px;
+    transition: color 0.15s;
+  }
+  .opt-btn:hover:not(:disabled) {
+    border-color: var(--green);
+    background: var(--green-dim);
+    color: var(--text);
+  }
+  .opt-btn:hover:not(:disabled) .opt-letter { color: var(--green); }
+  .opt-btn:disabled { cursor: default; }
+
+  /* Answer states */
+  .opt-btn.is-correct {
+    background: var(--green-dim);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  .opt-btn.is-correct .opt-letter { color: var(--green); }
+  .opt-btn.is-wrong {
+    background: var(--red-dim);
+    border-color: var(--red);
+    color: var(--red);
+    text-decoration: line-through;
+    opacity: 0.8;
+  }
+  .opt-btn.is-wrong .opt-letter { color: var(--red); }
+  .opt-btn.reveal-correct {
+    background: var(--green-dim);
+    border-color: #00e87a66;
+    color: #00b860;
+  }
+  .opt-btn.reveal-correct .opt-letter { color: #00b860; }
+
+  /* ── EXPLANATION ── */
+  .explanation-box {
+    margin-top: 14px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    animation: slideIn 0.25s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .exp-header {
+    padding: 8px 14px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .exp-header.correct-hdr { background: #002a18; color: var(--green); }
+  .exp-header.wrong-hdr   { background: #2a0010; color: var(--red); }
+  .exp-body {
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--text-soft);
+  }
+  .exp-body.correct-body { background: #001a10; border: 1px solid #003a20; border-top: none; border-radius: 0 0 5px 5px; }
+  .exp-body.wrong-body   { background: #1a0008; border: 1px solid #3a0018; border-top: none; border-radius: 0 0 5px 5px; }
+  .exp-correct-line {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: var(--green-dim);
+    border: 1px solid #00e87a44;
+    border-radius: 5px;
+    font-size: 12px;
+    color: var(--green);
+    display: flex;
+    gap: 6px;
+  }
+
+  /* ── RESULTS PANEL ── */
+  #results-panel {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 28px;
+  }
+  #results-panel .rp-header {
+    background: linear-gradient(135deg, #0a1a0a, #0d1a20);
+    padding: 24px 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rp-grade-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .rp-grade {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .rp-grade.pass { color: var(--green); }
+  .rp-grade.fail { color: var(--red); }
+  .rp-grade.mid  { color: var(--yellow); }
+  .rp-verdict {
+    font-size: 13px;
+    color: var(--text-soft);
+    line-height: 1.6;
+  }
+  .rp-stat-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .rp-stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    text-align: center;
+    min-width: 72px;
+  }
+  .rp-stat .rs-val { font-size: 1.4rem; font-weight: 800; }
+  .rp-stat .rs-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+  .rs-val.green { color: var(--green); }
+  .rs-val.red   { color: var(--red); }
+  .rs-val.yellow{ color: var(--yellow); }
+
+  #results-panel .rp-body { padding: 20px 24px; }
+  .rp-section-title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .missed-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--red);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-bottom: 8px;
+  }
+  .mi-q   { color: var(--text); font-size: 13px; margin-bottom: 6px; line-height: 1.5; }
+  .mi-you { color: var(--red); font-size: 12px; margin-bottom: 3px; }
+  .mi-ans { color: var(--green); font-size: 12px; margin-bottom: 6px; }
+  .mi-exp { color: var(--text-muted); font-size: 11px; line-height: 1.55; }
+
+  .topic-summary { margin-top: 20px; }
+  .ts-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .ts-row:last-child { border-bottom: none; }
+  .ts-name { min-width: 200px; color: var(--text-soft); }
+  .ts-track { flex: 1; height: 7px; background: var(--surface2); border-radius: 99px; overflow: hidden; max-width: 220px; }
+  .ts-fill  { height: 100%; border-radius: 99px; }
+  .ts-fill.good { background: var(--green); }
+  .ts-fill.mid  { background: var(--yellow); }
+  .ts-fill.bad  { background: var(--red); }
+  .ts-pct { font-size: 12px; font-weight: 700; min-width: 40px; text-align: right; }
+  .ts-pct.good { color: var(--green); }
+  .ts-pct.mid  { color: var(--yellow); }
+  .ts-pct.bad  { color: var(--red); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 20px;
+    font-size: 13px;
+    color: var(--text);
+    transition: transform 0.3s ease;
+    z-index: 999;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── UTILITY ── */
+  .mt16 { margin-top: 16px; }
+  .mt24 { margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<!-- STICKY HEADER -->
+<div id="sticky-header">
+  <div class="header-inner">
+    <span class="course-tag">CSC 114</span>
+    <div id="timer-display">90:00</div>
+    <div id="prog-wrap">
+      <div id="prog-bar-bg"><div id="prog-bar-fill"></div></div>
+      <div id="prog-label">0 / 70 answered</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill"><span class="sv green" id="s-correct">0</span><span class="sl">✓</span></div>
+      <div class="stat-pill"><span class="sv red"   id="s-wrong">0</span><span class="sl">✗</span></div>
+      <div class="stat-pill"><span class="sv blue"  id="s-acc">—</span><span class="sl">acc</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- INTRO CARD -->
+  <div id="intro-card">
+    <h1>Digital &amp; Virtual Libraries — CBT Drill</h1>
+    <p class="sub">AFIT CSC-114 · Full Exam Simulation · 70 Questions</p>
+    <div class="meta-chips">
+      <span class="chip accent">70 MCQ</span>
+      <span class="chip">90 min timer</span>
+      <span class="chip">Instant feedback</span>
+      <span class="chip">Checkpoint analysis every 10 Qs</span>
+      <span class="chip">Topic breakdown at end</span>
+    </div>
+    <p style="font-size:12px;color:var(--text-muted);line-height:1.6">Answer each question — the correct answer and a full explanation appear immediately. A focus-area analysis appears every 10 questions so you know where to revise before you finish. Timer counts down from 90 minutes.</p>
+  </div>
+
+  <!-- INTERNET ARCHIVE CARD -->
+  <div id="ia-card">
+    <div class="ia-header">
+      <div class="ia-icon">📦</div>
+      <div>
+        <h3>COURSE NOTE: Internet Archive &amp; the Wayback Machine</h3>
+        <div class="ia-subtitle">What it is · Why it matters for CSC 114</div>
+      </div>
+    </div>
+    <p>The <strong>Internet Archive</strong> (archive.org) is a non-profit digital library founded in 1996 by Brewster Kahle. It is one of the largest digital libraries in existence, storing over <strong>700 billion web pages, 44 million books, 15 million audio recordings, and millions of software programs and videos</strong> — all freely accessible to anyone with an internet connection.</p>
+    <p>Its most famous feature is the <strong>Wayback Machine</strong>, a tool that lets you view snapshots of websites as they appeared at specific dates in the past. If a webpage is deleted or changed, the Wayback Machine preserves what it looked like — making it an essential tool for <strong>digital preservation, citation verification, and combating link rot</strong>.</p>
+    <p><strong>Why it's relevant to this course:</strong> The Internet Archive is a real-world example of almost every concept in CSC 114 — it demonstrates digital preservation (LOCKSS strategy), metadata (Dublin Core), born-digital resources, open access, and the challenge of preserving the web as a cultural record. It also demonstrates the difference between a <em>digital library</em> (which it is) and a <em>virtual library</em> (which merely links to resources elsewhere).</p>
+    <div class="ia-facts">
+      <div class="ia-fact">
+        <div class="label">Founded</div>
+        <div class="value">1996, San Francisco</div>
+      </div>
+      <div class="ia-fact">
+        <div class="label">Type</div>
+        <div class="value">Non-profit Digital Library</div>
+      </div>
+      <div class="ia-fact">
+        <div class="label">Web pages archived</div>
+        <div class="value">700+ billion snapshots</div>
+      </div>
+      <div class="ia-fact">
+        <div class="label">Key tool</div>
+        <div class="value">Wayback Machine</div>
+      </div>
+      <div class="ia-fact">
+        <div class="label">Access model</div>
+        <div class="value">Open Access (free)</div>
+      </div>
+      <div class="ia-fact">
+        <div class="label">Relevance to course</div>
+        <div class="value">Preservation, DRM, Metadata, OA</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div id="controls-bar">
+    <button class="btn primary" onclick="submitFinal()">⬛ Submit &amp; Get Final Score</button>
+    <button class="btn" onclick="resetQuiz()">↺ Reset Quiz</button>
+  </div>
+
+  <!-- QUIZ BODY -->
+  <div id="quiz-body"></div>
+  <div id="results-panel"></div>
+
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── QUESTION DATA ──
+const TOPICS = [
+  "Core Concepts","Core Concepts","Core Concepts","Core Concepts","Core Concepts","Core Concepts",
+  "Digitization","Digitization","Digitization","Digitization",
+  "Metadata","Metadata","Metadata","Metadata","Metadata","Metadata",
+  "Cataloging & Indexing","Cataloging & Indexing","Cataloging & Indexing","Cataloging & Indexing",
+  "DRM & Access","DRM & Access","DRM & Access","DRM & Access",
+  "Platforms & Tech","Platforms & Tech","Platforms & Tech","Platforms & Tech","Platforms & Tech",
+  "Info Services","Info Services","Info Services","Info Services",
+  "History & Theory","History & Theory","History & Theory","History & Theory","History & Theory","History & Theory","History & Theory",
+  "Preservation","Preservation","Preservation","Preservation","Preservation",
+  "Citation & APA","Citation & APA","Citation & APA","Citation & APA","Citation & APA",
+  "Application","Application","Application","Application","Application","Application","Application","Application","Application","Application",
+  "Equity & Access","Equity & Access","Equity & Access",
+  "Advanced","Advanced","Advanced","Advanced","Advanced","Advanced","Advanced","Advanced","Advanced","Advanced"
+];
+
+const Q = [
+{q:"Which of the following BEST defines a digital library?",o:["A physical building with computers","A collection of digital resources organized for access and preservation","A library that only stores CDs","A website with no search function"],a:1,e:"A digital library is an organized, managed collection of digital resources (text, audio, video, datasets) accessible electronically. The key words are 'organized' and 'managed' — it's not just a website."},
+{q:"What distinguishes a VIRTUAL library from a DIGITAL library?",o:["A virtual library has no content","A virtual library primarily provides access to remote, networked resources without owning them","A virtual library stores only images","A virtual library requires physical visits"],a:1,e:"A virtual library acts as a gateway/portal to resources held elsewhere — it does not own its collection. A digital library owns and directly manages its digital collection."},
+{q:"A traditional library's PRIMARY function is to:",o:["Provide remote access to digital resources","Host online databases only","House and provide access to physical collections","Replace digital libraries"],a:2,e:"Traditional libraries curate, preserve, and provide access to physical items (books, journals, periodicals). They are defined by their physical collection and physical space."},
+{q:"A virtual library becomes operational when:",o:["It has a physical location","It is linked to the Internet","It uses only offline databases","It excludes multimedia"],a:1,e:"The defining feature of a virtual library is Internet connectivity. It depends on the network to link users to distributed resources across multiple servers and institutions."},
+{q:"The THREE pillars of a digital library are:",o:["Technology, Staff, Budget","Hardware, Software, Security","Content, Technology, User Experience","Books, Journals, Internet"],a:2,e:"The three pillars are: Content (what is stored), Technology (how it is stored and delivered), and User Experience (how users interact with it). These three must all be present for a functional digital library."},
+{q:"Which of the following is NOT a recognised type of digital library?",o:["Subject Repository","Institutional Repository","Personal Archive","National Digital Library"],a:2,e:"Personal Archive is not a standard library science classification. Recognised types include Institutional Repositories (by organisation), Subject Repositories (by discipline), and National Digital Libraries (by country)."},
+{q:"The process of converting physical books and documents into digital formats is called:",o:["Classifying","Indexing","Licensing","Digitization"],a:3,e:"Digitization is the specific term for converting analogue/physical materials into digital format, typically via scanning, photography, or OCR processing."},
+{q:"OCR stands for:",o:["Optical Character Recognition","Online Content Repository","Organised Catalog Record","Output Control Register"],a:0,e:"OCR = Optical Character Recognition. It reads scanned images of text and converts them into machine-readable, searchable, and editable digital text."},
+{q:"Which file format is MOST commonly associated with long-term digital preservation?",o:["DOCX","MP3","PDF/A","JPEG"],a:2,e:"PDF/A is the ISO 19005 archival standard of PDF. It embeds all fonts, disallows encryption and external references, making it self-contained and stable over decades."},
+{q:"Digitization of library resources PRIMARILY serves to:",o:["Eliminate the need for metadata","Preserve and widen access to materials","Increase storage costs","Replace librarians entirely"],a:1,e:"The two main goals of digitization are preservation (protecting fragile originals from physical wear) and access expansion (making materials available remotely to more users)."},
+{q:"Metadata in digital libraries is MAINLY used for:",o:["Security","Compressing files","Searching and categorising content","Licensing content"],a:2,e:"Metadata ('data about data') describes a resource — author, title, date, subject, format — enabling users and systems to discover, organise, and retrieve it."},
+{q:"Which metadata standards are COMMONLY used in digital libraries?",o:["ISO and HTML","CSS and SQL","XML and JSON","Dublin Core and MARC"],a:3,e:"Dublin Core (15 simple elements) and MARC (Machine-Readable Cataloging, developed by the Library of Congress) are the two dominant metadata standards in library science."},
+{q:"The PRIMARY purpose of metadata in digital libraries is to:",o:["Replace digital content","Convert physical books into digital format","Limit access to resources","Organise, describe, and facilitate searchability of resources"],a:3,e:"Metadata enables users to find (discover), identify (distinguish), select (evaluate), and obtain resources. Without metadata, digital content is essentially unfindable."},
+{q:"Dublin Core metadata has how many core elements?",o:["5","10","15","20"],a:2,e:"Dublin Core has exactly 15 elements: Title, Creator, Subject, Description, Publisher, Contributor, Date, Type, Format, Identifier, Source, Language, Relation, Coverage, Rights."},
+{q:"MARC stands for:",o:["Machine-Accessible Research Catalog","Machine-Readable Cataloging","Metadata Archive and Record Collection","Managed Access to Reference Content"],a:1,e:"MARC = Machine-Readable Cataloging. Developed by the Library of Congress in the 1960s to allow computers to process library catalog data."},
+{q:"Which of the following is an example of STRUCTURAL metadata?",o:["The author of a book","The ISBN number","Page sequence and chapter organisation within a document","The publication date"],a:2,e:"Structural metadata describes the internal organisation of a digital object — how pages relate to chapters, sections to volumes. Author, ISBN, and date are descriptive metadata."},
+{q:"Cataloging in a library context means:",o:["Scanning books into PDF","Creating systematic records describing resources for retrieval","Purchasing new books","Encrypting digital files"],a:1,e:"Cataloging creates bibliographic records that describe library resources — their author, title, subject, location — enabling users and automated systems to find them."},
+{q:"Indexing in digital libraries refers to:",o:["Adding DRM to files","Building searchable data structures that map terms to resources","Converting audio to text","Creating digital thumbnails"],a:1,e:"Indexing builds a map from keywords/terms to the documents containing them. This is what enables fast full-text search in a digital library."},
+{q:"Which cataloging classification system uses decimal notation?",o:["Library of Congress Classification","MARC","Dewey Decimal System","Dublin Core"],a:2,e:"The Dewey Decimal Classification (DDC), created by Melvil Dewey in 1876, uses a three-digit base number with decimal extensions to classify all human knowledge."},
+{q:"The Library of Congress Classification system differs from Dewey because it uses:",o:["Only numbers","Alphanumeric codes (letters + numbers)","Only Roman numerals","Binary codes"],a:1,e:"LC Classification uses letter + number combinations (e.g., QA76 for computer science), allowing more granular subject division than the purely numeric Dewey system."},
+{q:"DRM stands for:",o:["Digital Resource Management","Data Retrieval Method","Document Reference Model","Digital Rights Management"],a:3,e:"DRM = Digital Rights Management. These are technologies (encryption, access controls, licences) that control how digital content is used, copied, and distributed."},
+{q:"A key challenge faced by digital libraries is:",o:["Excess funding","Simple technology","Lack of users","Copyright and licensing complexities"],a:3,e:"Copyright law and publisher licensing agreements are among the most significant operational challenges for digital libraries, especially when digitizing existing works or providing database access."},
+{q:"Open Access in digital libraries means:",o:["Anyone can delete content","Resources are freely available online without subscription barriers","Only staff can access content","Content is restricted to paying members"],a:1,e:"Open Access (OA) refers to research outputs freely available online, free from most copyright and licensing restrictions, so anyone anywhere can read and use them."},
+{q:"Creative Commons licenses are relevant to digital libraries because they:",o:["Restrict all copying","Allow creators to specify reuse permissions clearly","Require payment for every download","Apply only to music files"],a:1,e:"Creative Commons provides standardised licences that let creators permit specified types of reuse (sharing, adaptation, commercial use) while retaining copyright — a middle ground between all-rights-reserved and public domain."},
+{q:"Which platform is COMMONLY used to host institutional digital libraries?",o:["Facebook","LinkedIn","DSpace","WordPress"],a:2,e:"DSpace is the world's leading open-source repository platform, used by hundreds of universities and research institutions globally for their institutional digital libraries."},
+{q:"Greenstone is best described as:",o:["A social media platform","A payment gateway","Open-source digital library software","A cloud database"],a:2,e:"Greenstone was developed at the University of Waikato, New Zealand. It is open-source software specifically for building and distributing digital library collections."},
+{q:"EPrints software is primarily used for:",o:["Video streaming","Building institutional repositories","Designing websites","Managing physical book checkouts"],a:1,e:"EPrints is open-source repository software used mainly by universities to create institutional repositories of research outputs like theses and journal articles."},
+{q:"The OAI-PMH protocol in digital libraries is used for:",o:["Encrypting files","Metadata harvesting between repositories","Managing user accounts","Printing library cards"],a:1,e:"OAI-PMH (Open Archives Initiative Protocol for Metadata Harvesting) allows different repositories to expose and share their metadata, enabling cross-repository search and aggregation."},
+{q:"Fedora Commons (FCREPO) is best known as:",o:["A hat brand","A flexible, extensible digital object repository","An email server","A physical library management tool"],a:1,e:"Fedora Commons is a robust open-source repository framework providing persistent, durable storage for digital objects and their complex relationships — often used for large institutional archives."},
+{q:"Which of the following is a digital information service a modern library can provide?",o:["Borrowing physical DVDs only","Current Awareness Services via email alerts","Printing books on demand only","Limiting access to walk-in users"],a:1,e:"Current Awareness Services (CAS) proactively alert users to new resources in their interest areas — a key digital library service that keeps researchers up to date."},
+{q:"Selective Dissemination of Information (SDI) differs from CAS because:",o:["SDI is older","SDI is personalised to individual user profiles; CAS is broader","SDI requires physical delivery","SDI only covers print journals"],a:1,e:"SDI is tailored to an individual user's specific interest profile. CAS is a broader service for a general audience. SDI is the more personalised, targeted form."},
+{q:"A digital reference service allows users to:",o:["Physically check out books remotely","Submit research queries online and receive answers from librarians","Download library software","Pay library fines digitally"],a:1,e:"Digital (virtual) reference enables users to ask librarians questions via chat, email, or video — extending the reference desk far beyond the physical library building."},
+{q:"Interlibrary Loan (ILL) in a digital context means:",o:["Borrowing physical books only","One library sharing digital resources or scans with another library's user","Selling digital content","Permanently transferring ownership"],a:1,e:"ILL allows users to request materials from other libraries. Digitally, this usually involves sending scanned journal articles or providing temporary access to e-resources."},
+{q:"S.R. Ranganathan is known as the 'Father of Library Science in India' and proposed how many laws?",o:["3","4","5","7"],a:2,e:"Ranganathan proposed exactly Five Laws of Library Science in 1931. They remain the most widely cited foundational principles in library science worldwide."},
+{q:"Ranganathan's FIRST law of library science states:",o:["Every book its reader","Save the time of the reader","Books are for use","The library is a growing organism"],a:2,e:"First Law: 'Books are for use.' This challenged the then-common practice of locking books away in closed stacks, arguing that books must circulate and be accessible."},
+{q:"Ranganathan's FIFTH law states:",o:["Every reader their book","Books are for use","Save the time of the reader","The library is a growing organism"],a:3,e:"Fifth Law: 'The library is a growing organism.' Libraries must continuously grow, adapt, add new materials, and evolve with society — they are never static."},
+{q:"'Save the time of the reader' is Ranganathan's:",o:["First law","Second law","Third law","Fourth law"],a:3,e:"Fourth Law: 'Save the time of the reader.' Library systems, catalogues, signage, and services should minimise the effort users spend finding what they need."},
+{q:"Melvil Dewey is historically significant because he:",o:["Founded the first digital library","Invented the Internet","Developed the Dewey Decimal Classification system","Authored the Dublin Core standard"],a:2,e:"Melvil Dewey created the Dewey Decimal Classification (DDC) in 1876. It is still the most widely used library classification system in the world, used in over 200,000 libraries globally."},
+{q:"Vannevar Bush is notable in information science for:",o:["Inventing the printing press","Conceiving the 'Memex', a conceptual precursor to hypertext systems","Founding Google","Writing the first digital library standard"],a:1,e:"In his 1945 essay 'As We May Think', Vannevar Bush described the Memex — a hypothetical desk-based machine that linked related information via 'associative trails', directly foreshadowing hypertext and the World Wide Web."},
+{q:"Paul Otlet is associated with:",o:["Inventing cataloguing cards","Creating the Universal Decimal Classification and an early concept of a global knowledge network","Building the first university library","Writing Ranganathan's five laws"],a:1,e:"Paul Otlet (with Henri La Fontaine) developed the Universal Decimal Classification (UDC) and the Mundaneum in Belgium — an early 20th-century vision of a global networked information system, often called a precursor to the Web."},
+{q:"Digital preservation refers to:",o:["Converting all books to EPUB","Active management processes ensuring long-term accessibility of digital materials","Backing up files once to a USB drive","Restricting access to sensitive content"],a:1,e:"Digital preservation is an ongoing, active practice — it involves refreshing storage media, migrating formats, emulating obsolete environments — anything needed to keep digital objects accessible as technology changes."},
+{q:"'Bit rot' in digital preservation refers to:",o:["Viruses destroying files","Gradual data degradation due to physical decay of storage media","Illegal copying of digital content","Poor cataloging practices"],a:1,e:"Bit rot (data rot) is the gradual degradation of digital information caused by the slow physical deterioration of storage media (hard drives, optical discs), causing random bit errors that corrupt files."},
+{q:"Emulation as a preservation strategy means:",o:["Making identical physical copies","Creating software that mimics obsolete hardware/software to run old digital formats","Compressing files to smaller sizes","Converting files to newer formats"],a:1,e:"Emulation recreates the original environment (hardware, OS, software) in which a digital object ran, preserving the original object unchanged. Contrast with migration, which converts the object itself."},
+{q:"Migration as a preservation strategy means:",o:["Moving servers to the cloud","Converting digital content to newer formats to ensure continued accessibility","Archiving files on paper","Emulating old operating systems"],a:1,e:"Migration converts digital content from older, obsolete formats to current ones — e.g., converting WordPerfect files to DOCX. The object is transformed; contrast with emulation where the environment is recreated."},
+{q:"The LOCKSS (Lots Of Copies Keep Stuff Safe) principle asserts that:",o:["One backup is sufficient","Distributing many copies across multiple systems protects against loss","Content should be locked under DRM","Libraries should merge collections"],a:1,e:"LOCKSS is a distributed preservation strategy: many independent copies held by different institutions means no single point of failure can destroy the work. The Internet Archive uses this principle."},
+{q:"In APA citation style, a citation that PRECEDES the information (leads the sentence) is called a:",o:["Parenthetical citation","Narrative/signal citation","In-text footnote","End citation"],a:1,e:"A narrative citation integrates the author name into the sentence: 'Smith (2020) argued that...' A parenthetical citation follows the information: '...(Smith, 2020).'"},
+{q:"In APA 7th edition, a parenthetical citation format is:",o:["[Author, Year]","Author (Year)","(Author, Year)","Author: Year"],a:2,e:"APA parenthetical format: (Author, Year) — e.g., (Ranganathan, 1931). The author name and year are inside parentheses, separated by a comma, placed after the relevant information."},
+{q:"The role of citation in academic writing PRIMARILY serves to:",o:["Increase word count","Give credit to sources, enable verification, and demonstrate research rigour","Make essays look more professional","Satisfy university formatting rules only"],a:1,e:"Citations serve three core purposes: intellectual honesty (crediting original ideas), information credibility (citing authoritative sources), and traceability (allowing readers to find and verify original works)."},
+{q:"Plagiarism in academic writing is BEST defined as:",o:["Writing long bibliographies","Using your own ideas","Presenting another person's work, ideas, or words as your own without attribution","Citing too many sources"],a:2,e:"Plagiarism is presenting another's intellectual work as your own without credit — whether verbatim copying, paraphrasing without attribution, or reusing your own prior submitted work without disclosure."},
+{q:"Which citation style does AFIT CSC 114 require for academic submissions?",o:["MLA","Harvard","Chicago","APA"],a:3,e:"The CSC 114 past question paper explicitly states: 'Ensure proper citation formatting according to the APA style that was taught in class.'"},
+{q:"A university wants its researchers' published papers accessible via Google Scholar. The BEST infrastructure choice is:",o:["A traditional library catalogue","An institutional repository with OAI-PMH support","A Facebook group","A simple shared Google Drive"],a:1,e:"Institutional repositories built on DSpace or EPrints with OAI-PMH support expose metadata that Google Scholar, BASE, and other aggregators can harvest — making papers discoverable globally."},
+{q:"Which scenario BEST demonstrates Ranganathan's Fourth Law in a digital library?",o:["Adding more books to the collection","Implementing full-text search to reduce lookup time","Hiring more librarians","Adding more server storage"],a:1,e:"Full-text search directly implements 'Save the time of the reader' — users find relevant resources in seconds rather than browsing through catalogue cards manually."},
+{q:"A digital library stores 10,000 journal articles but users cannot find relevant ones. The ROOT cause is most likely:",o:["The server is too slow","The articles are in PDF format","Inadequate metadata and indexing","Too many users online"],a:2,e:"Discoverability problems in digital libraries almost always trace to poor metadata (missing/inconsistent descriptions) and weak indexing. Fast servers and PDF format are not discovery problems."},
+{q:"The difference between a SUBJECT repository and an INSTITUTIONAL repository is:",o:["Size of collection","Subject repositories collect by discipline; institutional repositories collect by organisational affiliation","Subject repositories use different software","They are the same thing"],a:1,e:"Subject repositories (arXiv for physics, PubMed for medicine) gather by academic field. Institutional repositories (a university's IR) collect all outputs from one institution regardless of subject."},
+{q:"Persistent identifiers (like DOIs) in digital libraries solve which specific problem?",o:["File corruption","Link rot — URLs change but the identifier always resolves to the resource","Slow download speeds","Copyright infringement"],a:1,e:"DOIs (Digital Object Identifiers) are stable, permanent identifiers. Even if a resource moves to a new URL, the DOI always resolves to it — directly solving link rot."},
+{q:"A user in rural Nigeria can access a university's digital library resources. This PRIMARILY demonstrates which advantage?",o:["DRM effectiveness","Metadata quality","Remote/universal access regardless of physical location","Better cataloging"],a:2,e:"Geographic accessibility is a core advantage of digital libraries — users can access resources from any location with internet connectivity, removing the physical distance barrier entirely."},
+{q:"Which of the following BEST demonstrates a disadvantage of digital libraries?",o:["Too many books available","Content is searchable","Requires technology infrastructure and internet access that some users lack","Books cannot be lost"],a:2,e:"The digital divide is real — users without reliable internet, compatible devices, or digital literacy are excluded from digital library resources. This is a structural disadvantage."},
+{q:"When building a departmental digital library from scratch, which step comes FIRST?",o:["Choose platform software","Select and digitise materials","Needs assessment and planning","Set up server hardware"],a:2,e:"Needs assessment comes first in any library development project — you identify user needs, available resources, scope, and goals before making any technical or content decisions."},
+{q:"A digital library uses HTTPS. This PRIMARILY ensures:",o:["Faster download speeds","Better metadata","Encrypted, secure data transmission","Wider browser compatibility"],a:2,e:"HTTPS uses SSL/TLS encryption to protect data in transit between browser and server, ensuring confidentiality (data can't be intercepted) and integrity (data isn't tampered with)."},
+{q:"Which of the following is an example of a BORN-DIGITAL resource?",o:["A scanned newspaper from 1945","An e-journal that was never printed","A microfilm reel","A handwritten manuscript"],a:1,e:"Born-digital resources are created digitally from the start with no physical original. A scanned newspaper is a digital surrogate of a physical object — not born-digital."},
+{q:"One way digital libraries support equity in education is by:",o:["Restricting access to data","Providing subscription-only services","Offering printed books only","Offering adaptive technologies for users with disabilities"],a:3,e:"Adaptive technologies — screen readers, text-to-speech, adjustable contrast, keyboard navigation — ensure digital library resources are accessible to users with visual, hearing, or motor disabilities."},
+{q:"Universal Design in digital libraries means:",o:["One design for all screen sizes","Designing resources and interfaces usable by the widest possible range of people, including those with disabilities","Using universal metadata standards","Making all content free"],a:1,e:"Universal Design (formalised for the web as WCAG — Web Content Accessibility Guidelines) ensures digital library interfaces work for users regardless of disability, device, or context."},
+{q:"The digital divide refers to:",o:["The difference between digital and traditional libraries","The gap between those with access to digital technology and those without","The space between database records","The delay in digitising physical content"],a:1,e:"The digital divide is the inequality gap in access to digital technology (internet, devices, skills) between different populations — a major equity challenge for digital library services."},
+{q:"Z39.50 is a protocol used in digital libraries for:",o:["Encrypting metadata","Searching and retrieving records across different library systems","Managing user accounts","Streaming multimedia content"],a:1,e:"Z39.50 is an ANSI/NISO international standard protocol for searching and retrieving bibliographic records from remote library systems — it enables cross-catalogue searching without knowing each system's individual interface."},
+{q:"An institutional repository PRIMARILY benefits a university by:",o:["Reducing printing costs","Providing a centralised, persistent archive of the institution's research output","Replacing the library website","Managing student grades"],a:1,e:"IRs collect, preserve, and make freely accessible all scholarly output of an institution — theses, journal articles, conference papers — increasing visibility and impact of the institution's research."},
+{q:"Which of the following describes a FEDERATED search in digital libraries?",o:["Searching only one database at a time","A single search query sent simultaneously to multiple databases, results aggregated in one interface","A government-controlled search system","A search limited to federal publications"],a:1,e:"Federated (metasearch) systems broadcast one query to multiple databases simultaneously and merge the results in a single interface, dramatically improving discovery across fragmented collections."},
+{q:"The term 'dark archive' in digital preservation means:",o:["A library that stores horror content","A backup archive not publicly accessible, activated only if the primary copy fails","An archive without lighting","Illegally held content"],a:1,e:"A dark archive (e.g., CLOCKSS) stores preserved copies but keeps them inaccessible until a trigger event — like a publisher going bankrupt — releases them. It is a preservation safety net, not a public resource."},
+{q:"Linked Data in digital libraries means:",o:["Hyperlinked table of contents","Publishing structured data using URIs so it can connect to and be consumed by other systems on the web","Connecting PDFs with bookmarks","Linking user accounts"],a:1,e:"Linked Data uses W3C standards (RDF, SPARQL, URIs) to make library metadata part of the global web of data — connecting library resources to Wikipedia, DBpedia, and other knowledge systems."},
+{q:"Which BEST describes the difference between a database and a digital library?",o:["They are identical","A database stores structured data for efficient querying; a digital library organises diverse resource types with context for human use","A database is always free","A digital library is always bigger"],a:1,e:"Databases optimise structured data retrieval for machines. Digital libraries curate diverse content (text, image, audio) with human discovery and use in mind — a fundamentally broader, more contextual concept."},
+{q:"What is the PRIMARY function of a library catalogue?",o:["To list books alphabetically only","To provide a systematic, searchable record of all resources held in a library","To check out books automatically","To manage library finances"],a:1,e:"A catalogue is the library's inventory and discovery tool — it records and describes all holdings so users can determine what the library has and how to locate it."},
+{q:"OPAC stands for:",o:["Open Public Access Computer","Online Public Access Catalogue","Organised Print Archive Collection","Optical Print and Audio Catalogue"],a:1,e:"OPAC = Online Public Access Catalogue. It is the digital, web-accessible replacement for the physical card catalogue — the public-facing search interface of a library system."},
+{q:"A library's finding aid is MOST useful for:",o:["Browsing journal articles","Understanding the organisation and content of archival collections","Checking out e-books","Managing overdue fines"],a:1,e:"Finding aids describe archival collections in detail — their provenance, arrangement, scope, and contents — to help researchers understand and navigate primary source material."},
+{q:"Which BEST describes interoperability in digital library systems?",o:["All users having the same password","The ability of different systems to exchange and use information seamlessly","All resources being in PDF format","Libraries sharing physical buildings"],a:1,e:"Interoperability means different digital library systems can communicate and exchange data effectively — achieved through shared protocols (OAI-PMH, Z39.50) and standards (Dublin Core, MARC)."},
+{q:"Resource Description and Access (RDA) replaced which earlier cataloging standard?",o:["Dublin Core","MARC 21","AACR2 (Anglo-American Cataloguing Rules 2)","Dewey Decimal Classification"],a:2,e:"RDA replaced AACR2 as the content standard for cataloguing. RDA is more flexible and designed for the digital environment and linked data, while AACR2 was built around physical card catalogues."},
+{q:"A content management system (CMS) differs from a digital library system because:",o:["A CMS is more expensive","A CMS manages web content broadly; a DLS is purpose-built for organising, preserving, and providing access to information resources","A CMS cannot store documents","A DLS cannot be accessed online"],a:1,e:"CMS platforms (WordPress, Joomla) manage web publishing workflows. Digital Library Systems (DSpace, Greenstone) are engineered specifically for metadata-rich, preservation-focused information management."},
+{q:"The concept of 'digital curation' encompasses:",o:["Only digitisation of physical materials","The ongoing management, preservation, and addition of value to digital materials throughout their lifecycle","Printing digital content onto paper","Designing library websites"],a:1,e:"Digital curation is broader than preservation — it includes active management, enrichment (adding metadata, context), and preservation of digital materials from creation through long-term use."},
+{q:"Which statement about virtual libraries is CORRECT?",o:["Virtual libraries own all the resources they provide access to","Virtual libraries exist at a single physical location","Virtual libraries provide access to resources distributed across multiple networks and locations","Virtual libraries cannot include multimedia"],a:2,e:"Virtual libraries are defined by distributed access — they act as gateways to resources held on different servers across multiple institutions and locations. They do not own or store the resources themselves."},
+{q:"Information literacy in the context of digital libraries means the ability to:",o:["Type quickly on a keyboard","Recognise an information need, locate, evaluate, and effectively use information","Design library databases","Memorise library catalogue numbers"],a:1,e:"Information literacy (per ACRL standards) is the integrated ability to identify an information need, find relevant sources, critically evaluate their quality, and use the information effectively and ethically."},
+{q:"Which is a DISADVANTAGE of traditional libraries compared to digital libraries?",o:["Traditional libraries allow browsing of physical items","Traditional libraries are limited by physical space and operating hours","Traditional libraries provide human reference assistance","Traditional libraries allow serendipitous discovery"],a:1,e:"Physical space limits collection size and fixed opening hours restrict access. Digital libraries overcome both — collections are unlimited in size and accessible 24/7 from anywhere."},
+{q:"The MAIN reason digital libraries implement access controls and user authentication is to:",o:["Slow down non-members","Comply with licensing agreements and protect restricted content","Collect user data for advertising","Limit the number of daily users"],a:1,e:"Publishers license digital content to specific institutions. Access controls are a legal requirement — they ensure only authorised users (enrolled students, registered staff) can use licensed resources."},
+{q:"Which BEST describes the role of a digital librarian compared to a traditional librarian?",o:["A digital librarian only manages servers","A digital librarian combines traditional information organisation skills with technical skills in digital systems, metadata, and preservation","A digital librarian does not interact with users","They are identical roles"],a:1,e:"Digital librarianship requires both classical library science (cataloguing, reference, collection development) AND technical skills (systems administration, metadata management, digital preservation)."},
+{q:"An AFIT student cannot access a journal article in the library system. The FIRST troubleshooting step should be:",o:["Assume the library doesn't have it","Check if the resource exists in the catalogue/metadata before assuming absence","Buy the article personally","Contact the journal publisher directly"],a:1,e:"Correct protocol: verify the catalogue/metadata first. The resource may exist but be miscatalogued, or accessible via a different database the library subscribes to. Never assume absence before checking."},
+];
+
+// ── SECTION LABELS ──
+const SECTIONS = [
+  {start:0,  label:"Section 1 — Core Concepts & Definitions"},
+  {start:6,  label:"Section 2 — Digitization & Formats"},
+  {start:10, label:"Section 3 — Metadata"},
+  {start:16, label:"Section 4 — Cataloging & Indexing"},
+  {start:20, label:"Section 5 — DRM, Access & Copyright"},
+  {start:24, label:"Section 6 — Platforms & Technology"},
+  {start:29, label:"Section 7 — Digital Information Services"},
+  {start:33, label:"Section 8 — History & Theory"},
+  {start:40, label:"Section 9 — Digital Preservation"},
+  {start:45, label:"Section 10 — Citation & APA Style"},
+  {start:50, label:"Section 11 — Application Questions"},
+  {start:60, label:"Section 12 — Equity & Accessibility"},
+  {start:63, label:"Section 13 — Advanced Concepts"},
+];
+
+// ── STATE ──
+let answered = new Array(Q.length).fill(null);
+let timerInterval = null;
+let secondsLeft = 90 * 60;
+let checkpointsShown = new Set();
+
+// ── TIMER ──
+function startTimer(){
+  timerInterval = setInterval(()=>{
+    secondsLeft--;
+    updateTimerDisplay();
+    if(secondsLeft <= 0){ clearInterval(timerInterval); submitFinal(); }
+  }, 1000);
+}
+function updateTimerDisplay(){
+  const m = Math.floor(secondsLeft/60);
+  const s = secondsLeft % 60;
+  const el = document.getElementById('timer-display');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.className = secondsLeft <= 300 ? 'crit' : secondsLeft <= 900 ? 'warn' : '';
+}
+
+// ── STATS ──
+function updateStats(){
+  const done   = answered.filter(x=>x!==null).length;
+  const correct= answered.filter((x,i)=>x===Q[i].a).length;
+  const wrong  = done - correct;
+  const pct    = done ? Math.round(correct/done*100) : null;
+  document.getElementById('s-correct').textContent = correct;
+  document.getElementById('s-wrong').textContent   = wrong;
+  document.getElementById('s-acc').textContent      = pct !== null ? pct+'%' : '—';
+  document.getElementById('prog-bar-fill').style.width = (done/Q.length*100)+'%';
+  document.getElementById('prog-label').textContent    = `${done} / ${Q.length} answered`;
+}
+
+// ── CHECKPOINT ANALYSIS ──
+function buildCheckpoint(upToIndex){
+  const from = Math.max(0, upToIndex - 9);
+  const to   = upToIndex; // inclusive
+  const slice= Q.slice(from, to+1);
+  const sliceAns = answered.slice(from, to+1);
+  const correct  = sliceAns.filter((x,i)=>x!==null && x===slice[i].a).length;
+  const done     = sliceAns.filter(x=>x!==null).length;
+  const pct      = done ? Math.round(correct/done*100) : 0;
+
+  // topic performance in this window
+  const topicMap = {};
+  slice.forEach((q,i)=>{
+    const t = TOPICS[from+i];
+    if(!topicMap[t]) topicMap[t]={correct:0,total:0};
+    topicMap[t].total++;
+    if(sliceAns[i]!==null && sliceAns[i]===q.a) topicMap[t].correct++;
+  });
+
+  const colorClass = pct>=75?'good':pct>=50?'mid':'bad';
+
+  let topicHTML = '';
+  Object.entries(topicMap).forEach(([name,d])=>{
+    const tp = d.total ? Math.round(d.correct/d.total*100) : 0;
+    const tc = tp>=75?'good':tp>=50?'mid':'bad';
+    topicHTML += `
+      <div class="topic-bar">
+        <span class="t-name">${name}</span>
+        <div class="t-track"><div class="t-fill ${tc}" style="width:${tp}%"></div></div>
+        <span class="t-pct" style="color:var(--${tc==='good'?'green':tc==='mid'?'yellow':'red'})">${tp}%</span>
+      </div>`;
+  });
+
+  const weakTopics = Object.entries(topicMap)
+    .filter(([,d])=>d.total && Math.round(d.correct/d.total*100)<60)
+    .map(([name])=>name);
+  const adviceText = weakTopics.length
+    ? `<strong>Focus area:</strong> You struggled with <strong>${weakTopics.join(', ')}</strong>. Go back and re-read those sections before the exam. Don't move on assuming you'll remember.`
+    : pct>=80
+    ? `<strong>Solid block.</strong> Keep this pace. Review any wrong answers quickly, then keep going.`
+    : `<strong>Room to improve.</strong> Review the explanations on your wrong answers in this block before continuing.`;
+
+  return `
+    <div class="checkpoint-card">
+      <h4>📊 Checkpoint — Questions ${from+1}–${to+1}</h4>
+      <div class="cp-score-row">
+        <div class="cp-big-score ${colorClass}">${pct}%</div>
+        <div class="cp-score-meta">${correct} correct out of ${done} answered in this block<br><span style="color:var(--text-muted);font-size:11px">Overall: ${answered.filter(x=>x!==null).length}/${Q.length} done</span></div>
+      </div>
+      <div class="focus-areas">
+        <div class="fa-title">Topic breakdown — this block</div>
+        ${topicHTML}
+      </div>
+      <div class="cp-advice">${adviceText}</div>
+    </div>`;
+}
+
+// ── RENDER ──
+function render(){
+  const body = document.getElementById('quiz-body');
+  body.innerHTML = '';
+
+  let sectionIdx = 0;
+
+  Q.forEach((q, i) => {
+    // Section divider
+    if(sectionIdx < SECTIONS.length && SECTIONS[sectionIdx].start === i){
+      const sec = SECTIONS[sectionIdx];
+      const secEnd = (sectionIdx+1 < SECTIONS.length ? SECTIONS[sectionIdx+1].start : Q.length) - 1;
+      body.insertAdjacentHTML('beforeend',`
+        <div class="section-divider">
+          <span class="sd-label">${sec.label}</span>
+          <div class="sd-line"></div>
+          <span class="sd-count">Q${i+1}–Q${secEnd+1}</span>
+        </div>`);
+      sectionIdx++;
+    }
+
+    // Checkpoint placeholder (every 10 Qs, after Q10, Q20, etc.)
+    if(i > 0 && i % 10 === 0){
+      const cpDiv = document.createElement('div');
+      cpDiv.id = 'checkpoint-' + i;
+      cpDiv.className = 'checkpoint-placeholder';
+      if(checkpointsShown.has(i)){
+        cpDiv.innerHTML = buildCheckpoint(i-1);
+      }
+      body.appendChild(cpDiv);
+    }
+
+    // Question card
+    const state = answered[i]===null?'':'(answered[i]===Q[i].a?\'state-correct\':\'state-wrong\')';
+    const stateClass = answered[i]===null ? '' : (answered[i]===Q[i].a ? 'state-correct' : 'state-wrong');
+    const statusIcon = answered[i]===null ? '' : (answered[i]===Q[i].a ? '✅' : '❌');
+
+    let optsHTML = q.o.map((o,j)=>{
+      let cls = 'opt-btn';
+      if(answered[i]!==null){
+        if(j===q.a)          cls += answered[i]===q.a ? ' is-correct' : ' reveal-correct';
+        else if(j===answered[i]) cls += ' is-wrong';
+      }
+      return `<button class="${cls}" onclick="answer(${i},${j})" ${answered[i]!==null?'disabled':''}><span class="opt-letter">${String.fromCharCode(65+j)}</span>${o}</button>`;
+    }).join('');
+
+    let expHTML = '';
+    if(answered[i]!==null){
+      const wasCorrect = answered[i]===q.a;
+      const hdrClass   = wasCorrect ? 'correct-hdr' : 'wrong-hdr';
+      const bodyClass  = wasCorrect ? 'correct-body' : 'wrong-body';
+      const icon       = wasCorrect ? '✓' : '✗';
+      const label      = wasCorrect ? 'CORRECT' : 'INCORRECT';
+      let correctLine  = '';
+      if(!wasCorrect){
+        correctLine = `<div class="exp-correct-line"><span>✓</span><span><strong>Correct answer:</strong> ${String.fromCharCode(65+q.a)}. ${q.o[q.a]}</span></div>`;
+      }
+      expHTML = `
+        <div class="explanation-box">
+          <div class="exp-header ${hdrClass}">${icon} ${label}</div>
+          <div class="exp-body ${bodyClass}">
+            ${correctLine}
+            <div style="margin-top:${wasCorrect?0:8}px">${q.e}</div>
+          </div>
+        </div>`;
+    }
+
+    const topicBadge = TOPICS[i] ? `<span class="q-topic-badge">${TOPICS[i]}</span>` : '';
+
+    const card = document.createElement('div');
+    card.className = `q-card ${stateClass}`;
+    card.id = 'q'+i;
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-num-badge">Q${i+1} / 70</span>
+        ${topicBadge}
+        <span class="status-icon">${statusIcon}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options-grid">${optsHTML}</div>
+      ${expHTML}`;
+    body.appendChild(card);
+  });
+
+  updateStats();
+}
+
+// ── ANSWER ──
+function answer(qi, oi){
+  if(answered[qi]!==null) return;
+  answered[qi] = oi;
+  const q = Q[qi];
+  const wasCorrect = oi===q.a;
+
+  // Update card in place
+  const card = document.getElementById('q'+qi);
+  card.className = `q-card ${wasCorrect ? 'state-correct' : 'state-wrong'}`;
+  card.querySelector('.status-icon').textContent = wasCorrect ? '✅' : '❌';
+
+  // Update option buttons
+  card.querySelectorAll('.opt-btn').forEach((btn,j)=>{
+    if(j===q.a)   btn.className = wasCorrect ? 'opt-btn is-correct' : 'opt-btn reveal-correct';
+    else if(j===oi) btn.className = 'opt-btn is-wrong';
+    btn.disabled = true;
+  });
+
+  // Inject explanation
+  const hdrClass  = wasCorrect ? 'correct-hdr' : 'wrong-hdr';
+  const bodyClass = wasCorrect ? 'correct-body' : 'wrong-body';
+  const icon      = wasCorrect ? '✓' : '✗';
+  const label     = wasCorrect ? 'CORRECT' : 'INCORRECT';
+  let correctLine = '';
+  if(!wasCorrect){
+    correctLine = `<div class="exp-correct-line"><span>✓</span><span><strong>Correct answer:</strong> ${String.fromCharCode(65+q.a)}. ${q.o[q.a]}</span></div>`;
+  }
+  const expDiv = document.createElement('div');
+  expDiv.className = 'explanation-box';
+  expDiv.innerHTML = `
+    <div class="exp-header ${hdrClass}">${icon} ${label}</div>
+    <div class="exp-body ${bodyClass}">
+      ${correctLine}
+      <div style="margin-top:${wasCorrect?0:8}px">${q.e}</div>
+    </div>`;
+  card.appendChild(expDiv);
+
+  updateStats();
+
+  // Checkpoint: show after every 10th answer (Q10, Q20, ...)
+  const done = answered.filter(x=>x!==null).length;
+  if(done % 10 === 0 && done > 0 && done < Q.length){
+    const cpKey = done;
+    if(!checkpointsShown.has(cpKey)){
+      checkpointsShown.add(cpKey);
+      const cpEl = document.getElementById('checkpoint-'+cpKey);
+      if(cpEl){
+        cpEl.innerHTML = buildCheckpoint(done-1);
+        setTimeout(()=>cpEl.scrollIntoView({behavior:'smooth', block:'start'}), 300);
+      }
+    }
+  }
+
+  // Toast
+  showToast(wasCorrect ? '✓ Correct' : `✗ Wrong — answer was ${String.fromCharCode(65+q.a)}`);
+}
+
+// ── TOAST ──
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+// ── FINAL SUBMIT ──
+function submitFinal(){
+  const done    = answered.filter(x=>x!==null).length;
+  const correct = answered.filter((x,i)=>x!==null && x===Q[i].a).length;
+  const pct     = done ? Math.round(correct/done*100) : 0;
+  const gradeClass = pct>=70 ? 'pass' : pct>=50 ? 'mid' : 'fail';
+  const verdict    = pct>=70 ? 'You would PASS this exam.' : pct>=50 ? 'Close — more revision needed.' : 'Below passing threshold. Focus on weak areas.';
+
+  // Per-topic breakdown
+  const topicMap = {};
+  Q.forEach((q,i)=>{
+    const t = TOPICS[i];
+    if(!topicMap[t]) topicMap[t]={correct:0,total:0};
+    topicMap[t].total++;
+    if(answered[i]!==null && answered[i]===q.a) topicMap[t].correct++;
+  });
+  let topicRows = '';
+  Object.entries(topicMap).forEach(([name,d])=>{
+    const tp = d.total ? Math.round(d.correct/d.total*100) : 0;
+    const tc = tp>=75?'good':tp>=50?'mid':'bad';
+    topicRows += `
+      <div class="ts-row">
+        <span class="ts-name">${name}</span>
+        <div class="ts-track"><div class="ts-fill ${tc}" style="width:${tp}%"></div></div>
+        <span class="ts-pct ${tc}">${d.correct}/${d.total} (${tp}%)</span>
+      </div>`;
+  });
+
+  // Missed questions
+  const missed = Q.map((q,i)=>({q,i,ans:answered[i]}))
+    .filter(x=>x.ans!==null && x.ans!==x.q.a);
+  let missedHTML = '';
+  if(missed.length){
+    missedHTML = missed.map(x=>`
+      <div class="missed-item">
+        <div class="mi-q"><strong>Q${x.i+1}:</strong> ${x.q.q}</div>
+        <div class="mi-you">✗ You chose: ${String.fromCharCode(65+x.ans)}. ${x.q.o[x.ans]}</div>
+        <div class="mi-ans">✓ Correct: ${String.fromCharCode(65+x.q.a)}. ${x.q.o[x.q.a]}</div>
+        <div class="mi-exp">${x.q.e}</div>
+      </div>`).join('');
+  } else {
+    missedHTML = '<div style="color:var(--green);font-size:13px">No mistakes on answered questions.</div>';
+  }
+
+  const panel = document.getElementById('results-panel');
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div class="rp-header">
+      <div class="rp-grade-row">
+        <div class="rp-grade ${gradeClass}">${pct}%</div>
+        <div class="rp-verdict"><strong>${verdict}</strong><br><span style="color:var(--text-muted);font-size:12px">${Q.length-done} questions left unanswered</span></div>
+      </div>
+      <div class="rp-stat-row">
+        <div class="rp-stat"><div class="rs-val green">${correct}</div><div class="rs-lbl">Correct</div></div>
+        <div class="rp-stat"><div class="rs-val red">${done-correct}</div><div class="rs-lbl">Wrong</div></div>
+        <div class="rp-stat"><div class="rs-val yellow">${Q.length-done}</div><div class="rs-lbl">Skipped</div></div>
+        <div class="rp-stat"><div class="rs-val">${done}</div><div class="rs-lbl">Attempted</div></div>
+      </div>
+    </div>
+    <div class="rp-body">
+      <div class="rp-section-title">Performance by Topic</div>
+      <div class="topic-summary">${topicRows}</div>
+      <div class="rp-section-title mt24">Missed Questions (${missed.length})</div>
+      ${missedHTML}
+    </div>`;
+
+  panel.scrollIntoView({behavior:'smooth'});
+  clearInterval(timerInterval);
+}
+
+// ── RESET ──
+function resetQuiz(){
+  if(!confirm('Reset all progress and start again?')) return;
+  answered = new Array(Q.length).fill(null);
+  checkpointsShown.clear();
+  secondsLeft = 90 * 60;
+  clearInterval(timerInterval);
+  document.getElementById('results-panel').style.display = 'none';
+  render();
+  startTimer();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ── INIT ──
+render();
+startTimer();
+</script>
+</body>
+</html>
