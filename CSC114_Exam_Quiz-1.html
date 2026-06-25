@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC 114 — Digital &amp; Virtual Libraries | Exam Catalog</title>
+<style>
+  :root{
+    --paper:#f3ecd9;
+    --paper-dark:#e7dcc0;
+    --ink:#2b2118;
+    --ink-soft:#5b4d3b;
+    --brass:#9c7a3c;
+    --brass-dark:#7a5e2c;
+    --green:#3c5a44;
+    --red:#8c3b2e;
+    --card-shadow: 0 10px 25px rgba(43,33,24,0.25);
+    --rule: rgba(43,33,24,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(ellipse at top, #ece1c6 0%, #d9cba3 60%, #c9b988 100%);
+    background-attachment: fixed;
+    min-height:100vh;
+    font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, 'Times New Roman', serif;
+    color: var(--ink);
+    display:flex;
+    justify-content:center;
+    padding: 24px 14px 60px;
+  }
+  .drawer-label{
+    font-family: 'Courier New', monospace;
+    letter-spacing: 3px;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--brass-dark);
+  }
+  #app{ width:100%; max-width: 720px; }
+  .catalog-frame{
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: var(--card-shadow);
+    position:relative;
+    padding: 28px 26px 30px;
+    background-image:
+      linear-gradient(var(--paper) 0%, var(--paper) 100%);
+  }
+  .catalog-frame::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:6px;
+    background: repeating-linear-gradient(90deg, var(--brass) 0 18px, var(--brass-dark) 18px 20px);
+    border-radius: 4px 4px 0 0;
+  }
+  .top-row{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    margin-bottom: 6px;
+  }
+  .punch{
+    width:10px; height:10px; border-radius:50%;
+    background: var(--paper-dark);
+    box-shadow: inset 0 0 0 1px var(--rule);
+  }
+  header.card-head{
+    text-align:center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+  }
+  header.card-head h1{
+    font-size: 1.5rem;
+    margin: 4px 0 2px;
+    letter-spacing: 0.5px;
+  }
+  header.card-head .sub{
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .call-number{
+    display:inline-block;
+    margin-top:8px;
+    font-family:'Courier New', monospace;
+    font-size: 0.75rem;
+    border:1px solid var(--ink);
+    padding: 2px 10px;
+    border-radius: 2px;
+    background: var(--paper-dark);
+  }
+  /* START SCREEN */
+  .mode-grid{ display:grid; gap:14px; margin-top: 10px; }
+  .mode-card{
+    border:1px solid var(--rule);
+    background: var(--paper-dark);
+    border-radius: 4px;
+    padding: 16px 16px 14px;
+    cursor:pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    position:relative;
+  }
+  .mode-card:hover{ transform: translateY(-2px); box-shadow: 0 6px 14px rgba(43,33,24,0.2); }
+  .mode-card h3{ margin:0 0 4px; font-size:1.05rem; }
+  .mode-card p{ margin:0; font-size:0.85rem; color:var(--ink-soft); }
+  .mode-card .tag{
+    position:absolute; top:12px; right:14px;
+    font-family:'Courier New',monospace; font-size:0.7rem;
+    color: var(--brass-dark); letter-spacing:1px;
+  }
+  .count-line{
+    text-align:center; font-size:0.8rem; color:var(--ink-soft);
+    margin-top:16px; font-style:italic;
+  }
+  .unit-picker{
+    margin-top: 18px;
+  }
+  .unit-picker summary{
+    cursor:pointer; font-size:0.85rem; color:var(--brass-dark); text-decoration:underline;
+  }
+  .unit-list{
+    display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;
+  }
+  .unit-chip{
+    border:1px solid var(--ink); border-radius: 20px; padding:5px 12px;
+    font-size:0.75rem; cursor:pointer; background:var(--paper);
+    user-select:none;
+  }
+  .unit-chip.active{ background: var(--green); color:#fff; border-color:var(--green); }
+
+  /* QUIZ SCREEN */
+  .progress-row{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:0.78rem; color:var(--ink-soft); margin-bottom:10px;
+    font-family:'Courier New', monospace;
+  }
+  .timer{ font-weight:bold; }
+  .timer.low{ color:var(--red); }
+  .bar-track{
+    height:6px; background:var(--paper-dark); border-radius:3px; overflow:hidden;
+    margin-bottom: 18px; border:1px solid var(--rule);
+  }
+  .bar-fill{ height:100%; background:var(--brass); transition:width .3s ease; }
+  .q-week{
+    font-family:'Courier New', monospace; font-size:0.7rem; letter-spacing:1px;
+    color:var(--brass-dark); text-transform:uppercase; margin-bottom:6px;
+  }
+  .q-text{ font-size:1.08rem; line-height:1.45; margin-bottom:18px; }
+  .options{ display:flex; flex-direction:column; gap:10px; }
+  .option{
+    border:1px solid var(--ink); border-radius:3px; padding:12px 14px;
+    background: var(--paper-dark); cursor:pointer; font-size:0.95rem;
+    display:flex; gap:10px; align-items:flex-start;
+    transition: background .15s ease;
+  }
+  .option:hover{ background:#ddd0a8; }
+  .option .letter{
+    font-family:'Courier New',monospace; font-weight:bold; color:var(--brass-dark);
+    min-width:18px;
+  }
+  .option.selected{ background:#d9cba3; border-color: var(--brass-dark); box-shadow: inset 0 0 0 1px var(--brass-dark); }
+  .option.correct{ background:#cfe0d2; border-color: var(--green); }
+  .option.incorrect{ background:#e3c9c4; border-color: var(--red); }
+  .option.disabled{ cursor:default; }
+  .feedback{
+    margin-top:14px; font-size:0.85rem; padding:10px 12px;
+    border-left:3px solid var(--brass); background: rgba(156,122,60,0.1);
+    display:none;
+  }
+  .nav-row{ display:flex; justify-content:space-between; margin-top:20px; }
+  button{
+    font-family: inherit; font-size:0.85rem; padding:10px 18px;
+    border-radius:3px; border:1px solid var(--ink); background:var(--ink);
+    color: var(--paper); cursor:pointer; letter-spacing:0.5px;
+  }
+  button.secondary{ background:transparent; color:var(--ink); }
+  button:disabled{ opacity:0.4; cursor:not-allowed; }
+  button.ghost{ background:transparent; border:1px solid var(--brass-dark); color:var(--brass-dark); }
+
+  /* RESULTS */
+  .score-circle{
+    width:140px; height:140px; border-radius:50%;
+    border:6px solid var(--brass);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    margin: 10px auto 18px; background: var(--paper-dark);
+  }
+  .score-circle .pct{ font-size:2rem; font-weight:bold; }
+  .score-circle .frac{ font-size:0.78rem; color:var(--ink-soft); }
+  .grade-line{ text-align:center; font-size:1rem; margin-bottom:18px; font-style:italic; }
+  .breakdown{ margin: 18px 0; }
+  .breakdown-row{
+    display:flex; justify-content:space-between; font-size:0.85rem;
+    border-bottom:1px dashed var(--rule); padding:6px 0;
+  }
+  .review-item{
+    border:1px solid var(--rule); border-left:4px solid var(--ink); border-radius:3px;
+    padding:12px 14px; margin-bottom:10px; font-size:0.88rem;
+  }
+  .review-item.wrong{ border-left-color: var(--red); }
+  .review-item.right{ border-left-color: var(--green); }
+  .review-item .rq{ font-weight:bold; margin-bottom:6px; }
+  .review-item .ra{ margin: 2px 0; }
+  .review-item .ra.correct-ans{ color: var(--green); }
+  .review-item .ra.wrong-ans{ color: var(--red); text-decoration:line-through; }
+  details.review-wrap summary{ cursor:pointer; color:var(--brass-dark); margin: 14px 0; font-size:0.85rem; }
+  .hidden{ display:none !important; }
+  footer.note{
+    text-align:center; font-size:0.7rem; color: var(--ink-soft); margin-top:18px;
+    font-family:'Courier New',monospace;
+  }
+  @media (max-width:480px){
+    .catalog-frame{ padding:20px 16px 22px; }
+    header.card-head h1{ font-size:1.25rem; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="catalog-frame">
+
+    <!-- START SCREEN -->
+    <div id="screen-start">
+      <header class="card-head">
+        <div class="drawer-label">AFIT KADUNA · FACULTY OF COMPUTING</div>
+        <h1>CSC 114 Exam Catalog</h1>
+        <div class="sub">Introduction to Digital &amp; Virtual Libraries</div>
+        <span class="call-number">CSC114 · WK 1–12 · FULL COURSE</span>
+      </header>
+
+      <div class="mode-grid">
+        <div class="mode-card" data-mode="exam">
+          <span class="tag">TIMED</span>
+          <h3>Final Examination Mode</h3>
+          <p>All questions, one timer for the whole exam, no feedback until the end. Mirrors real exam pressure.</p>
+        </div>
+        <div class="mode-card" data-mode="practice">
+          <span class="tag">UNTIMED</span>
+          <h3>Practice Drill Mode</h3>
+          <p>Instant feedback after every question, with a short explanation pulled from the lecture notes.</p>
+        </div>
+        <div class="mode-card" data-mode="unit">
+          <span class="tag">FOCUSED</span>
+          <h3>Unit Drill</h3>
+          <p>Pick one or more weeks to drill — good for cramming a specific topic the night before.</p>
+        </div>
+      </div>
+
+      <details class="unit-picker" id="unitPicker">
+        <summary>Choose weeks for Unit Drill →</summary>
+        <div class="unit-list" id="unitList"></div>
+        <div style="margin-top:12px;">
+          <button id="startUnitBtn">Start Unit Drill</button>
+        </div>
+      </details>
+
+      <div class="count-line" id="bankCount"></div>
+      <footer class="note">Card-catalog edition · build your own knowledge index</footer>
+    </div>
+
+    <!-- QUIZ SCREEN -->
+    <div id="screen-quiz" class="hidden">
+      <div class="progress-row">
+        <span id="progressText">Question 1 / 100</span>
+        <span class="timer" id="timerText"></span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+
+      <div class="q-week" id="qWeek"></div>
+      <div class="q-text" id="qText"></div>
+      <div class="options" id="optionsWrap"></div>
+      <div class="feedback" id="feedback"></div>
+
+      <div class="nav-row">
+        <button class="secondary" id="quitBtn">← Close drawer</button>
+        <button id="nextBtn" disabled>Next →</button>
+      </div>
+    </div>
+
+    <!-- RESULTS SCREEN -->
+    <div id="screen-results" class="hidden">
+      <header class="card-head">
+        <div class="drawer-label">RESULT SLIP</div>
+        <h1 id="resultTitle">Examination Complete</h1>
+        <div class="sub" id="resultSub"></div>
+      </header>
+
+      <div class="score-circle">
+        <div class="pct" id="resultPct">0%</div>
+        <div class="frac" id="resultFrac">0 / 0</div>
+      </div>
+      <div class="grade-line" id="resultGrade"></div>
+
+      <div class="breakdown" id="weekBreakdown"></div>
+
+      <details class="review-wrap">
+        <summary>Review every question →</summary>
+        <div id="reviewList"></div>
+      </details>
+
+      <div class="nav-row">
+        <button class="secondary" id="retryWrongBtn">Retry missed only</button>
+        <button id="restartBtn">Return to catalog</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============== QUESTION BANK ============== */
+const BANK = [
+// ---------------- WEEK 1 ----------------
+{w:"Week 1", q:"Which definition best describes a library according to the lecture note?", o:["A place that only stores physical books for borrowing","A collection of resources, physical and digital, organized for access and use to educate and inform a community","A government building reserved for archiving newspapers","A private collection accessible only to staff"], a:1, e:"A library is a collection of resources, both physical and digital, organized for access and use, supporting the community through services."},
+{w:"Week 1", q:"What is the defining feature of a traditional library?", o:["It requires no physical visit","It emphasizes storage of physical items and requires users to visit in person","It is hosted entirely on cloud servers","It only contains digital periodicals"], a:1, e:"A traditional library is a physical space emphasizing storage/preservation of physical items, requiring an in-person visit."},
+{w:"Week 1", q:"A digital library is best defined as:", o:["A set of digital collections/repositories of organized information resources in digital format, focused on creation and preservation of such resources","A library that has simply scanned its building floor plan","A library that only allows access during opening hours","A physical archive with no computer technology"], a:0, e:"Digital libraries host organized digital information resources/services focused on creating and preserving them."},
+{w:"Week 1", q:"According to the American Digital Library (ADL) definition, a digital library is:", o:["A purely automated system with no staff involvement","An organization of resources, including staff, to select, organize, offer access to, share and preserve digital works for a defined user community","A storage device for CD-ROMs only","A free Wi-Fi hotspot inside a library building"], a:1, e:"ADL stresses organization of resources INCLUDING STAFF to select, organize, give access to, share, and preserve digital works."},
+{w:"Week 1", q:"What happens when a digital library is linked to the Internet, per the notes?", o:["It becomes obsolete","It becomes a virtual library","It loses its metadata","It must be converted to MARC format"], a:1, e:"When a digital library is linked to the Internet, it becomes a virtual library."},
+{w:"Week 1", q:"According to Usman (2019), a virtual library is:", o:["A library located only in virtual reality headsets","A collection of resources on one or more computer systems with a single interface/entry point, accessible remotely","A subscription-only academic database","A library that has digitized its card catalogue but nothing else"], a:1, e:"Usman (2019) defines a virtual library as resources on computer system(s) accessed via a single interface, remotely."},
+{w:"Week 1", q:"Gapen (1993) and Kato et al. (2021) describe a central aspect of virtual libraries as:", o:["Total elimination of librarians","Remote access to contents/services combined with an onsite collection and an electronic network linking to external sources","Storage exclusively on CD-ROM","Restriction of access to a single physical site"], a:1, e:"The central aspect is remote access to library contents/services, combining onsite electronic collections with networked external sources."},
+{w:"Week 1", q:"Which of these is NOT listed as a key advantage of virtual libraries in the notes?", o:["Time and speedy access","Wider access anytime, anywhere","Becoming a global symbol of the information access paradigm","Requiring users to be physically present"], a:3, e:"Virtual libraries are valued for remote, anytime/anywhere access — the opposite of requiring physical presence."},
+{w:"Week 1", q:"Printed information resources, as contrasted with digital ones in the notes, are designed for:", o:["Simultaneous multi-location access","One reader at a time, in one place","Unlimited concurrent global users","Automatic preservation without human input"], a:1, e:"Printed resources are designed for one reader at a time in one place, unlike digital resources which can be accessed simultaneously regardless of location."},
+{w:"Week 1", q:"In the past, who acted as custodians/intermediaries of localized print information?", o:["Software engineers","Information professionals/librarians","University vice-chancellors","Internet service providers"], a:1, e:"Information professionals traditionally acted as custodians/intermediaries of print information localized within the library's four walls."},
+{w:"Week 1", q:"In 1965, who envisioned a digital library in 'Libraries of the Future'?", o:["Michael Hart","J.C.R. Licklider","Paul Ginsparg","Sergey Brin"], a:1, e:"J.C.R. Licklider envisioned a digital library in 'Libraries of the Future' (1965)."},
+{w:"Week 1", q:"MARC (Machine-Readable Cataloging) was introduced by the Library of Congress in which year?", o:["1965","1968","1971","1980"], a:1, e:"MARC was introduced by the Library of Congress in 1968."},
+{w:"Week 1", q:"Who founded Project Gutenberg, and when?", o:["Michael Hart, 1971","Larry Page, 2004","Paul Ginsparg, 1991","Sergey Brin, 1996"], a:0, e:"Michael Hart founded Project Gutenberg in 1971, producing the first digital book."},
+{w:"Week 1", q:"Which storage medium was introduced for digital storage in the 1980s?", o:["USB flash drives","CD-ROMs","Cloud servers","Blockchain ledgers"], a:1, e:"CD-ROMs were introduced for digital storage in the 1980s."},
+{w:"Week 1", q:"arXiv.org, launched in 1991 for research papers, was started by:", o:["Michael Hart","Paul Ginsparg","Larry Page","Sergey Brin"], a:1, e:"Paul Ginsparg launched arXiv.org in 1991 for research papers."},
+{w:"Week 1", q:"The Digital Library Initiative (DLI) of 1994 was funded by:", o:["NSF, DARPA, and NASA","UNESCO only","Google and Apple","The Library of Congress alone"], a:0, e:"DLI (1994) was funded by NSF, DARPA, and NASA."},
+{w:"Week 1", q:"Google was started in 1996 at Stanford University by:", o:["Michael Hart and Paul Ginsparg","Sergey Brin and Larry Page","Vannevar Bush and Ted Nelson","Tim Berners-Lee and Vint Cerf"], a:1, e:"Google started at Stanford in 1996, founded by Sergey Brin and Larry Page."},
+{w:"Week 1", q:"The DOI (Digital Object Identifier) system was introduced for scholarly documents in:", o:["1991","1996","2000","2008"], a:2, e:"The DOI system was introduced in 2000 for scholarly documents."},
+{w:"Week 1", q:"Google Books, launched in 2004, was launched by:", o:["Michael Hart","Larry Page and Sergey Brin","Jimmy Wales","Paul Ginsparg"], a:1, e:"Google Books was launched in 2004 by Larry Page and Sergey Brin."},
+{w:"Week 1", q:"DOAJ, which promoted open access starting in 2008, stands for:", o:["Digital Open Access Journals","Directory of Open Access Journals","Database of Online Academic Journals","Digital Object Archive Journal"], a:1, e:"DOAJ = Directory of Open Access Journals, promoting open access from 2008."},
+{w:"Week 1", q:"HathiTrust Digital Library was launched in:", o:["2000","2004","2008","2011"], a:3, e:"HathiTrust Digital Library was launched in 2011."},
+{w:"Week 1", q:"Which era is characterized by AI-powered recommendations (e.g., Semantic Scholar) and blockchain for digital rights?", o:["Pre-Digital Era","Early Digital Libraries (1960s–1980s)","Internet & Online Libraries (1990s–2000s)","AI & Cloud-Based Libraries (2010s–Present)"], a:3, e:"The AI & Cloud-Based Libraries era (2010s–present) features AI recommendations and blockchain for digital rights."},
+{w:"Week 1", q:"How does the note differentiate digital and virtual libraries?", o:["Digital libraries require in-person visits to access resources; virtual libraries can be accessed remotely anywhere, anytime","Virtual libraries only exist offline","Digital libraries cannot store images","There is no real difference between them"], a:0, e:"Digital library content is accessed only by visiting in person, while virtual library content is accessed remotely regardless of location/time."},
+{w:"Week 1", q:"Which of these is one of the four steps in building a digital library listed in the self-assessment?", o:["Hiring security guards for the building","Acquisition of original digital content from authors/copyright owners","Banning all digital formats except PDF","Outsourcing all cataloging to volunteers only"], a:1, e:"One key step is acquiring original digital content created by authors or copyright owners."},
+{w:"Week 1", q:"Which is NOT one of the five digital information services listed for an academic library?", o:["Access to Online Public Access Catalogue (OPAC)","Access to e-theses and dissertations","Online reference and information services","Mandatory physical attendance for every search"], a:3, e:"The listed services are all remote/digital services — mandatory physical attendance contradicts the digital service model."},
+// ---------------- WEEK 2 ----------------
+{w:"Week 2", q:"Which of the following is NOT one of the four steps in building a digital library (Week 2 expansion)?", o:["Acquisition of original digital content","Converting non-digital documents into digital format using OCR","Subscribing to or linking open access resources","Eliminating all copyright considerations"], a:3, e:"Rights management — tracking copyright and authenticating users — is a required step, not something to eliminate."},
+{w:"Week 2", q:"What technology is used to convert non-digital born documents into digital format?", o:["Optical Character Recognition (OCR)","Domain Name System (DNS)","Digital Rights Management (DRM)","Simple Mail Transfer Protocol (SMTP)"], a:0, e:"OCR (Optical Character Recognition) converts print documents into digital format."},
+{w:"Week 2", q:"Where are OCR-converted documents typically uploaded for access?", o:["A private USB drive only","An Institutional Digital Repository (IDR) or library website","A printed bulletin board","An offline-only CD-ROM with no network access"], a:1, e:"Converted documents are uploaded into an Institutional Digital Repository (IDR) or library website."},
+{w:"Week 2", q:"According to Kato, Kisangiri, and Kaijage (2021), digital library resources are defined as:", o:["Information processed and digitally driven using hardware/software, accessible via remote networks or mounted locally by DL managers","Only printed materials converted to PDF","Resources that cannot be accessed remotely","Materials limited strictly to academic journals"], a:0, e:"They define digital library resources as info processed/digitally driven via hardware and software, accessible remotely or mounted locally."},
+{w:"Week 2", q:"What is a key advantage of offline CD-ROM databases, especially in developing countries?", o:["They require constant Internet connectivity","Content can be accessed without Internet connectivity once inside the library building","They are immune to all forms of damage","They eliminate the need for computer terminals"], a:1, e:"Offline CD-ROM content can be accessed without Internet connectivity within the physical building, helpful where connectivity is a challenge."},
+{w:"Week 2", q:"What does OPAC stand for?", o:["Online Public Access Catalogue","Open Public Archive Center","Optical Print Access Code","Online Periodical Access Channel"], a:0, e:"OPAC = Online Public Access Catalogue."},
+{w:"Week 2", q:"Before OPAC, how did users typically access bibliographic information in a library?", o:["Through smartphone apps","Via card catalogue, book, or shelf catalogue","Through blockchain ledgers","Via satellite uplink"], a:1, e:"Previously, users accessed bibliographic info only via card, book, or shelf catalogues."},
+{w:"Week 2", q:"What can users search by when using an OPAC?", o:["Only the call number","Author, title, keywords, call number, or a combination of these","Only the publication year","Only the ISBN"], a:1, e:"OPAC allows searching by author, title, keywords, call number, or any combination."},
+{w:"Week 2", q:"What technologies have largely replaced traditional reference methods like post, phone, or in-person contact?", o:["E-mail, topic gateways, FAQs, discussion forums, online reference desks","Telegraph and fax machines only","Printed newsletters","Physical suggestion boxes"], a:0, e:"Asynchronous and interactive online tools (e-mail, FAQs, discussion forums, ask-a-librarian) have replaced traditional reference contact."},
+{w:"Week 2", q:"What significant challenge do developing countries like Nigeria face regarding Internet-based library services?", o:["Too much bandwidth available","Underdeveloped Internet infrastructure, high bandwidth cost, poor electricity supply","Excessive government funding for ICT","Overabundance of skilled IT staff"], a:1, e:"Challenges include underdeveloped infrastructure, high cost of bandwidth, and poor electricity supply."},
+{w:"Week 2", q:"What does ADL stand for in the architecture discussion of Week 2?", o:["Alexandria Digital Library","Academic Document Locator","Advanced Digital Ledger","American Digital Listing"], a:0, e:"In the architecture section, ADL refers to the Alexandria Digital Library project."},
+{w:"Week 2", q:"The Alexandria Digital Library Project began in which year?", o:["1991","1995","2000","2008"], a:1, e:"The Alexandria Digital Library Project began in 1995."},
+{w:"Week 2", q:"Where is the Alexandria Digital Library Project headquartered?", o:["University of Waikato","Library of Congress","University of California, Santa Barbara (hosted by Davidson Library)","Stanford University"], a:2, e:"The project is headquartered at UC Santa Barbara, hosted by the Davidson Library."},
+{w:"Week 2", q:"What are the three tiers of the Alexandria Digital Library (ADL) architecture?", o:["Client, Middleware, Server","Frontend, Backend, Database","Input, Process, Output","Author, Publisher, Reader"], a:0, e:"ADL follows a three-tiered structure: Client, Middleware, Server."},
+{w:"Week 2", q:"Who developed the Greenstone Digital Library (GSDL), and in collaboration with whom?", o:["Google, in collaboration with NASA","University of Waikato, in collaboration with UNESCO and the Human Libraries Project","Library of Congress, in collaboration with DARPA","Stanford University, in collaboration with IEEE"], a:1, e:"GSDL was developed by the University of Waikato with UNESCO and the Human Libraries Project, for the developing world."},
+{w:"Week 2", q:"What does the Greenstone Digital Library generate when retrieving requested information?", o:["XML schemas only","HTML pages containing the information","Printed receipts","Blockchain transaction records"], a:1, e:"Greenstone retrieves requested information and generates HTML pages containing it."},
+{w:"Week 2", q:"Which file formats are associated with e-books in the notes?", o:["PDF, EPUB, MOBI, AZW","SQL, XML, JSON","MP4, AVI, MP3","HTML only"], a:0, e:"E-book formats listed are PDF, EPUB, MOBI, and AZW (Kindle)."},
+{w:"Week 2", q:"Which formats are associated with e-journals?", o:["JPEG, PNG","PDF, HTML, XML","MP3, WAV","SQL only"], a:1, e:"E-journal formats listed are PDF, HTML, and XML."},
+{w:"Week 2", q:"Which of these is given as an example of a multimedia digital resource source?", o:["JSTOR","YouTube EDU, TED Talks, Khan Academy, BBC Archives","Scopus","Dublin Core"], a:1, e:"Multimedia examples include YouTube EDU, TED Talks, Khan Academy, and BBC Archives."},
+{w:"Week 2", q:"Which formats are associated with databases in digital libraries?", o:["EPUB, MOBI","MP4, AVI","SQL, XML, JSON","JPEG, PNG"], a:2, e:"Database formats listed are SQL, XML, and JSON."},
+{w:"Week 2", q:"Which of these is given as an example of a database-type digital resource?", o:["Kindle e-books","Scopus, Web of Science, ProQuest, arXiv, Open Library","BBC Archives","Project Gutenberg"], a:1, e:"Database examples include Scopus, Web of Science, ProQuest, arXiv, and Open Library."},
+// ---------------- WEEK 3 ----------------
+{w:"Week 3", q:"Digital Library Management Systems (DLMS) are best described as:", o:["Hardware devices for printing books","Specialized software systems providing infrastructure for creating, managing and accessing digital libraries","Social media platforms for librarians","Manual paper-based cataloguing tools"], a:1, e:"DLMS are specialized software systems enabling organization, storage, access, and preservation of digital objects."},
+{w:"Week 3", q:"Which of these is NOT listed as software used for managing digital libraries?", o:["DSpace","Greenstone","Fedora","Microsoft Excel"], a:3, e:"DSpace, Greenstone, Fedora, Koha, E-Print, and Omeka are listed; Microsoft Excel is not a digital library platform."},
+{w:"Week 3", q:"Koha is described as:", o:["A proprietary closed-source spreadsheet tool","An open-source integrated library system supporting cataloging, circulation, acquisitions, and patron management","A blockchain-based currency for libraries","A hardware scanner for OCR"], a:1, e:"Koha is an open-source integrated library system (ILS) for cataloging, circulation, acquisitions, and patron management."},
+{w:"Week 3", q:"NewGenLib is best described as:", o:["A social media app for readers","An integrated library management system and digital repository software for both print and digital collections","A single-purpose e-book reader app","A cybersecurity firewall tool"], a:1, e:"NewGenLib provides a single solution managing both print and digital collections."},
+{w:"Week 3", q:"BiblioteQ is described in the notes as:", o:["A professional archiving, cataloging, and library management suite available as open-source","A paid-only proprietary antivirus program","A hardware RFID tag system","A metadata standard like Dublin Core"], a:0, e:"BiblioteQ is an open-source professional archiving, cataloging, and library management suite."},
+{w:"Week 3", q:"DSpace is best described as:", o:["A closed hardware appliance","A prominent open-source digital library solution managing content lifecycle from acquisition to secured distribution","A metadata-only standard","An offline CD-ROM reader"], a:1, e:"DSpace allows librarians to manage the end-to-end lifecycle of content, from acquisition to secured distribution."},
+{w:"Week 3", q:"Omeka is best described as:", o:["A proprietary library hardware vendor","An open-source web publishing platform for museums, libraries, and archives to publish digital collections online","A cybersecurity protocol","A type of metadata schema"], a:1, e:"Omeka lets museums, libraries, and archives publish their digital collections online."},
+{w:"Week 3", q:"The Atla Digital Library is noted for providing access to digital collections of interest to:", o:["Engineering and computer science researchers","Religion and theology researchers","Sports science researchers","Agricultural researchers"], a:1, e:"Atla Digital Library serves religion and theology researchers."},
+{w:"Week 3", q:"Which of these is NOT listed as a benefit of cloud computing for digital libraries?", o:["Cost reduction","Enhanced accessibility","Scalability and flexibility","Guaranteed elimination of all security risks"], a:3, e:"Cloud computing offers benefits but also presents challenges like data security and privacy concerns — it does not guarantee zero risk."},
+{w:"Week 3", q:"How does cloud computing achieve cost reduction for libraries?", o:["By eliminating the need for any staff","By reducing IT infrastructure costs (hardware, software, personnel) since functions can be outsourced","By banning all digital formats","By requiring libraries to purchase new servers annually"], a:1, e:"Cloud services reduce IT infrastructure costs as libraries can outsource hardware, software, and personnel functions."},
+{w:"Week 3", q:"Which AI capability is highlighted as transforming digital libraries?", o:["Personalized recommendations, smarter search, and automated tasks","Manual card cataloging","Elimination of all metadata","Physical book binding"], a:0, e:"AI enhances efficiency and UX through personalized recommendations, smarter search, and automated tasks."},
+{w:"Week 3", q:"Which of these is listed as a benefit AI provides to digital libraries?", o:["Enhanced Information Retrieval and Access","Increased need for physical shelving","Slower search response times","Reduced accessibility for users with disabilities"], a:0, e:"AI helps with enhanced information retrieval/access, improved operations/management, and accessibility/inclusivity."},
+{w:"Week 3", q:"Cloud-based platforms support which collaborative function for libraries?", o:["Preventing any inter-institutional sharing","Enabling libraries to collaborate with other institutions and share resources","Restricting access to a single computer only","Disabling remote access entirely"], a:1, e:"Cloud platforms enable collaboration between institutions and resource sharing, expanding access to information."},
+{w:"Week 3", q:"Cloud providers are noted to support data security and privacy through:", o:["Ignoring all regulations","Robust security measures and compliance with relevant regulations","Publicly sharing all user data","Removing encryption to simplify access"], a:1, e:"Cloud providers often offer robust security measures and compliance with relevant regulations to protect sensitive data."},
+{w:"Week 3", q:"Which is an example of scalability and flexibility benefits of cloud solutions?", o:["Cloud solutions can easily scale up or down based on demand","Cloud solutions are fixed in size forever","Cloud solutions require manual hardware replacement to scale","Cloud solutions cannot adapt to changing needs"], a:0, e:"Cloud solutions can scale up or down based on demand, offering flexibility and adaptability."},
+{w:"Week 3", q:"Which combination correctly lists software solutions mentioned for managing digital collections?", o:["DSpace, Greenstone, Fedora, Koha, E-Print, Omeka","Word, Excel, PowerPoint, Outlook","Photoshop, Illustrator, InDesign","Chrome, Firefox, Safari, Edge"], a:0, e:"The notes list DSpace, Greenstone, Fedora, Koha, E-Print, and Omeka as digital library management software."},
+// ---------------- WEEK 4-5: METADATA ----------------
+{w:"Week 4-5", q:"How is metadata defined in the lecture note?", o:["The actual content of a digital file","Descriptive information about a piece of digital content, rather than the content itself","A type of computer virus","A subscription-based access model"], a:1, e:"Metadata is descriptive information about digital content (e.g., file size, author, date created) rather than the content itself."},
+{w:"Week 4-5", q:"Which of these is given as an example of metadata?", o:["The full text of a novel","File size, author, date created, keywords, description, resolution","The library's electricity bill","The lecturer's class attendance sheet"], a:1, e:"Examples of metadata include file size, author, date created, keywords, descriptions, and resolution."},
+{w:"Week 4-5", q:"Which is NOT listed as an importance of metadata?", o:["Organization","Searchability","Management","Eliminating the need for any digital preservation"], a:3, e:"Metadata supports organization, searchability, management, and context — not elimination of preservation needs."},
+{w:"Week 4-5", q:"Metadata is described as a core component of which type of system?", o:["Digital Asset Management (DAM) systems","Domain Name System (DNS)","Content Delivery Network (CDN)","Customer Relationship Management (CRM)"], a:0, e:"Metadata is a core component of Digital Asset Management (DAM) systems."},
+{w:"Week 4-5", q:"Dublin Core is described as a set of how many core elements?", o:["10","12","15","20"], a:2, e:"Dublin Core is a set of 15 core elements designed for broad resource description."},
+{w:"Week 4-5", q:"Which of these IS one of the Dublin Core elements?", o:["Creator","Login password","IP address","Server hostname"], a:0, e:"Creator is one of the 15 Dublin Core elements (others include title, date, subject, etc.)."},
+{w:"Week 4-5", q:"MARC (Machine-Readable Cataloging) is primarily used for:", o:["Streaming video content","Cataloging and managing bibliographic information in libraries, and exchanging records between catalogs","Encrypting financial transactions","Designing website layouts"], a:1, e:"MARC is a standard for bibliographic metadata, originally for exchanging records between library catalogs."},
+{w:"Week 4-5", q:"MODS (Metadata Object Description Schema) is used for:", o:["Metadata syndication/harvesting and documentation of digital information packages","Compressing video files","Managing electricity consumption in server rooms","Encrypting user passwords"], a:0, e:"MODS is used for metadata syndication/harvesting and documenting digital information packages."},
+{w:"Week 4-5", q:"What is indexing in the context of digital resources?", o:["Deleting irrelevant files","Analyzing content and assigning keywords/subject terms to facilitate searching and retrieval","Printing a physical index card","Encrypting digital files for security"], a:1, e:"Indexing analyzes content and assigns keywords/subject terms to enable searching and retrieval."},
+{w:"Week 4-5", q:"Cataloging is defined as:", o:["The process of creating metadata that describes and organizes digital resources to make them accessible","Deleting outdated digital files","A type of cloud storage pricing model","A network security protocol"], a:0, e:"Cataloging creates descriptive metadata that organizes digital resources for accessibility."},
+{w:"Week 4-5", q:"Which standard is described as widely used for describing web resources and other digital/physical materials?", o:["MARC","MODS","Dublin Core","DOI"], a:2, e:"Dublin Core is widely used for describing web resources and other digital and physical materials."},
+{w:"Week 4-5", q:"Why is metadata important for 'context', according to the notes?", o:["It deletes unnecessary files automatically","It provides information about the content, making it easier to understand and use","It hides all content from unauthorized search engines","It replaces the need for any cataloging"], a:1, e:"Metadata provides context and information about content, making it easier to understand and use."},
+// ---------------- WEEK 6-7: PRESERVATION & ACCESS ----------------
+{w:"Week 6-7", q:"Digital preservation is concerned with:", o:["Deleting old digital files to save space","Ensuring long-term accessibility of digital information","Encrypting all metadata permanently","Restricting access to only library staff"], a:1, e:"Digital preservation ensures long-term accessibility of digital information."},
+{w:"Week 6-7", q:"Access control, as distinguished from preservation, manages:", o:["The color scheme of a library website","Who can access information and what actions they can take (e.g., read-only, write-only)","The physical temperature of server rooms","The price of a subscription only"], a:1, e:"Access control determines who can access information and what actions (e.g., read-only, write-only) they can take."},
+{w:"Week 6-7", q:"Digital Rights Management (DRM) is defined as:", o:["A marketing tool for promoting e-books","A technology using access control to prevent unauthorized use of digital content and protect IP rights","A type of metadata standard like Dublin Core","A free, unrestricted distribution method"], a:1, e:"DRM uses access control to prevent unauthorized use of digital content, protecting intellectual property rights."},
+{w:"Week 6-7", q:"Open access digital libraries are characterized by:", o:["Requiring institutional subscription fees","Making research information freely available without cost or access restrictions","Restricting content to paying members only","Allowing access only via offline CD-ROM"], a:1, e:"Open access means making research information freely available without cost or restrictions."},
+{w:"Week 6-7", q:"Subscription-based digital libraries require:", o:["No payment whatsoever","Users or their institutions to pay a subscription fee to access content","Only government employees to register","Physical visits to access digital content"], a:1, e:"Subscription-based digital libraries require a fee from users or institutions for access."},
+{w:"Week 6-7", q:"What must digital libraries implement to safeguard systems from unauthorized access and cyberattacks?", o:["Robust cybersecurity measures","Open public Wi-Fi with no password","Unlimited free downloads for all users","Manual card catalogs only"], a:0, e:"Digital libraries must implement robust security measures to protect against unauthorized access and cyberattacks."},
+{w:"Week 6-7", q:"What do ethical considerations in digital libraries primarily prioritize?", o:["Maximizing advertising revenue","User privacy and confidentiality, handled responsibly per relevant laws","Eliminating all forms of metadata","Banning open access models"], a:1, e:"Ethical considerations focus on user privacy/confidentiality and responsible handling of personal information."},
+{w:"Week 6-7", q:"How does cybersecurity differ from ethical considerations, per the notes?", o:["They are identical concepts","Cybersecurity focuses on protecting systems/data from cyber threats, while ethics covers privacy, transparency, and responsible data handling","Cybersecurity only concerns hardware while ethics concerns only software","Ethics is a subset of DRM only"], a:1, e:"Cybersecurity protects against cyber threats; ethical considerations cover privacy, transparency, and responsible data handling."},
+{w:"Week 6-7", q:"Which example best fits an 'access control' action type mentioned in the notes?", o:["Read-only or write-only permissions","Color theme selection","Font size adjustment","Page numbering style"], a:0, e:"The note gives read-only/write-only as example actions managed by access control."},
+{w:"Week 6-7", q:"DRM limits how copyrighted material can be:", o:["Donated to charity only","Accessed, used, and distributed","Printed in black and white only","Translated into other languages only"], a:1, e:"DRM limits how copyrighted material is accessed, used, and distributed."},
+// ---------------- WEEK 8-9: VIRTUAL LIBRARIES & TRENDS ----------------
+{w:"Week 8-9", q:"How does the note distinguish a digital library from a virtual library?", o:["A digital library is a collection of digital objects stored in machine-readable formats; a virtual library emphasizes access/organization, often via internet links, without a physical collection","They are exactly the same thing","Virtual libraries only exist on paper","Digital libraries cannot include e-books"], a:0, e:"Digital library = stored digital objects in machine-readable formats; virtual library = access/organization via links, no physical collection."},
+{w:"Week 8-9", q:"Which is given as an example of an academic virtual library application?", o:["Libby","Kindle","Google Scholar, IEEE Xplore, ResearchGate, JSTOR","Worldcat"], a:2, e:"Academic virtual libraries include Google Scholar, IEEE Xplore, ResearchGate, and JSTOR."},
+{w:"Week 8-9", q:"Which is given as an example of a Public Library App?", o:["Sci-Hub","Libby, Overdrive, Worldcat","Kindle","Apple Books"], a:1, e:"Public library apps include Libby, Overdrive, and Worldcat."},
+{w:"Week 8-9", q:"Which is listed as an example of a Specialized Library?", o:["Google Scholar","Project Gutenberg, Open Library, Sci-Hub","ResearchGate","Apple Books"], a:1, e:"Specialized libraries listed include Project Gutenberg, Open Library, and Sci-Hub."},
+{w:"Week 8-9", q:"Which of these is an example of an E-Book library?", o:["Kindle, Google Books, Apple Books","IEEE Xplore","Worldcat","Sci-Hub"], a:0, e:"E-Book libraries listed include Kindle, Google Books, and Apple Books."},
+{w:"Week 8-9", q:"What defines a good user experience (UX) for a virtual library app, per the notes?", o:["It must require payment for every search","It should be easy to use, visually appealing, and efficient in helping users find and access resources","It should hide all search functions","It should only work offline"], a:1, e:"A good virtual library app should be easy to use, visually appealing, and efficient in helping users find/access resources."},
+{w:"Week 8-9", q:"Blockchain technology in digital libraries is said to offer:", o:["Enhanced security, transparency, and accessibility of collections via a distributed, immutable ledger","A way to eliminate metadata entirely","A method to print physical books faster","A replacement for OPAC systems only"], a:0, e:"Blockchain offers enhanced security, transparency, accessibility, improved preservation, and IP management via a distributed, immutable ledger."},
+{w:"Week 8-9", q:"University digital libraries, as a category of virtual library application, refers to:", o:["Libraries owned by universities","Only public libraries in urban centers","Government archives exclusively","Private corporate repositories"], a:0, e:"University digital libraries are libraries owned by universities."},
+{w:"Week 8-9", q:"What overall purpose does CSC 114 intend to introduce, according to the Week 8-9 summary?", o:["Hardware repair techniques","Digital information systems and services in line with the dynamics of the digital environment","Networking protocols for ISPs","Database administration certification"], a:1, e:"The course introduces digital information systems and services aligned with the dynamic digital environment."},
+{w:"Week 8-9", q:"Which emerging trend, alongside blockchain, is mentioned for virtual libraries' future?", o:["AI-driven search","Manual card catalog expansion","Increased reliance on CD-ROMs","Elimination of all open access models"], a:0, e:"Future trends mentioned include AI-driven search and blockchain in digital libraries."},
+// ---------------- WEEK 10: CASE STUDIES ----------------
+{w:"Week 10", q:"Google Books is described in the case study as:", o:["A subscription-only academic database with no previews","A vast digital repository providing previews, full-text access for public domain works, and metadata indexing","A purely offline CD-ROM service","A library management software like Koha"], a:1, e:"Google Books offers previews, full-text access (for public domain works), and metadata indexing."},
+{w:"Week 10", q:"Project Gutenberg is highlighted in the case study for its focus on:", o:["Making public domain books freely available, being one of the earliest digital libraries","Charging high subscription fees for journals","Hosting only multimedia video content","Managing university administrative records"], a:0, e:"Project Gutenberg is one of the earliest digital libraries, dedicated to free public domain books."},
+{w:"Week 10", q:"IEEE Xplore is described as a premier digital library for:", o:["Public domain fiction novels","Scientific and engineering literature","Children's picture books","Local newspaper archives only"], a:1, e:"IEEE Xplore is a premier digital library for scientific and engineering literature."},
+{w:"Week 10", q:"Which platforms are introduced for hands-on practice with digital library software?", o:["DSpace, Greenstone, and Koha","Photoshop and Illustrator","Excel and PowerPoint","WhatsApp and Telegram"], a:0, e:"DSpace, Greenstone, and Koha are introduced as widely used platforms for managing digital collections."},
+{w:"Week 10", q:"In the metadata/content management hands-on session, which standard is used as an example?", o:["MODS only","Dublin Core","HTTP","TCP/IP"], a:1, e:"Students learn to organize/catalog/retrieve resources using metadata standards such as Dublin Core."},
+{w:"Week 10", q:"What does the search and retrieval techniques session focus on understanding?", o:["Indexing, full-text search, and filtering mechanisms","Physical shelving arrangement","Printing press calibration","Electrical wiring standards"], a:0, e:"The session focuses on indexing, full-text search, and filtering mechanisms in digital libraries."},
+{w:"Week 10", q:"The 'User Access and Security' hands-on topic explores:", o:["Digital rights management (DRM), authentication, and licensing","Building architecture and HVAC systems","Catering services for library events","Marketing strategies for new books"], a:0, e:"This topic explores DRM, authentication, and licensing in digital libraries."},
+{w:"Week 10", q:"What is the overall goal of the Week 10 case studies and practical demonstrations?", o:["To memorize lecturer biographies","To give students practical experience using digital library tools and a deeper understanding of how digital information is structured and managed","To replace the final examination entirely","To teach hardware repair of library computers"], a:1, e:"By the end of the session, students gain practical experience and a deeper understanding of digital information structuring/management."},
+// ---------------- COURSE-WIDE / ASSESSMENT ----------------
+{w:"Course Info", q:"What percentage of the final grade is allocated to the Final Examination?", o:["10%","15%","5%","70%"], a:3, e:"Assessment structure: First Test 10%, Second Test 15%, Practical Project 5%, Final Examination 70%."},
+{w:"Course Info", q:"In which week does the Practical Project assessment occur?", o:["Week 5","Week 8","Week 10","Week 12"], a:2, e:"The Practical Project (5%) is scheduled for Week 10."},
+{w:"Course Info", q:"Who are the lecturers listed for CSC 114?", o:["Isa Adam Muhammad and Haruna Adamu","Sergey Brin and Larry Page","Michael Hart and Paul Ginsparg","J.C.R. Licklider and Vannevar Bush"], a:0, e:"The lecturers listed are Isa Adam Muhammad and Haruna Adamu."},
+{w:"Course Info", q:"How many credit units is CSC 114 worth?", o:["1","2","3","4"], a:1, e:"CSC 114 carries 2 credit units."},
+];
+
+/* ============== STATE ============== */
+let activeBank = [];
+let mode = "exam";
+let current = 0;
+let score = 0;
+let answers = []; // {qIndex, selected, correct}
+let timerInterval = null;
+let timeLeft = 0;
+let selectedWeeks = new Set();
+
+const ALL_WEEKS = [...new Set(BANK.map(q=>q.w))];
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+/* ============== INIT START SCREEN ============== */
+document.getElementById('bankCount').textContent = `Catalog contains ${BANK.length} questions across ${ALL_WEEKS.length} units (Week 1 → Week 12).`;
+
+const unitList = document.getElementById('unitList');
+ALL_WEEKS.forEach(w=>{
+  const chip = document.createElement('div');
+  chip.className='unit-chip';
+  chip.textContent = w;
+  chip.addEventListener('click', ()=>{
+    if(selectedWeeks.has(w)){ selectedWeeks.delete(w); chip.classList.remove('active'); }
+    else { selectedWeeks.add(w); chip.classList.add('active'); }
+  });
+  unitList.appendChild(chip);
+});
+
+document.querySelectorAll('.mode-card').forEach(card=>{
+  card.addEventListener('click', ()=>{
+    const m = card.dataset.mode;
+    if(m === 'unit'){
+      document.getElementById('unitPicker').open = true;
+      return;
+    }
+    mode = m;
+    activeBank = shuffle(BANK);
+    beginQuiz();
+  });
+});
+
+document.getElementById('startUnitBtn').addEventListener('click', ()=>{
+  if(selectedWeeks.size===0){ alert('Select at least one week first.'); return; }
+  mode = 'practice';
+  activeBank = shuffle(BANK.filter(q=>selectedWeeks.has(q.w)));
+  beginQuiz();
+});
+
+/* ============== QUIZ FLOW ============== */
+function beginQuiz(){
+  current = 0; score = 0; answers = [];
+  document.getElementById('screen-start').classList.add('hidden');
+  document.getElementById('screen-results').classList.add('hidden');
+  document.getElementById('screen-quiz').classList.remove('hidden');
+
+  if(mode === 'exam'){
+    timeLeft = activeBank.length * 30; // 30 seconds per question budget
+    startTimer();
+  } else {
+    document.getElementById('timerText').textContent = '';
+  }
+  renderQuestion();
+}
+
+function startTimer(){
+  updateTimerDisplay();
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft<=0){
+      clearInterval(timerInterval);
+      finishQuiz();
+    }
+  },1000);
+}
+
+function updateTimerDisplay(){
+  const m = Math.floor(timeLeft/60);
+  const s = timeLeft%60;
+  const el = document.getElementById('timerText');
+  el.textContent = `⏳ ${m}:${s.toString().padStart(2,'0')}`;
+  el.classList.toggle('low', timeLeft < 60);
+}
+
+function renderQuestion(){
+  const item = activeBank[current];
+  document.getElementById('progressText').textContent = `Question ${current+1} / ${activeBank.length}`;
+  document.getElementById('barFill').style.width = `${((current)/activeBank.length)*100}%`;
+  document.getElementById('qWeek').textContent = item.w;
+  document.getElementById('qText').textContent = item.q;
+
+  const wrap = document.getElementById('optionsWrap');
+  wrap.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  item.o.forEach((opt, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.innerHTML = `<span class="letter">${letters[idx]}.</span><span>${opt}</span>`;
+    div.addEventListener('click', ()=> selectOption(idx));
+    wrap.appendChild(div);
+  });
+
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('nextBtn').disabled = true;
+  document.getElementById('nextBtn').textContent = current === activeBank.length-1 ? 'Finish →' : 'Next →';
+}
+
+function selectOption(idx){
+  const item = activeBank[current];
+  const opts = document.querySelectorAll('#optionsWrap .option');
+  const already = answers[current] !== undefined;
+  if(already) return;
+
+  opts.forEach(o=>o.classList.add('disabled'));
+  opts[idx].classList.add('selected');
+
+  const isCorrect = idx === item.a;
+  answers[current] = {selected: idx, correct: isCorrect};
+  if(isCorrect) score++;
+
+  if(mode === 'practice'){
+    opts[item.a].classList.add('correct');
+    if(!isCorrect) opts[idx].classList.add('incorrect');
+    const fb = document.getElementById('feedback');
+    fb.style.display = 'block';
+    fb.textContent = (isCorrect ? '✓ Correct. ' : '✗ Not quite. ') + item.e;
+  }
+
+  document.getElementById('nextBtn').disabled = false;
+}
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  if(current === activeBank.length-1){
+    finishQuiz();
+  } else {
+    current++;
+    renderQuestion();
+  }
+});
+
+document.getElementById('quitBtn').addEventListener('click', ()=>{
+  if(confirm('Close this drawer and return to the catalog? Your progress will be lost.')){
+    clearInterval(timerInterval);
+    location.reload();
+  }
+});
+
+function finishQuiz(){
+  clearInterval(timerInterval);
+  document.getElementById('screen-quiz').classList.add('hidden');
+  document.getElementById('screen-results').classList.remove('hidden');
+
+  const total = activeBank.length;
+  const answeredCount = answers.filter(a=>a!==undefined).length;
+  const pct = Math.round((score/total)*100);
+
+  document.getElementById('resultPct').textContent = `${pct}%`;
+  document.getElementById('resultFrac').textContent = `${score} / ${total} correct`;
+  document.getElementById('resultSub').textContent = mode === 'exam' ? 'Final Examination Mode' : 'Practice / Unit Drill';
+
+  let grade = '';
+  if(pct>=80) grade = 'Distinction — you have mastered this unit.';
+  else if(pct>=70) grade = 'Very Good — strong command of the material.';
+  else if(pct>=60) grade = 'Good — solid grasp, revise the weak spots below.';
+  else if(pct>=50) grade = 'Pass — re-read the flagged weeks before the real exam.';
+  else grade = 'Below Pass — go back through the lecture note week by week.';
+  document.getElementById('resultGrade').textContent = grade;
+
+  // breakdown by week
+  const weekStats = {};
+  activeBank.forEach((item,i)=>{
+    if(!weekStats[item.w]) weekStats[item.w] = {correct:0, total:0};
+    weekStats[item.w].total++;
+    if(answers[i] && answers[i].correct) weekStats[item.w].correct++;
+  });
+  const bd = document.getElementById('weekBreakdown');
+  bd.innerHTML = '<div class="drawer-label" style="margin-bottom:8px;">UNIT BREAKDOWN</div>';
+  Object.keys(weekStats).forEach(w=>{
+    const s = weekStats[w];
+    const row = document.createElement('div');
+    row.className = 'breakdown-row';
+    row.innerHTML = `<span>${w}</span><span>${s.correct} / ${s.total}</span>`;
+    bd.appendChild(row);
+  });
+
+  // review list
+  const rl = document.getElementById('reviewList');
+  rl.innerHTML = '';
+  activeBank.forEach((item,i)=>{
+    const ans = answers[i];
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (ans && ans.correct ? 'right':'wrong');
+    const letters = ['A','B','C','D'];
+    let html = `<div class="rq">${i+1}. [${item.w}] ${item.q}</div>`;
+    html += `<div class="ra correct-ans">✓ Correct: ${letters[item.a]}. ${item.o[item.a]}</div>`;
+    if(ans && !ans.correct){
+      html += `<div class="ra wrong-ans">✗ You chose: ${letters[ans.selected]}. ${item.o[ans.selected]}</div>`;
+    } else if(!ans){
+      html += `<div class="ra wrong-ans">— Not answered</div>`;
+    }
+    html += `<div style="margin-top:6px; font-size:0.82rem; color:#5b4d3b;">${item.e}</div>`;
+    div.innerHTML = html;
+    rl.appendChild(div);
+  });
+
+  document.getElementById('barFill').style.width = '100%';
+}
+
+document.getElementById('retryWrongBtn').addEventListener('click', ()=>{
+  const missed = activeBank.filter((item,i)=> !(answers[i] && answers[i].correct));
+  if(missed.length===0){ alert('No missed questions — full marks!'); return; }
+  activeBank = shuffle(missed);
+  mode = 'practice';
+  document.getElementById('screen-results').classList.add('hidden');
+  document.getElementById('screen-quiz').classList.remove('hidden');
+  current = 0; score = 0; answers = [];
+  document.getElementById('timerText').textContent = '';
+  renderQuestion();
+});
+
+document.getElementById('restartBtn').addEventListener('click', ()=> location.reload());
+</script>
+</body>
+</html>
