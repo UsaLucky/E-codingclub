@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1f3a2c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>LIB 111 — The Catalog (Exam Prep)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --parchment:#f1e8d6;
+    --parchment-deep:#e7dabd;
+    --card:#fbf6e9;
+    --ink:#2c2316;
+    --ink-soft:#5b4f3c;
+    --cover:#1f3a2c;
+    --cover-deep:#142a20;
+    --brass:#a9762f;
+    --brass-bright:#c89342;
+    --stamp-red:#7c2d2d;
+    --stamp-green:#2f5c3f;
+    --rule:#c9b98e;
+    --shadow: 0 10px 30px rgba(20,15,5,.18);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--parchment);
+    background-image:
+      radial-gradient(circle at 15% 8%, rgba(169,118,47,.10), transparent 40%),
+      radial-gradient(circle at 90% 85%, rgba(31,58,44,.08), transparent 45%);
+    color:var(--ink);
+    font-family:'Source Serif 4', Georgia, serif;
+    min-height:100vh;
+    min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
+    overscroll-behavior-y:contain;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+  button{font-family:inherit; touch-action:manipulation;}
+  .app{
+    max-width:560px;
+    margin:0 auto;
+    min-height:100vh;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    padding:18px 18px 28px;
+  }
+  /* ---------- Header / drawer label ---------- */
+  .drawer-label{
+    background: linear-gradient(180deg, var(--cover) 0%, var(--cover-deep) 100%);
+    color:#f1e8d6;
+    border-radius:10px;
+    padding:16px 18px 14px;
+    box-shadow: var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .drawer-label::before{
+    content:"";
+    position:absolute; inset:0;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 7px);
+    pointer-events:none;
+  }
+  .drawer-pull{
+    width:46px; height:8px; border-radius:5px;
+    background: linear-gradient(180deg,var(--brass-bright),var(--brass));
+    margin:0 auto 10px;
+    box-shadow: 0 2px 3px rgba(0,0,0,.3) inset, 0 1px 0 rgba(255,255,255,.2);
+  }
+  .drawer-label h1{
+    font-family:'Fraunces', Georgia, serif;
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:.2px;
+    margin:0 0 2px;
+    text-align:center;
+  }
+  .drawer-label .sub{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    color:#c9b98e;
+  }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-bottom:14px;
+  }
+  .topbar .back{
+    background:none; border:none; color:var(--cover); font-family:'IBM Plex Mono',monospace;
+    font-size:13px; letter-spacing:.5px; padding:8px 4px; cursor:pointer;
+  }
+  .topbar .progress-chip{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft);
+    background:var(--card); border:1px solid var(--rule); border-radius:20px; padding:5px 12px;
+  }
+
+  /* ---------- Home screen ---------- */
+  .home{flex:1; display:flex; flex-direction:column; gap:16px; padding-top:18px;}
+  .home p.intro{
+    color:var(--ink-soft); font-size:15px; line-height:1.55; margin:0 4px 4px; text-align:center;
+  }
+  .mode-card{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:16px 16px 14px;
+    box-shadow:var(--shadow);
+    cursor:pointer;
+    position:relative;
+    transition:transform .12s ease;
+  }
+  .mode-card:active{transform:scale(.985);}
+  .mode-card .tab{
+    position:absolute; top:-9px; left:16px;
+    background:var(--brass); color:#fff;
+    font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:1px;
+    padding:3px 9px; border-radius:4px; text-transform:uppercase;
+    box-shadow:0 2px 4px rgba(0,0,0,.15);
+  }
+  .mode-card h3{
+    font-family:'Fraunces',serif; font-size:18px; margin:8px 0 4px; color:var(--ink);
+  }
+  .mode-card p{margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.45;}
+  .mode-card .meta{
+    margin-top:10px; display:flex; gap:14px; font-family:'IBM Plex Mono',monospace;
+    font-size:11px; color:var(--brass);
+  }
+
+  .topic-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px;
+  }
+  .topic-chip{
+    background:var(--card); border:1px solid var(--rule); border-radius:8px;
+    padding:11px 10px; font-size:12.5px; color:var(--ink); cursor:pointer; text-align:left;
+    line-height:1.3; min-height:44px; display:flex; align-items:center;
+  }
+  .topic-chip:active{background:var(--parchment-deep);}
+  .topic-chip .n{display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--brass); margin-bottom:2px;}
+
+  .hidden{display:none !important;}
+
+  /* ---------- Quiz card (catalog card look) ---------- */
+  .quiz-wrap{flex:1; display:flex; flex-direction:column;}
+  .bar{
+    height:6px; background:var(--parchment-deep); border-radius:4px; overflow:hidden; margin:14px 0 18px;
+  }
+  .bar > div{height:100%; background:linear-gradient(90deg,var(--brass),var(--brass-bright)); transition:width .25s ease;}
+
+  .catalog-card{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:6px;
+    box-shadow:var(--shadow);
+    position:relative;
+    padding:22px 18px 18px;
+    margin-bottom:16px;
+  }
+  .catalog-card::before{
+    content:"";
+    position:absolute; top:0; left:50%; transform:translate(-50%,-50%);
+    width:20px; height:20px; border-radius:50%;
+    background:var(--parchment);
+    border:1px solid var(--rule);
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.15);
+  }
+  .catalog-card .stamp-no{
+    position:absolute; top:10px; right:12px;
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--brass);
+    letter-spacing:.5px;
+  }
+  .catalog-card .topic-tag{
+    display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10px;
+    text-transform:uppercase; letter-spacing:1px; color:var(--cover);
+    background:rgba(31,58,44,.08); border:1px solid rgba(31,58,44,.2);
+    padding:3px 8px; border-radius:4px; margin-bottom:10px;
+  }
+  .catalog-card h2{
+    font-family:'Fraunces',serif; font-weight:600; font-size:18px; line-height:1.4; margin:0 0 16px;
+  }
+  .options{display:flex; flex-direction:column; gap:9px;}
+  .opt{
+    border:1.5px solid var(--rule);
+    background:var(--parchment);
+    border-radius:8px;
+    padding:12px 14px;
+    font-size:15px;
+    text-align:left;
+    cursor:pointer;
+    display:flex; gap:10px; align-items:flex-start;
+    line-height:1.4;
+    min-height:48px;
+  }
+  .opt .letter{
+    font-family:'IBM Plex Mono',monospace; font-weight:600; color:var(--brass); flex-shrink:0;
+  }
+  .opt:active{background:var(--parchment-deep);}
+  .opt.correct{
+    border-color:var(--stamp-green); background:rgba(47,92,63,.10); color:var(--stamp-green); font-weight:600;
+  }
+  .opt.wrong{
+    border-color:var(--stamp-red); background:rgba(124,45,45,.08); color:var(--stamp-red);
+  }
+  .opt.disabled{opacity:.55; pointer-events:none;}
+  .opt.disabled.correct, .opt.disabled.wrong{opacity:1;}
+
+  .explain{
+    margin-top:14px; padding:12px 14px; border-radius:8px;
+    background:var(--parchment-deep); border-left:3px solid var(--brass);
+    font-size:13.5px; color:var(--ink-soft); line-height:1.5;
+    display:none;
+  }
+  .explain.show{display:block;}
+
+  .nav-row{display:flex; gap:10px; margin-top:auto;}
+  .btn{
+    flex:1; border:none; border-radius:8px; padding:13px 14px; font-size:15px; font-weight:600;
+    cursor:pointer; font-family:'Source Serif 4',serif; min-height:48px;
+  }
+  .btn-primary{background:var(--cover); color:#f1e8d6;}
+  .btn-primary:disabled{background:#9aa79f; color:#e7e7e2; cursor:not-allowed;}
+  .btn-ghost{background:none; border:1.5px solid var(--rule); color:var(--ink-soft);}
+  .btn-primary:active:not(:disabled){background:var(--cover-deep);}
+
+  .streak{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--brass);
+    display:flex; align-items:center; gap:5px; justify-content:center; margin-bottom:8px;
+  }
+
+  /* ---------- Results ---------- */
+  .results{flex:1; display:flex; flex-direction:column; gap:16px; padding-top:8px;}
+  .score-card{
+    background: linear-gradient(180deg, var(--cover) 0%, var(--cover-deep) 100%);
+    color:#f1e8d6; border-radius:12px; padding:26px 20px; text-align:center; box-shadow:var(--shadow);
+  }
+  .score-card .pct{font-family:'Fraunces',serif; font-size:48px; font-weight:700;}
+  .score-card .label{font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#c9b98e; margin-top:2px;}
+  .score-card .grade{
+    margin-top:10px; display:inline-block; font-family:'IBM Plex Mono',monospace;
+    font-size:11px; letter-spacing:1px; padding:4px 12px; border-radius:20px;
+    background:rgba(255,255,255,.12);
+  }
+  .breakdown{background:var(--card); border:1px solid var(--rule); border-radius:10px; padding:14px 16px;}
+  .breakdown h3{font-family:'Fraunces',serif; font-size:15px; margin:0 0 10px;}
+  .b-row{display:flex; align-items:center; gap:10px; padding:7px 0; font-size:13px;}
+  .b-row .name{flex:1; color:var(--ink-soft);}
+  .b-track{flex:1.3; height:7px; background:var(--parchment-deep); border-radius:4px; overflow:hidden;}
+  .b-fill{height:100%; background:var(--brass);}
+  .b-frac{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); width:38px; text-align:right;}
+
+  .review-list{display:flex; flex-direction:column; gap:8px;}
+  .review-item{
+    background:var(--card); border:1px solid var(--rule); border-radius:8px; padding:11px 13px;
+    font-size:13px; display:flex; gap:10px; align-items:flex-start;
+  }
+  .review-item .mark{font-size:15px; line-height:1.4;}
+  .review-item .txt{flex:1; line-height:1.45; color:var(--ink);}
+  .review-item .txt .ans{color:var(--ink-soft); margin-top:3px; font-size:12.5px;}
+
+  ::selection{background:var(--brass-bright); color:#fff;}
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;} }
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* =========================================================
+   LIB 111 — QUESTION BANK
+   Source: AFIT LIB 111 Lecture Notes (Use of Library, Study Skills & ICT)
+   ========================================================= */
+const BANK = [
+// ---- Concept & Origin of Library ----
+{t:"Concept & Origin", q:"The word 'library' is derived from which Latin word?", o:["Liber","Biblio","Codex","Scriptum"], a:0, e:"'Library' comes from the Latin 'liber', meaning 'a book'."},
+{t:"Concept & Origin", q:"The word for library in German, Russian and the Romance languages derives from a Latinized Greek word:", o:["Theca","Bibliotheca","Pinakes","Scriptorium"], a:1, e:"'Bibliotheca', a Latinized Greek word, is the root used in German, Russian and Romance languages."},
+{t:"Concept & Origin", q:"According to UNESCO, a library is best described as:", o:["A storehouse for rare manuscripts only","An organized collection of published books, periodicals and other materials with staff to interpret them for users","A government records office","A private reading room"], a:1, e:"UNESCO defines a library as an organized collection of published materials with staff able to interpret them to meet users' needs."},
+{t:"Concept & Origin", q:"Who described the library as a 'storehouse of knowledge' where professionally selected materials are processed for easy retrieval?", o:["Ranganathan","Obiora (1995)","Dewey","Putman"], a:1, e:"Obiora (1995) described the library this way, as noted in the lecture."},
+{t:"Concept & Origin", q:"Materials originally used for writing before the book, housed in early repositories, included:", o:["Clay tablets, papyrus rolls and scrolls","Printed pamphlets","Microfilm reels","Compact discs"], a:0, e:"Clay tablets, papyrus rolls and scrolls were the earliest writing materials kept in repositories (proto-libraries)."},
+{t:"Concept & Origin", q:"The library holdings of King Ashurbanipal of Assyria (c. 625 BC) contained roughly how many tablets?", o:["3,000","30,000","300,000","3,000,000"], a:1, e:"King Ashurbanipal's collection held more than 30,000 tablets."},
+{t:"Concept & Origin", q:"Which of these was NOT named among the important libraries of the ancient world in the notes?", o:["The great Library at Alexandria","Bibliotheca Ulpia of Rome","The Imperial Library at Byzantium","The British Library"], a:3, e:"The British Library is a modern institution, not one of the ancient libraries listed (Alexandria, Bibliotheca Ulpia, Imperial Library at Byzantium, Aristotle's library)."},
+{t:"Concept & Origin", q:"During the 14th–15th centuries, library books were often chained to:", o:["Encourage borrowing","Prevent misuse and stealing","Mark their classification","Indicate their language"], a:1, e:"Books were chained together in this period to prevent misuse and theft, since they were scarce and valuable."},
+{t:"Concept & Origin", q:"What development in the mid-15th century changed libraries from preservation centres to free-access centres?", o:["The invention of paper","The invention of the printing press","The discovery of papyrus","The founding of Alexandria"], a:1, e:"The invention of the printing press in the mid-15th century made books more available and cheaper, shifting libraries toward free access."},
+{t:"Concept & Origin", q:"Ranganathan's FIRST law of library science states:", o:["Every Reader His Book","Books are for Use","Save the Time of the User","The Library is a Growing Organism"], a:1, e:"Ranganathan's first law is 'Books are for Use.'"},
+{t:"Concept & Origin", q:"Which of Ranganathan's five laws emphasises efficiency for the patron?", o:["Every Book Its Reader","Save the Time of the User","Every Reader His Book","The Library is a Growing Organism"], a:1, e:"'Save the Time of the User' is Ranganathan's fourth law."},
+{t:"Concept & Origin", q:"Ranganathan's fifth law, 'The Library is a Growing Organism', implies that libraries must:", o:["Stay fixed in size forever","Continually expand and adapt over time","Only grow in staff, never in collection","Avoid acquiring new materials"], a:1, e:"This law recognises that collections, users and services keep expanding, so libraries must adapt continuously."},
+
+// ---- Library objectives, librarian, functions ----
+{t:"Library Objectives & Functions", q:"A librarian is generally expected to hold, at minimum:", o:["A secondary school certificate","A degree or master's in library and information science","A diploma in any discipline","No formal qualification"], a:1, e:"A librarian typically holds at least a degree or master's in library and information science/studies."},
+{t:"Library Objectives & Functions", q:"Which is a basic function of the library as outlined in the notes?", o:["Selection and acquisition of materials","Manufacturing books","Setting national examinations","Running a postal service"], a:0, e:"Selection and acquisition of library materials is one of the library's basic functions, alongside preservation, providing facilities, lending, dissemination and organisation."},
+{t:"Library Objectives & Functions", q:"Inter-library loan is an example of which library function?", o:["Cataloguing","Borrowing and lending materials","Digital preservation","Classification"], a:1, e:"Inter-library loan falls under borrowing and lending materials between libraries."},
+{t:"Library Objectives & Functions", q:"Dissemination of materials in a library happens mainly through:", o:["Circulation, reference and reserve units","The accounts department","The security office only","External vendors"], a:0, e:"Libraries disseminate information through circulation, reference and reserve services."},
+{t:"Library Objectives & Functions", q:"According to the Alva Public Library (2015), a key objective of a library is to:", o:["Maximize ticket sales","Serve the community as a centre of reliable information","Replace schools entirely","Compete with bookstores"], a:1, e:"One stated objective is to serve the community as a centre of reliable information, alongside supporting education and culture."},
+{t:"Library Objectives & Functions", q:"Providing carrels and photocopying services relates to which library function?", o:["Providing adequate physical facilities for study","Cataloguing","Digital archaeology","Piracy control"], a:0, e:"The notes list providing comfortable physical facilities (carrels, typing, photocopying) as a basic library function."},
+{t:"Library Objectives & Functions", q:"Organizing library materials so they are accessible mainly involves:", o:["A scheme of classification and catalogues/indexes for location","Random shelving","Locking all books away","Avoiding open shelves"], a:0, e:"Organising materials involves classification schemes and catalogues/bibliographies/indexes for easy retrieval."},
+{t:"Library Objectives & Functions", q:"Who is described in the notes as 'anybody who works in the library' to the uninformed public, though properly a trained professional?", o:["The cataloguer","The librarian","The security officer","The bursar"], a:1, e:"The notes contrast the layperson's view of 'librarian' with the trained professional definition."},
+
+// ---- Types of libraries ----
+{t:"Types of Libraries", q:"How many major types of libraries are identified in the notes?", o:["Three","Four","Five","Six"], a:2, e:"Five types are listed: National, Public, School, Academic, and Special libraries."},
+{t:"Types of Libraries", q:"Which library is also called the 'Apex Library' and serves as legal depository for the nation?", o:["Public Library","National Library","School Library","Special Library"], a:1, e:"The National Library is also called the Apex Library and acts as the legal depository and bibliographic centre."},
+{t:"Types of Libraries", q:"Which body is responsible for issuing the International Standard Book Number (ISBN)?", o:["Public Library","National Library","Academic Library","School Library"], a:2, e:"The notes state the National Library is responsible for issuing ISBNs."},
+{t:"Types of Libraries", q:"A library 'often called the people's library', maintained mainly by public funds, is the:", o:["Special Library","Public Library","Academic Library","National Library"], a:1, e:"The Public Library is described as the 'people's library', funded publicly and serving the general public."},
+{t:"Types of Libraries", q:"Mobile library services extending to hospitals and prisons are a feature of:", o:["School Libraries","Academic Libraries","Public Libraries","Special Libraries"], a:2, e:"Public libraries offer extension/mobile services to underserved groups, including hospitals and prisons."},
+{t:"Types of Libraries", q:"Libraries designed to support a school's curriculum, often giving pupils their first library experience, are:", o:["School Libraries","Special Libraries","National Libraries","Academic Libraries"], a:0, e:"School libraries support the curriculum and give pupils their first experience of using a library."},
+{t:"Types of Libraries", q:"AFIT's library is an example of which type of library?", o:["Special Library","National Library","Academic Library","Public Library"], a:2, e:"The notes explicitly cite AFIT, Kaduna Polytechnic and Federal Colleges of Education libraries as examples of Academic Libraries."},
+{t:"Types of Libraries", q:"A library attached to an organization, ministry or research institute, generally not open to the public, is called a:", o:["Special Library","Public Library","National Library","School Library"], a:0, e:"Special libraries serve organisations like research institutes, hospitals or the military and are not open to the general public."},
+{t:"Types of Libraries", q:"Which of these is given as an example of a Special Library?", o:["A public city library","A military (Arms and Armour) library","A primary school library","A national depository library"], a:1, e:"Examples given include Research Institute, Medical, Teaching Hospital and Military libraries."},
+{t:"Types of Libraries", q:"Reader advisory service and inter-library loan are functions most associated with:", o:["School Libraries","Academic Libraries","National Libraries","Special Libraries"], a:1, e:"Academic libraries promote reader advisory services and inter-library loan to support staff and students."},
+
+// ---- Book ----
+{t:"The Book", q:"UNESCO (1985) defines a book as a non-periodical publication consisting of at least how many pages, excluding the cover?", o:["29 pages","39 pages","49 pages","99 pages"], a:2, e:"UNESCO's 1985 definition specifies at least 49 pages, excluding the cover."},
+{t:"The Book", q:"A single sheet within a book is called a 'leaf'; each side of a leaf is called a:", o:["Folio","Page","Spine","Signature"], a:1, e:"Each side of a leaf is termed a page."},
+{t:"The Book", q:"A book produced in electronic format is called:", o:["A pamphlet","An e-book","A reprint","A periodical"], a:1, e:"An electronically produced book is an e-book."},
+{t:"The Book", q:"Publications shorter than 49 pages are classified as:", o:["Reference books","Trade books","Pamphlets","Reprints"], a:2, e:"Publications under the 49-page threshold are called pamphlets, not books."},
+{t:"The Book", q:"Which part of a book carries the publisher's crest/logo as well as title and author information?", o:["Fly page","Spine","Front cover","Glossary"], a:2, e:"The front cover identifies the title, author and other information; the spine also carries the publisher's crest."},
+{t:"The Book", q:"The blank pages at the beginning and end of a book, serving as protection, are called:", o:["Title pages","Fly pages","Forewords","Subsidiaries"], a:1, e:"Fly pages are blank protective pages at the start and end of a book."},
+{t:"The Book", q:"An explanatory statement on the purpose of a book, usually written by someone other than the author, is the:", o:["Acknowledgement","Foreword","Glossary","Bibliography"], a:1, e:"The Foreword explains the book's purpose and is typically written by another knowledgeable person."},
+{t:"The Book", q:"The subsidiaries of a book, found at the end of the text, typically include:", o:["The title page and dedication","Reference/bibliography and glossary","The front and back covers only","The table of contents"], a:1, e:"Subsidiaries located at the end of the text include the reference/bibliography section and glossary."},
+{t:"The Book", q:"Novels, travel books and religious books published for public consumption are classified as:", o:["Text books","Trade books","Reference books","Reprints"], a:1, e:"Trade books are general-interest books published for the public, including novels and travel/religious works."},
+{t:"The Book", q:"Books meant to be consulted for specific facts rather than read cover to cover are:", o:["Reprints","Trade books","Reference books","Text books"], a:2, e:"Reference books are designed for consultation on specific information, not continuous reading."},
+
+// ---- Sections of the library ----
+{t:"Sections of the Library", q:"Planning the library budget and developing library policy are responsibilities of which section?", o:["Cataloging Section","Administration","Circulation Section","Acquisition Section"], a:1, e:"Administration, headed by the librarian, is responsible for budgeting, policy, and supervision."},
+{t:"Sections of the Library", q:"Compiling reading lists and conducting library tours fall under the:", o:["Reference Section","Acquisition Section","Cataloging Section","Bindery"], a:0, e:"The Reference Section handles library tours, translation services, exhibitions and compiling reading lists, among others."},
+{t:"Sections of the Library", q:"Collecting fines and dues, and loaning out books, are duties of the:", o:["Circulation Section","Reference Section","Administration","Cataloging Section"], a:0, e:"The Circulation Section manages loaning, fines, due dates and orientation for new patrons."},
+{t:"Sections of the Library", q:"The section responsible for book identification, selection, ordering and inspecting received books is:", o:["Acquisition Section","Circulation Section","Reference Section","Administration"], a:0, e:"The Acquisition Section handles identification, selection, ordering, receiving and inspecting materials."},
+{t:"Sections of the Library", q:"Assigning a call mark (class number) that corresponds to a book's subject is called:", a:1, o:["Cataloguing","Classification","Labeling","Description cataloguing"], e:"Classification is the process of assigning a class number (call mark) matching the subject content."},
+{t:"Sections of the Library", q:"Recording bibliographic details such as author, title, publisher and ISBN on a descriptive sheet is called:", o:["Labeling","Description cataloguing","Classification","Filing"], a:1, e:"Description cataloguing involves recording bibliographic details like author, title, publisher, edition and ISBN."},
+{t:"Sections of the Library", q:"Producing and affixing a spine label showing a book's call mark is known as:", o:["Labeling","Cataloguing","Classification","Cuttering"], a:0, e:"Labeling is the process of producing and placing call-mark labels on the spine (or front, for small books)."},
+{t:"Sections of the Library", q:"Which two major schemes are mentioned for organising materials by subject in the Cataloging Section?", o:["APA and MLA","LC and DDC","ALA and AACR2","ISBN and ISSN"], a:1, e:"The notes mention the Library of Congress (LC) and Dewey Decimal Classification (DDC) schemes."},
+
+// ---- Library Automation ----
+{t:"Library Automation", q:"Library automation is best defined as:", o:["Manual cataloguing of all materials","Mechanization of routine, repetitive library housekeeping operations using computers","Replacing librarians with robots entirely","Outsourcing the library to another institution"], a:1, e:"Library automation mechanizes the routine, repetitive operations of the library using computers and associated technology."},
+{t:"Library Automation", q:"Madu (2004) describes the sharing of responsibilities between staff and computers as a:", o:["Human-machine system","Digital archive","Technology preservation model","Hybrid catalogue"], a:0, e:"Madu (2004) refers to this collaboration between humans and computers as a human-machine system."},
+{t:"Library Automation", q:"Which of these is listed as a PURPOSE of library automation?", o:["Increasing manual labour","Saving the time of the user","Reducing the size of the collection","Eliminating reference services"], a:1, e:"Saving the user's time is one of the major purposes of library automation, along with better services and storage solutions."},
+{t:"Library Automation", q:"Which is an ADVANTAGE of library automation listed in the notes?", o:["Slower record retrieval","Greater redundancy of records","Real-time update of records","Reduced resource sharing"], a:2, e:"Library automation enables real-time record updates, improved accuracy and faster retrieval."},
+{t:"Library Automation", q:"A CHALLENGE of library automation mentioned is:", o:["Excess funding","Unstable power supply","Too many trained staff","Over-reliance on print catalogues"], a:1, e:"Unstable power supply is listed as a key challenge since automated systems depend on electricity."},
+{t:"Library Automation", q:"Fear among staff that automation may lead to job loss is described in the notes as a:", o:["Technical problem","Socio-political problem","Natural factor","Currency issue"], a:1, e:"This phobia toward technology, tied to fear of retrenchment, is termed a socio-political problem."},
+{t:"Library Automation", q:"One benefit of automation TO LIBRARY STAFF specifically is:", o:["Reduced need for any skills","Empowerment in decision-making","Less communication with IT services","Removal of staff training"], a:1, e:"The notes list empowerment of staff in decision-making as a benefit to staff, alongside new communication patterns and skills acquisition."},
+{t:"Library Automation", q:"Aina (2004) defines library automation as:", o:["The elimination of librarians","The computerization of routine tasks previously performed by humans","A type of reference service","A copyright enforcement mechanism"], a:1, e:"Aina (2004) defines it as computerizing routine tasks formerly done manually by library staff."},
+
+// ---- ICT / Computers ----
+{t:"ICT & Computer Basics", q:"ICT is best described as technology where computers and telecommunication devices are used for:", o:["Only entertainment","Information gathering, processing, storage, retrieval and dissemination","Manufacturing hardware only","Printing books exclusively"], a:1, e:"ICT covers the full cycle: gathering, processing, storing, retrieving and disseminating information to users."},
+{t:"ICT & Computer Basics", q:"In computing terms, 'data' refers to:", o:["Accurate, timely information presented in context","A distinct piece of information, usually formatted in a special way","A network of devices","A type of output device"], a:1, e:"Data is defined as a distinct piece of information in a specific format; 'information' is data made accurate, timely and meaningful."},
+{t:"ICT & Computer Basics", q:"Devices that translate processed results into a form humans can understand are:", o:["Input devices","Output devices","Hardware","Software"], a:1, e:"Output devices translate computer-processed information into human-understandable form."},
+{t:"ICT & Computer Basics", q:"The physical elements that make up a computer system are referred to as:", o:["Software","Hardware","Network","Data"], a:1, e:"Hardware refers to the physical components of a computer system."},
+{t:"ICT & Computer Basics", q:"Classified by SIZE, the largest, fastest and most expensive computers used for intensive computation are:", o:["Mainframe","Micro","Mini","Super computers"], a:3, e:"Supercomputers are the largest, fastest, most expensive class, used for intensive computational tasks (e.g. PARAM, Jaguar)."},
+{t:"ICT & Computer Basics", q:"Mainframe computers are also commonly nicknamed:", o:["The big iron","The tiny giant","The personal box","The micro engine"], a:0, e:"Mainframes, large general-purpose computers, are commonly known as 'the big iron'."},
+{t:"ICT & Computer Basics", q:"Tablets, smart watches and smartphones are examples of which size classification?", o:["Mini computers","Micro computers","Mainframe computers","Super computers"], a:1, e:"Microcomputers are small in size yet powerful, including tablets, smartwatches and smartphones."},
+{t:"ICT & Computer Basics", q:"Classified by data handling, a computer that processes physical quantities like temperature and voltage is:", o:["Digital","Analog","Hybrid","Mini"], a:1, e:"Analog computers process continuous physical quantities such as temperature, humidity and voltage."},
+{t:"ICT & Computer Basics", q:"A computer combining features of both digital and analog processing is called:", o:["Mainframe","Hybrid","Micro","Super"], a:1, e:"Hybrid computers combine analog and digital processing features."},
+{t:"ICT & Computer Basics", q:"A computer designed for domestic use such as games, diaries and family budgets is classified (by functionality) as a:", o:["Word processor","Home computer","Mainframe","Personal computer"], a:1, e:"Home computers are low-cost machines designed for domestic uses like games and budgeting."},
+
+// ---- Computer and the Library ----
+{t:"Computer & the Library", q:"Computers are used in the library for tasks such as:", o:["Only printing labels","Processing, ordering, accounting for materials and literature searching","Manufacturing furniture","Conducting fumigation"], a:1, e:"The notes list processing, ordering, accounting, purchase, loan control, stock recording and literature searching among computer uses in the library."},
+{t:"Computer & the Library", q:"The main purpose of library automation, per the notes, is to enable librarians to:", o:["Focus on physical building maintenance","Concentrate on meaningful spread of knowledge and information","Avoid contact with patrons","Eliminate the reference desk"], a:1, e:"Automation frees librarians and staff to focus on meaningfully disseminating knowledge rather than repetitive manual tasks."},
+{t:"Computer & the Library", q:"Improved resource sharing via virtual catalogues or networks is listed as a/an:", o:["Challenge of automation","Advantage of automation","Disadvantage of the internet","Factor of deterioration"], a:1, e:"Improved resource sharing through virtual catalogues/networks is listed as an advantage of library automation."},
+{t:"Computer & the Library", q:"Lack of technical personnel to maintain library software is identified as a:", o:["Advantage of automation","Challenge of automation","Type of reference service","Filing rule"], a:1, e:"Insufficient technical staff to maintain automated systems is listed as a challenge of library automation."},
+{t:"Computer & the Library", q:"ICTs have altered libraries mainly by changing how they:", o:["Select, acquire, organize and deliver information","Hire security staff","Design furniture","Print physical newsletters only"], a:0, e:"ICT has changed how libraries select, acquire, organize and deliver information to users."},
+
+// ---- Internet & Information Sourcing ----
+{t:"Internet & Info Sourcing", q:"The internet is best defined as:", o:["A single national computer system","A global conglomeration of interconnected computer networks","A type of reference book","A library cataloguing scheme"], a:1, e:"The internet is a global/international conglomeration of interconnected computer networks serving users worldwide."},
+{t:"Internet & Info Sourcing", q:"Which of these is NOT listed as a common format for internet/online materials?", o:["PDF","Word Document","Clay tablet","PowerPoint"], a:2, e:"Listed formats include PDF, Word, audio, visual, Excel and PowerPoint files — not clay tablets, which were ancient writing media."},
+{t:"Internet & Info Sourcing", q:"A website's domain suffix (e.g. .edu, .gov, .com) gives a clue about its:", o:["File size","Purpose/audience","Internet speed","Encryption level"], a:1, e:"The domain suffix hints at the site's purpose and intended audience."},
+{t:"Internet & Info Sourcing", q:"Checking whether a site credits a credible author or sponsor relates to evaluating its:", o:["Currency","Authority","Links","URL"], a:1, e:"Authority involves verifying the credibility/expertise of the author or sponsoring body."},
+{t:"Internet & Info Sourcing", q:"Ensuring a research resource is not outdated relates to checking its:", o:["Currency","Authority","Domain suffix","Comparison"], a:0, e:"Currency means checking that a resource is up to date and complete."},
+{t:"Internet & Info Sourcing", q:"Truncating a URL to its root address helps determine:", o:["Where the site is hosted","The author's qualifications","The file format","The site's currency"], a:0, e:"Truncating the URL to its root reveals where the site is hosted, aiding authenticity checks."},
+{t:"Internet & Info Sourcing", q:"Which is listed as an ADVANTAGE of the internet?", o:["Internet addiction disorder","Unlimited education opportunities","Web crime","Social alienation"], a:1, e:"Unlimited/virtual education is listed as an advantage; addiction, web crime and alienation are disadvantages."},
+{t:"Internet & Info Sourcing", q:"Which is listed as a DISADVANTAGE of the internet?", o:["Easy access from anywhere","Abundant information","Web crime by hackers","Faster communication"], a:2, e:"Web crime (hacking, data theft) is listed as a disadvantage, alongside addiction and social alienation."},
+{t:"Internet & Info Sourcing", q:"Reduced face-to-face interaction due to excessive time online is described as:", o:["Web crime","Social alienation","Currency failure","Digital archaeology"], a:1, e:"Social alienation refers to decreased real-life interaction from excessive internet use."},
+{t:"Internet & Info Sourcing", q:"The internet can be considered a 'global library' because it:", o:["Has a fixed, easily measured size","Stores varied information in digital form across languages and formats","Only contains academic journals","Is curated by a single editorial board"], a:1, e:"The notes describe the internet as a global library storing varied digital information, though its size is impossible to estimate."},
+
+// ---- Online materials & resources ----
+{t:"Online Materials & Resources", q:"According to Lawinsider (2013), 'online material' refers to:", o:["Only printed books scanned to PDF","Any writing, image, video, sound or data accessible to the public via a website","Library catalogue cards only","Government documents exclusively"], a:1, e:"Lawinsider's 2013 definition covers any writing, visual image, video, sound recording or data accessible via the internet."},
+{t:"Online Materials & Resources", q:"Library databases, scholarly journals and eBooks (e.g. ProQuest, ARTstor) are examples of which type of online resource?", o:["Current information sources","Sources for academic research","Institutional information sources","Entertainment sources"], a:1, e:"These are classified as research-oriented online resources such as library databases and scholarly journals."},
+{t:"Online Materials & Resources", q:"CNN, ESPN and NTA are cited as examples of online resources providing:", o:["Scholarly journals","Government policy archives","Current information such as news and sports scores","Library catalogues"], a:2, e:"These outlets exemplify current information sources like news, weather and sports updates."},
+{t:"Online Materials & Resources", q:"When evaluating authenticity of online content, checking the author's expertise relates to the question:", o:["Where was it published?","Who published the content?","What is its purpose?","Are the links relevant?"], a:1, e:"'Who published the content?' addresses whether the author is an expert/qualified on the subject."},
+{t:"Online Materials & Resources", q:"A key ADVANTAGE of online resources is that they:", o:["Are always free from quality issues","Expand access to learning materials anytime, anywhere","Eliminate the need for any internet connection","Are exclusively available in all world languages"], a:1, e:"Online resources expand access, allowing students to reach materials at any time and from anywhere."},
+{t:"Online Materials & Resources", q:"A DISADVANTAGE of online resources noted in the lecture is:", o:["Quick circulation","Lower cost than textbooks","Language barriers limiting non-English speakers","Multimedia enhancement of content"], a:2, e:"Language barriers are listed as a disadvantage, since many resources are available mainly in English."},
+{t:"Online Materials & Resources", q:"Sustainability issues with Open Educational Resources (OERs) arise because:", o:["Creators receive no payment, reducing incentive to update them","They are too expensive to host","Governments ban them","They cannot be accessed on mobile devices"], a:0, e:"Since OER creators are typically unpaid, there is little incentive to keep materials updated."},
+{t:"Online Materials & Resources", q:"Checking that an online article's grammar and vocabulary are correct relates to evaluating its:", o:["Currency","Accuracy","Purpose","Links"], a:1, e:"Accuracy concerns the writer's correct use of language and vocabulary in the content."},
+
+// ---- Digital preservation ----
+{t:"Digital Preservation", q:"Digital preservation is defined as:", o:["Keeping digital materials usable despite hardware/software obsolescence","Printing all digital files on paper","Deleting outdated digital files","Encrypting all files permanently"], a:0, e:"Digital preservation keeps digital materials alive and usable as technology advances and original formats become obsolete."},
+{t:"Digital Preservation", q:"Creating an exact copy of digital content, popularly called 'backing up data', is the strategy known as:", o:["Refreshing","Bit stream copying","Technology preservation","Digital archaeology"], a:1, e:"Bit stream copying is the process of creating an exact copy of digital content — i.e., backing up data."},
+{t:"Digital Preservation", q:"Copying digital details from one medium to another of the same type, without changes, is called:", o:["Refreshing","Persistent media storage","Analog backup","Data migration"], a:0, e:"Refreshing addresses physical storage deterioration by copying data onto a new medium of the same type."},
+{t:"Digital Preservation", q:"Using long-term media like gold CDs, highly resistant to corrosion, exemplifies:", o:["Technology preservation","Persistent media storage","Digital archaeology","Bit stream copying"], a:1, e:"Persistent media storage uses durable long-term media such as gold CDs."},
+{t:"Digital Preservation", q:"Preserving the operating systems and software environment a system runs on is informally called the:", o:["Computer museum solution","Gold CD strategy","Bit stream method","Analog conversion"], a:0, e:"Technology preservation, keeping the original digital environment intact, is nicknamed the 'computer museum' solution."},
+{t:"Digital Preservation", q:"Recovering data from already damaged digital media, as an emergency strategy, is called:", o:["Data migration","Digital archaeology","Refreshing","Persistent media storage"], a:1, e:"Digital archaeology is the emergency recovery of data from damaged digital media."},
+
+// ---- Preservation of library materials ----
+{t:"Preservation of Materials", q:"Theft, mutilation and pencil/biro marks on materials are classified as which factor of deterioration?", o:["Biological factor","Human factor","Chemical factor","Natural factor"], a:1, e:"Theft, mutilation and writing marks are human factors of deterioration."},
+{t:"Preservation of Materials", q:"Insects, rodents and mildew are classified under which factor of deterioration?", o:["Physical factor","Biological factor","Chemical factor","Human factor"], a:1, e:"Insects, rodents and microorganisms like mildew are biological factors damaging library materials."},
+{t:"Preservation of Materials", q:"Light, heat, humidity and dust are grouped under which factor of deterioration?", o:["Physical agents","Natural factors","Human factors","Chemical factors"], a:0, e:"Light, heat, humidity/moisture and dust/dirt are physical agents of deterioration."},
+{t:"Preservation of Materials", q:"Fire, wind and flooding are grouped under which factor of deterioration?", o:["Chemical factors","Natural factors","Biological factors","Human factors"], a:1, e:"Fire, wind and water (flooding) are classified as natural factors of deterioration."},
+{t:"Preservation of Materials", q:"Which is listed as a preventive/curative preservation measure for library materials?", o:["Mending and lamination","Increasing humidity deliberately","Allowing open access to chemicals","Removing all lighting"], a:0, e:"Mending, lamination, binding, fumigation and de-acidification are among the preventive/curative measures listed."},
+{t:"Preservation of Materials", q:"William (1970) observed about library collections that:", o:["They never deteriorate if stored well","Everything is deteriorating today, yesterday, and will continue tomorrow","Only old books deteriorate","Digital materials deteriorate but print does not"], a:1, e:"William (1970) stated that everything in a library collection is, was, and will continue deteriorating, though librarians should retard the process."},
+
+// ---- Rules and regulations ----
+{t:"Library Rules", q:"According to the library rules listed, eating or drinking is:", o:["Allowed only with staff permission","Prohibited in the reading room","Allowed at all times","Allowed only for reference materials"], a:1, e:"Eating/drinking in the reading room (library) is explicitly prohibited."},
+{t:"Library Rules", q:"Reference books and audio-visual materials may be taken out of the library:", o:["Freely, at any time","Only with the librarian/staff's permission","Never, under any circumstance, even with permission","Only by academic staff"], a:1, e:"Such materials may not be taken out without permission from the librarian or library staff."},
+{t:"Library Rules", q:"What must users do before leaving the institution or organization?", o:["Pay a final library fee","Return all library materials in their possession","Destroy their library ticket","Donate a book"], a:1, e:"Users must return all library materials in their possession before leaving the institution."},
+{t:"Library Rules", q:"Borrower's tickets are described in the rules as:", o:["Transferable to family members","Not transferable","Valid for any library nationwide","Optional for borrowing"], a:1, e:"Borrower's tickets are not transferable; users are advised to keep them secured."},
+
+// ---- Copyright, Plagiarism, Piracy ----
+{t:"Copyright & the Law", q:"According to WIPO (2014), copyright is a legal term describing:", o:["Government control over all publications","The rights creators have over their literary and artistic works","Library lending rights only","Rights to access the internet freely"], a:1, e:"WIPO defines copyright as the rights creators hold over their literary and artistic works."},
+{t:"Copyright & the Law", q:"Which of these is explicitly listed as protected by copyright?", o:["Photographic works","Public domain folklore with no known author","Government statistical data tables","Common everyday phrases"], a:0, e:"Photographic works are listed among items protected by copyright, alongside books, music, drawings and films."},
+{t:"Copyright & the Law", q:"The two broad types of copyright rights identified are:", o:["Economic right and moral right","Civil right and criminal right","Public right and private right","National right and international right"], a:0, e:"Copyright comprises economic rights and moral rights (including paternity right and right of respect)."},
+{t:"Copyright & the Law", q:"Which Nigerian body, alongside the police, can impound and destroy equipment used by copyright infringers?", o:["Nigerian Copyright Commission","National Library of Nigeria","AFIT Senate","Federal Ministry of Education"], a:0, e:"The Nigerian Copyright Commission, working with the Nigerian Police Force, can impound, destroy and sell infringing equipment."},
+{t:"Copyright & the Law", q:"Plagiarism is best described in the notes as:", o:["A legitimate research method","A literary theft involving pilfering another's work and lying about it","A type of reference service","A library classification scheme"], a:1, e:"Plagiarism is defined as a dishonest, unlawful act of literary theft — pilfering another's work and being dishonest about its source."},
+{t:"Copyright & the Law", q:"Which of the following is listed as evidence of plagiarism?", o:["Citing all sources properly","Using quotation marks for direct quotes","Failing to put direct quotations in quotation marks","Acknowledging paraphrased ideas"], a:2, e:"Failing to use quotation marks for direct quotations is explicitly listed as evidence of plagiarism."},
+{t:"Copyright & the Law", q:"Which is mentioned as a free plagiarism checker in the notes?", o:["Turnitin","iThenticate","Chimpsky","PlagScan"], a:2, e:"Chimpsky is listed among the free plagiarism checkers; Turnitin, iThenticate and PlagScan are listed as commercial tools."},
+{t:"Copyright & the Law", q:"Fair use, per the US Copyright Office (2012), is best described as:", o:["Total elimination of copyright protection","A limitation on the copyright holder's exclusive rights for small reproductions with minimal effect on the work's value","A rule applying only to music","An exception that requires no acknowledgement"], a:1, e:"Fair use permits limited reproduction of copyrighted material when it has little effect on the original work's value."},
+{t:"Copyright & the Law", q:"Which is listed as a condition for fair use?", o:["Reproducing entire works for resale","Use as illustrations for teaching","Mass commercial distribution","Avoiding acknowledgement of source"], a:1, e:"Using works as illustrations for teaching is one of the listed conditions for fair use, alongside research/private study and reporting current events."},
+{t:"Copyright & the Law", q:"Piracy, as defined in the notes, refers to:", o:["Borrowing books without returning them","Illegally reproducing copyrighted work for commercial gain without permission","Writing a book review","Lending personal books to friends"], a:1, e:"Piracy is the illegal reproduction of copyrighted works for sale/commercial gain without the owner's permission."},
+
+// ---- Cataloguing and Classification ----
+{t:"Cataloguing & Classification", q:"Cataloguing follows set rules specified in which standards mentioned in the notes?", o:["AACR2 or RDA","APA or MLA","LC or DDC","ISBN or ISSN"], a:0, e:"Cataloguing rules are specified in AACR2 (Anglo-American Cataloguing Rules) or RDA (Resource Description and Access)."},
+{t:"Cataloguing & Classification", q:"The print catalogue cards traditionally prepared for each title measure:", o:["5 x 7 inches","3 x 5 inches","4 x 6 inches","2 x 4 inches"], a:1, e:"Traditional print catalogue cards are prepared in 3 x 5 inch format."},
+{t:"Cataloguing & Classification", q:"OPAC stands for:", o:["Online Public Access Catalogue","Open Public Archive Center","Organized Print and Catalogue","Online Periodical Access Centre"], a:0, e:"OPAC stands for Online Public Access Catalogue."},
+{t:"Cataloguing & Classification", q:"Which is NOT one of the three types of catalogues listed in the notes?", o:["Author/Title catalogue","Classified catalogue","Subject catalogue","Annotated catalogue"], a:3, e:"The three types listed are Author/Title, Classified, and Subject catalogues — 'Annotated' is a type of bibliography, not catalogue."},
+{t:"Cataloguing & Classification", q:"Which of these is listed as a FORM of library catalogue?", o:["Sheaf catalogue","Trade catalogue","Reprint catalogue","Pamphlet catalogue"], a:0, e:"Forms listed include card, book, sheaf, computer and OPAC catalogues."},
+{t:"Cataloguing & Classification", q:"The Library of Congress (LC) classification scheme was formulated in 1899 by:", o:["Melvin Dewey","Herbert Putman","Ranganathan","Cutter"], a:1, e:"Herbert Putman formulated the LC scheme in 1899 for the US Congress library."},
+{t:"Cataloguing & Classification", q:"In the LC scheme, which letters are presently NOT in use?", o:["A, B, C, D, E","I, O, W, X, Y","P, Q, R, S, T","J, K, L, M, N"], a:1, e:"The letters I, O, W, X and Y are not currently used in the LC classification scheme."},
+{t:"Cataloguing & Classification", q:"In the LC classification scheme, which letter represents 'Philosophy, Psychology, Religion'?", o:["A","B","C","D"], a:1, e:"B represents Philosophy, Psychology, Religion in the LC scheme."},
+{t:"Cataloguing & Classification", q:"Melvin Dewey first published the Dewey Decimal Classification (DDC) scheme in which year?", o:["1876","1899","1925","1950"], a:0, e:"Dewey first published the DDC scheme in 1876 for his private library."},
+{t:"Cataloguing & Classification", q:"In the DDC scheme, the class 300–399 represents:", o:["Religion","Social Science","Pure Science","Literature"], a:1, e:"300–399 is the Social Science division in Dewey Decimal Classification."},
+
+// ---- Shelving and shelf arrangement ----
+{t:"Shelving & Filing", q:"Books on library shelves are arranged primarily by:", o:["Author surname","Title alphabetically","Class mark (call number)","Date of acquisition"], a:2, e:"Books on shelves are arranged by class marks (call numbers), not by author or title directly."},
+{t:"Shelving & Filing", q:"Cuttering, according to Oketunji (2005), exists mainly to:", o:["Speed up book printing","Differentiate materials on the same subject by different authors","Replace classification entirely","Determine library opening hours"], a:1, e:"Cuttering differentiates works on the same subject written by different authors, bringing alphabetical uniformity to shelving."},
+{t:"Shelving & Filing", q:"The filing rules recommended in the notes for libraries are based on the 2nd edition of AACR2 and are called:", o:["APA filing rules","MLA filing rules","ALA filing rules","DDC filing rules"], a:2, e:"The ALA filing rules, based on AACR2 2nd edition, are recommended for library filing."},
+{t:"Shelving & Filing", q:"The most common filing practice for catalogue cards is:", o:["Letter by letter","Word by word","Number by number","Date by date"], a:1, e:"'Word by word' is identified as the most common filing practice, compared to 'letter by letter'."},
+
+// ---- Reference tools and services ----
+{t:"Reference Tools & Services", q:"A reference book consulted for definitions, spelling and pronunciation of words is a:", o:["Encyclopedia","Dictionary","Gazetteer","Directory"], a:1, e:"A dictionary is consulted for definitions, spelling and pronunciation of words."},
+{t:"Reference Tools & Services", q:"A reference source providing a geographical dictionary of place names and statistics is a:", o:["Gazetteer","Yearbook","Handbook","Atlas"], a:0, e:"A gazetteer is a geographical dictionary/directory giving information about place names and features."},
+{t:"Reference Tools & Services", q:"A bound collection of maps, sometimes with charts and tables, is called a/an:", o:["Atlas","Directory","Handbook","Manual"], a:0, e:"An atlas is a bound collection of maps, often accompanied by charts and tables."},
+{t:"Reference Tools & Services", q:"A reference source giving lists of names, addresses and phone numbers of persons/organizations is a:", o:["Yearbook","Directory","Manual","Biographical source"], a:1, e:"A directory lists contact information for persons, organizations or institutions."},
+{t:"Reference Tools & Services", q:"A reference source published annually, useful for historical research soon after events occur, is a:", o:["Yearbook","Manual","Gazetteer","Dictionary"], a:0, e:"Yearbooks are published annually and are useful for historical research shortly after events occur."},
+{t:"Reference Tools & Services", q:"A book that gives an account of a person's life, achievements and career is a:", o:["Biographical source","Handbook","Manual","Yearbook"], a:0, e:"Biographical sources provide accounts of individuals' lives, achievements and careers."},
+{t:"Reference Tools & Services", q:"A portable reference work providing concise, established facts on a specific subject is a:", o:["Handbook","Atlas","Gazetteer","Directory"], a:0, e:"A handbook is a portable reference source giving concise, comprehensive facts on a specific subject."},
+{t:"Reference Tools & Services", q:"Which is listed as a criterion for evaluating reference materials?", o:["Page colour","Currency (how up-to-date it is)","Number of illustrations only","Country of printing"], a:1, e:"Currency, along with authority, scope, accuracy and objectivity, is a listed criterion for evaluating reference materials."},
+
+// ---- Tools for information access & retrieval ----
+{t:"Information Retrieval Tools", q:"A brief summary of a research work meant to help readers quickly grasp its content is called a/an:", o:["Index","Abstract","Bibliography","Gazetteer"], a:1, e:"An abstract is a brief summary guiding readers on a paper's intent and content."},
+{t:"Information Retrieval Tools", q:"A guide that serves as an access point to contents of periodicals, books or reports is a/an:", o:["Index","Atlas","Handbook","Yearbook"], a:0, e:"An index serves as an access point to the contents of periodicals, books, conference proceedings and reports."},
+{t:"Information Retrieval Tools", q:"A bibliography that lists works by/about a single subject without commentary is best described under which type?", o:["Annotated bibliography","Enumerative bibliography","Analytical bibliography","National bibliography"], a:1, e:"An enumerative bibliography simply lists sources, as opposed to annotated (with notes) or analytical bibliographies."},
+{t:"Information Retrieval Tools", q:"Google, Yahoo and Bing are examples of:", o:["Meta-search engines","Subject directories","Search engines","Library catalogues"], a:2, e:"Google, Yahoo, Bing and similar tools are classified as search engines."},
+{t:"Information Retrieval Tools", q:"A tool that gathers and searches results from SEVERAL search engines at once, like Dogpile or Metacrawler, is a:", o:["Subject directory","Meta-search engine","Library OPAC","Bibliography"], a:1, e:"Meta-search engines (e.g. Dogpile, Metacrawler, Mamma) search across multiple engines simultaneously."},
+{t:"Information Retrieval Tools", q:"Tools that assist browsing many sites on a narrower topic, generally non-commercial, are called:", o:["Subject directories","Meta-search engines","Web crawlers","OPACs"], a:0, e:"Subject directories (e.g. Infomine) help browse sites on a topic and are largely non-commercial in orientation."},
+
+// ---- Citation and referencing ----
+{t:"Citation & Referencing", q:"Which citation format is mentioned alongside APA and MLA in the notes?", o:["Turabian","HTML","DDC","ISBN"], a:0, e:"Turabian (Kate L.) is listed among the standard citation formats, alongside APA, MLA and NEA."},
+{t:"Citation & Referencing", q:"In academic writing, citation style requires consistency mainly because:", o:["Only one format exists","No format is better than another, but one should remain consistent throughout a paper","Switching styles improves credibility","Style choice is determined by the publisher only"], a:1, e:"No citation format is inherently superior; the key is consistency once a style is chosen."},
+{t:"Citation & Referencing", q:"APA and MLA formats both require writers to handle references in two ways: in-text citations and:", o:["Footnotes only","A complete reference list at the end of the write-up","Endnotes in a separate appendix only","Verbal acknowledgement during presentation"], a:1, e:"Both styles require citing sources within the text and providing a complete reference list at the end."},
+
+// ---- Research ----
+{t:"Research", q:"Creswell (2008) describes research as a process involving which three steps?", o:["Reading, writing, editing","Posing a question, collecting data, presenting an answer","Selecting, acquiring, cataloguing","Planning, filing, shelving"], a:1, e:"Creswell's three steps are: pose a question, collect data to answer it, and present an answer."},
+{t:"Research", q:"Which is listed as a CHARACTERISTIC of research?", o:["It must be biased","It must be empirical","It must avoid verification","It must be informal"], a:1, e:"Research must be controlled, rigorous, systematic, valid, verifiable, empirical and critical."},
+{t:"Research", q:"The FIRST step typically listed in conducting research is:", o:["Analysis of data","Identification of the research problem","Drawing conclusions","Communicating findings"], a:1, e:"Identification of the research problem is the starting point of the systematic research process."},
+{t:"Research", q:"In a thesis/dissertation, which chapter typically covers the Literature Review?", o:["Chapter One","Chapter Two","Chapter Three","Chapter Four"], a:1, e:"Chapter Two is typically devoted to the Literature Review, pointing out gaps justifying the study."},
+{t:"Research", q:"Which chapter of a thesis is concerned with the research design, population, sampling and instrumentation?", o:["Chapter One: Introduction","Chapter Two: Literature Review","Chapter Three: Methodology","Chapter Five: Conclusions"], a:2, e:"Chapter Three (Methodology) covers design, population, sampling and instrumentation."},
+{t:"Research", q:"A good research work should ensure that procedures are described in enough detail to:", o:["Confuse other researchers","Permit another researcher to replicate the work","Avoid peer review","Hide the researcher's methodology"], a:1, e:"Sufficient procedural detail allows other researchers to repeat or replicate the study."},
+
+// ---- Study Skills ----
+{t:"Study Skills", q:"According to the Dictionary of Education (2005), 'skills' are defined as:", o:["Innate talents needing no practice","The capacity to perform particular tasks or achieve goals, often acquired through training and practice","Abilities only relevant to sports","Random natural abilities"], a:1, e:"Skills are the capacity to perform tasks/achieve goals, typically built through sustained training and practice."},
+{t:"Study Skills", q:"Ukaga (2000) lists reasons students study, including:", o:["To avoid all examinations","To pass tests and gain mastery for career success","To reduce time spent reading","To avoid acquiring new skills"], a:1, e:"Ukaga's reasons include passing exams, gaining skills for academic/career success, and mastering subject areas."},
+{t:"Study Skills", q:"Per the notes, the best time to study depends mainly on:", o:["The lecturer's preference","The subject's nature and time available, studying when you can naturally concentrate","Always studying very late at night","Studying only during daylight hours"], a:1, e:"The ideal study time depends on the subject and available time; one should study when concentration is naturally strongest."},
+{t:"Study Skills", q:"Which is listed as an essential element of success in studying?", o:["Avoidance of all challenges","Self-discipline","Luck alone","Reliance solely on others"], a:1, e:"Motivation, courage, determination and self-discipline are listed as essential elements of success."},
+{t:"Study Skills", q:"Per the timetable planning tips, how many hours of sleep are recommended per 24 hours?", o:["Five hours","Six hours","Eight hours","Ten hours"], a:2, e:"The notes recommend allotting eight hours of sleep per 24 hours."},
+{t:"Study Skills", q:"Which is listed as an ADVANTAGE of a well-planned study schedule?", o:["It increases procrastination","It gives a sense of direction and saves time","It removes the need for self-discipline","It eliminates the need for review periods"], a:1, e:"A well-planned study schedule gives direction, organizes work, saves time and builds self-discipline."},
+];
+
+/* =========================================================
+   APP STATE & LOGIC
+   ========================================================= */
+const TOPICS = [...new Set(BANK.map(q=>q.t))];
+
+let state = {
+  screen: 'home',
+  mode: null,           // 'practice' | 'exam' | 'topic'
+  topicFilter: null,
+  queue: [],
+  idx: 0,
+  selected: null,
+  locked: false,
+  correctCount: 0,
+  streak: 0,
+  bestStreak: 0,
+  results: [],          // {topic, correct}
+  timerEnd: null,
+  timerInterval: null,
+};
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function startQuiz(mode, topic){
+  let pool = BANK;
+  if(mode === 'topic' && topic){ pool = BANK.filter(q=>q.t===topic); }
+  let count;
+  if(mode === 'practice') count = Math.min(20, pool.length);
+  else if(mode === 'exam') count = Math.min(50, pool.length);
+  else count = pool.length;
+
+  state.mode = mode;
+  state.topicFilter = topic || null;
+  state.queue = shuffle(pool).slice(0, count).map(q=>{
+    const optOrder = shuffle(q.o.map((text,i)=>({text,i})));
+    return {...q, optOrder, correctNewIndex: optOrder.findIndex(o=>o.i===q.a)};
+  });
+  state.idx = 0;
+  state.selected = null;
+  state.locked = false;
+  state.correctCount = 0;
+  state.streak = 0;
+  state.bestStreak = 0;
+  state.results = [];
+
+  clearInterval(state.timerInterval);
+  if(mode === 'exam'){
+    const minutes = Math.max(15, Math.round(count*0.9));
+    state.timerEnd = Date.now() + minutes*60*1000;
+    state.timerInterval = setInterval(()=>{
+      if(Date.now() >= state.timerEnd){ clearInterval(state.timerInterval); finishQuiz(); }
+      else render();
+    }, 1000);
+  } else {
+    state.timerEnd = null;
+  }
+
+  state.screen = 'quiz';
+  render();
+}
+
+function selectOption(i){
+  if(state.locked) return;
+  state.selected = i;
+  if(state.mode === 'exam'){
+    // exam mode: no instant feedback, just record and lock to selection (can change until next)
+    render();
+    return;
+  }
+  state.locked = true;
+  const q = state.queue[state.idx];
+  const correct = i === q.correctNewIndex;
+  recordAnswer(q, correct);
+  render();
+}
+
+function recordAnswer(q, correct){
+  if(correct){ state.correctCount++; state.streak++; state.bestStreak = Math.max(state.bestStreak,state.streak); }
+  else { state.streak = 0; }
+  state.results.push({topic:q.t, correct, question:q.q, chosen: state.selected, correctIdx:q.correctNewIndex, optOrder:q.optOrder});
+}
+
+function nextQuestion(){
+  if(state.mode === 'exam' && !state.locked){
+    const q = state.queue[state.idx];
+    const correct = state.selected !== null && state.selected === q.correctNewIndex;
+    if(state.selected !== null) recordAnswer(q, correct);
+    else state.results.push({topic:q.t, correct:false, question:q.q, chosen:null, correctIdx:q.correctNewIndex, optOrder:q.optOrder});
+  }
+  state.idx++;
+  state.selected = null;
+  state.locked = false;
+  if(state.idx >= state.queue.length){ finishQuiz(); }
+  else render();
+}
+
+function finishQuiz(){
+  clearInterval(state.timerInterval);
+  state.screen = 'results';
+  render();
+}
+
+function goHome(){
+  clearInterval(state.timerInterval);
+  state.screen = 'home';
+  render();
+}
+
+function fmtTime(ms){
+  if(ms<0) ms=0;
+  const m = Math.floor(ms/60000);
+  const s = Math.floor((ms%60000)/1000);
+  return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+/* ---------- Rendering ---------- */
+const app = document.getElementById('app');
+
+function render(){
+  if(state.screen === 'home') return renderHome();
+  if(state.screen === 'quiz') return renderQuiz();
+  if(state.screen === 'results') return renderResults();
+}
+
+function renderHome(){
+  app.innerHTML = `
+    <div class="drawer-label">
+      <div class="drawer-pull"></div>
+      <h1>LIB 111 — The Catalog</h1>
+      <div class="sub">Use of Library · Study Skills · ICT</div>
+    </div>
+    <div class="home">
+      <p class="intro">${BANK.length} cards drawn from the AFIT LIB 111 lecture notes. Pick a drawer to begin.</p>
+
+      <div class="mode-card" id="m-practice">
+        <span class="tab">Drawer 1</span>
+        <h3>Practice Review</h3>
+        <p>20 mixed questions, instant feedback with explanations after each answer. Best for first pass review.</p>
+        <div class="meta"><span>⏱ self-paced</span><span>✓ explanations on</span></div>
+      </div>
+
+      <div class="mode-card" id="m-exam">
+        <span class="tab">Drawer 2</span>
+        <h3>Timed Exam Simulation</h3>
+        <p>50 questions, timed, no feedback until you finish — closest to real exam conditions.</p>
+        <div class="meta"><span>⏱ ~45 min</span><span>✓ scored at end</span></div>
+      </div>
+
+      <div>
+        <h3 style="font-family:'Fraunces',serif; font-size:15px; margin:4px 0 8px; color:var(--ink-soft);">Drawer 3 — Review by topic</h3>
+        <div class="topic-grid">
+          ${TOPICS.map(t=>{
+            const n = BANK.filter(q=>q.t===t).length;
+            return `<button class="topic-chip" data-topic="${t}"><span><span class="n">${n} cards</span>${t}</span></button>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+  document.getElementById('m-practice').onclick = ()=>startQuiz('practice');
+  document.getElementById('m-exam').onclick = ()=>startQuiz('exam');
+  document.querySelectorAll('.topic-chip').forEach(btn=>{
+    btn.onclick = ()=>startQuiz('topic', btn.dataset.topic);
+  });
+}
+
+function renderQuiz(){
+  const q = state.queue[state.idx];
+  const total = state.queue.length;
+  const pct = Math.round((state.idx/total)*100);
+  const isExam = state.mode === 'exam';
+  const showFeedback = !isExam && state.locked;
+
+  let timerHtml = '';
+  if(isExam && state.timerEnd){
+    const remain = state.timerEnd - Date.now();
+    timerHtml = `<span class="progress-chip">⏳ ${fmtTime(remain)}</span>`;
+  } else {
+    timerHtml = `<span class="progress-chip">${state.idx+1} / ${total}</span>`;
+  }
+
+  app.innerHTML = `
+    <div class="quiz-wrap">
+      <div class="topbar">
+        <button class="back" id="exit-btn">← Exit</button>
+        ${timerHtml}
+      </div>
+      <div class="bar"><div style="width:${pct}%"></div></div>
+      ${!isExam ? `<div class="streak">🔥 streak: ${state.streak}${state.idx>0?` · ${state.correctCount}/${state.idx} correct so far`:''}</div>` : ''}
+
+      <div class="catalog-card">
+        <span class="stamp-no">No. ${state.idx+1}</span>
+        <span class="topic-tag">${q.t}</span>
+        <h2>${q.q}</h2>
+        <div class="options" id="options">
+          ${q.optOrder.map((opt,i)=>{
+            let cls = 'opt';
+            if(isExam){
+              if(state.selected===i) cls += ' selected-exam';
+            } else if(state.locked){
+              cls += ' disabled';
+              if(i===q.correctNewIndex) cls += ' correct';
+              else if(i===state.selected) cls += ' wrong';
+            } else if(state.selected===i){
+              cls += ' selected-exam';
+            }
+            const letter = ['A','B','C','D'][i];
+            const ring = (!isExam && state.locked===false && state.selected===i) || (isExam && state.selected===i) ? 'border-color:var(--brass);background:var(--parchment-deep);' : '';
+            return `<button class="${cls}" style="${ring}" data-i="${i}"><span class="letter">${letter}.</span><span>${opt.text}</span></button>`;
+          }).join('')}
+        </div>
+        ${showFeedback ? `<div class="explain show">${state.selected===q.correctNewIndex ? '✔ Correct. ' : '✘ Not quite. '}${q.e}</div>` : ''}
+      </div>
+
+      <div class="nav-row">
+        ${!isExam ? `
+          <button class="btn btn-primary" id="next-btn" ${!state.locked?'disabled':''}>${state.idx+1>=total ? 'Finish' : 'Next card →'}</button>
+        ` : `
+          <button class="btn btn-primary" id="next-btn">${state.idx+1>=total ? 'Submit exam' : 'Next →'}</button>
+        `}
+      </div>
+    </div>
+  `;
+
+  document.getElementById('exit-btn').onclick = ()=>{
+    if(confirm('Leave this session? Your progress on this attempt will be lost.')) goHome();
+  };
+  document.querySelectorAll('#options .opt').forEach(btn=>{
+    btn.onclick = ()=> selectOption(parseInt(btn.dataset.i,10));
+  });
+  document.getElementById('next-btn').onclick = nextQuestion;
+}
+
+function renderResults(){
+  const total = state.results.length;
+  const correct = state.results.filter(r=>r.correct).length;
+  const pct = total ? Math.round((correct/total)*100) : 0;
+  let grade = 'Keep drilling';
+  if(pct>=80) grade='Excellent — exam ready';
+  else if(pct>=65) grade='Solid — light review needed';
+  else if(pct>=50) grade='Fair — revisit weak topics';
+  else grade='Needs focused study';
+
+  const byTopic = {};
+  state.results.forEach(r=>{
+    byTopic[r.topic] = byTopic[r.topic] || {c:0,n:0};
+    byTopic[r.topic].n++;
+    if(r.correct) byTopic[r.topic].c++;
+  });
+
+  const missed = state.results.filter(r=>!r.correct);
+
+  app.innerHTML = `
+    <div class="drawer-label">
+      <div class="drawer-pull"></div>
+      <h1>Session Closed</h1>
+      <div class="sub">${state.mode==='exam'?'Timed Exam':state.mode==='topic'?state.topicFilter:'Practice Review'}</div>
+    </div>
+    <div class="results">
+      <div class="score-card">
+        <div class="pct">${pct}%</div>
+        <div class="label">${correct} of ${total} correct</div>
+        <div class="grade">${grade}</div>
+      </div>
+
+      <div class="breakdown">
+        <h3>By topic</h3>
+        ${Object.entries(byTopic).map(([t,v])=>`
+          <div class="b-row">
+            <div class="name">${t}</div>
+            <div class="b-track"><div class="b-fill" style="width:${Math.round((v.c/v.n)*100)}%"></div></div>
+            <div class="b-frac">${v.c}/${v.n}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      ${missed.length ? `
+        <div class="breakdown">
+          <h3>Review missed cards (${missed.length})</h3>
+          <div class="review-list">
+            ${missed.map(r=>`
+              <div class="review-item">
+                <span class="mark">📌</span>
+                <div class="txt">
+                  ${r.question}
+                  <div class="ans">Correct answer: ${r.optOrder[r.correctIdx].text}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : `<div class="breakdown"><p style="margin:0; color:var(--stamp-green); font-size:14px;">No missed cards this round — perfect drawer.</p></div>`}
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="home-btn">Back to drawers</button>
+        <button class="btn btn-primary" id="retry-btn">Run again</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('home-btn').onclick = goHome;
+  document.getElementById('retry-btn').onclick = ()=> startQuiz(state.mode, state.topicFilter);
+}
+
+render();
+</script>
+</body>
+</html>
