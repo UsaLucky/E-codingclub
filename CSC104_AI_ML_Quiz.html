@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSC104 — PDFNest Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #E8302A;
+    --primary-dark: #C0251F;
+    --primary-light: #F05550;
+    --red-bg: rgba(232,48,42,0.08);
+    --red-bg-hover: rgba(232,48,42,0.13);
+    --red-border: rgba(232,48,42,0.25);
+    --bg: #F5F5F7;
+    --surface: #FFFFFF;
+    --surface2: #F0F0F2;
+    --border: #E4E4E8;
+    --border2: #D0D0D5;
+    --ink: #0F0F0F;
+    --ink2: #3A3A3F;
+    --ink3: #6E6E78;
+    --ink4: #9E9EA8;
+    --green: #16A34A;
+    --amber: #D97706;
+    --blue: #2563EB;
+    --purple: #7C3AED;
+    --r-card: 16px;
+    --r-input: 12px;
+    --r-pill: 999px;
+    --r-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.05);
+    --shadow: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.14), 0 4px 12px rgba(0,0,0,0.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0F0F0F;
+      --surface: #1A1A1A;
+      --surface2: #242428;
+      --border: #2E2E34;
+      --border2: #3A3A42;
+      --ink: #F0F0F4;
+      --ink2: #C8C8D0;
+      --ink3: #8A8A96;
+      --ink4: #5A5A68;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--ink); min-height: 100vh; padding-bottom: 120px; }
+  a { color: inherit; text-decoration: none; }
+
+  /* NAV */
+  .top-nav {
+    position: sticky; top: 0; z-index: 100;
+    height: 56px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 16px; gap: 12px;
+  }
+  .nav-left { display: flex; align-items: center; gap: 10px; }
+  .nav-back {
+    width: 36px; height: 36px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: var(--r-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 18px; color: var(--ink2); flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .nav-back:hover { background: var(--border); }
+  .nav-logo {
+    width: 34px; height: 34px; background: var(--primary);
+    border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .nav-logo svg { width: 20px; height: 20px; }
+  .nav-brand { display: flex; flex-direction: column; line-height: 1.1; }
+  .nav-brand strong { font-size: 0.88rem; font-weight: 700; color: var(--ink); }
+  .nav-brand span { font-size: 0.72rem; color: var(--ink3); }
+  .nav-right { display: flex; align-items: center; gap: 8px; }
+  .timer-chip {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--red-bg); border: 1px solid var(--red-border);
+    border-radius: var(--r-pill); padding: 4px 12px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+    font-weight: 500; color: var(--primary);
+  }
+  .btn-icon {
+    width: 36px; height: 36px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: var(--r-sm);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; transition: background 0.15s;
+  }
+  .btn-icon:hover { background: var(--border); }
+  .btn-icon.active { background: var(--red-bg); border-color: var(--red-border); }
+
+  /* HERO */
+  .hero {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 20px 16px 16px;
+  }
+  .hero-inner { max-width: 720px; margin: 0 auto; }
+  .breadcrumb { font-size: 0.72rem; color: var(--ink3); margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+  .breadcrumb span { color: var(--primary); font-weight: 600; }
+  .hero-tag {
+    display: inline-flex; align-items: center;
+    background: var(--red-bg); border: 1px solid var(--red-border);
+    border-radius: var(--r-pill); padding: 3px 10px;
+    font-size: 0.68rem; font-weight: 700; color: var(--primary);
+    letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .hero h1 { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 6px; }
+  .hero h1 em { color: var(--primary); font-style: normal; }
+  .hero-sub { font-size: 0.82rem; color: var(--ink3); margin-bottom: 14px; }
+  .stats-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .stat-chip {
+    display: flex; align-items: center; gap: 5px;
+    border-radius: var(--r-pill); padding: 4px 10px;
+    font-size: 0.72rem; font-weight: 600; border: 1px solid transparent;
+  }
+  .stat-chip.blue { background: rgba(37,99,235,0.08); color: var(--blue); border-color: rgba(37,99,235,0.2); }
+  .stat-chip.green { background: rgba(22,163,74,0.08); color: var(--green); border-color: rgba(22,163,74,0.2); }
+  .stat-chip.red { background: var(--red-bg); color: var(--primary); border-color: var(--red-border); }
+  .stat-chip.purple { background: rgba(124,58,237,0.08); color: var(--purple); border-color: rgba(124,58,237,0.2); }
+  .stat-chip.amber { background: rgba(217,119,6,0.08); color: var(--amber); border-color: rgba(217,119,6,0.2); }
+  .progress-wrap { display: flex; align-items: center; gap: 10px; }
+  .progress-bar-bg {
+    flex: 1; height: 6px; background: var(--surface2);
+    border-radius: var(--r-pill); overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; width: 0%; border-radius: var(--r-pill);
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    transition: width 0.4s ease;
+  }
+  .progress-label { font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: var(--ink3); white-space: nowrap; }
+
+  /* ACTION BUTTONS */
+  .actions-row {
+    max-width: 720px; margin: 14px auto; padding: 0 16px;
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .btn { display: inline-flex; align-items: center; gap: 6px; border-radius: var(--r-pill); padding: 8px 16px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.15s; border: 1.5px solid transparent; white-space: nowrap; }
+  .btn-outline { background: var(--surface); border-color: var(--border2); color: var(--ink2); }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-ghost-red { background: var(--red-bg); border-color: var(--red-border); color: var(--primary); }
+  .btn-ghost-red:hover { background: var(--red-bg-hover); }
+  .btn-danger { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .btn-danger:hover { background: var(--primary-dark); }
+
+  /* MAIN */
+  .main { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+
+  /* BOOKMARK PANEL */
+  .bm-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-card); padding: 16px; margin-bottom: 12px;
+    display: none;
+    box-shadow: var(--shadow-sm);
+  }
+  .bm-card.open { display: block; }
+  .bm-card h3 { font-size: 0.82rem; font-weight: 700; color: var(--ink2); margin-bottom: 10px; }
+  #bm-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .bm-pill {
+    background: var(--red-bg); border: 1px solid var(--red-border);
+    color: var(--primary); border-radius: var(--r-pill);
+    padding: 3px 10px; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+    font-weight: 500; cursor: pointer;
+  }
+  .bm-pill:hover { background: var(--red-bg-hover); }
+  .bm-empty { font-size: 0.78rem; color: var(--ink4); font-style: italic; }
+
+  /* SUMMARY */
+  .summary-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r-card); margin-bottom: 12px;
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .sum-toggle {
+    width: 100%; display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; cursor: pointer; border: none; background: none;
+    font-family: 'Inter', sans-serif; color: var(--ink);
+  }
+  .sum-toggle-left { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 700; }
+  .sum-arrow { font-size: 0.75rem; color: var(--ink3); transition: transform 0.25s; }
+  .sum-arrow.open { transform: rotate(180deg); }
+  #sum-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+  #sum-body.open { display: block; }
+  .sum-section { margin-top: 12px; }
+  .sum-section h4 { font-size: 0.78rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .sum-section p { font-size: 0.8rem; color: var(--ink2); line-height: 1.6; }
+  .chip {
+    display: inline-block; background: var(--red-bg); border: 1px solid var(--red-border);
+    color: var(--primary); border-radius: 4px; padding: 1px 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 500;
+    margin: 1px;
+  }
+
+  /* SEARCH */
+  .search-wrap { position: relative; margin-bottom: 10px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--ink4); pointer-events: none; }
+  #search-input {
+    width: 100%; padding: 10px 12px 10px 38px;
+    background: var(--surface); border: 1.5px solid var(--border2);
+    border-radius: var(--r-input); font-family: 'Inter', sans-serif;
+    font-size: 0.85rem; color: var(--ink); outline: none;
+    transition: border-color 0.15s;
+  }
+  #search-input:focus { border-color: var(--primary); }
+  #search-input::placeholder { color: var(--ink4); }
+
+  /* FILTER PILLS */
+  .filter-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .filter-pill {
+    background: var(--surface); border: 1.5px solid var(--border2);
+    color: var(--ink2); border-radius: var(--r-pill); padding: 5px 12px;
+    font-size: 0.75rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+  }
+  .filter-pill:hover { border-color: var(--primary); color: var(--primary); }
+  .filter-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  /* SHUFFLE NOTE */
+  .shuffle-note { display: none; font-size: 0.75rem; color: var(--ink3); font-style: italic; margin-bottom: 10px; }
+  .shuffle-note.show { display: block; }
+
+  /* NO RESULTS */
+  .no-results { display: none; text-align: center; padding: 48px 16px; color: var(--ink3); font-size: 0.85rem; }
+  .no-results.show { display: block; }
+
+  /* QUESTION CARDS */
+  #q-list { display: flex; flex-direction: column; gap: 12px; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-card {
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: var(--r-card); padding: 16px;
+    box-shadow: var(--shadow-sm); animation: fadeUp 0.3s ease forwards;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .q-card.bookmarked { border-color: var(--primary); box-shadow: 0 0 0 3px var(--red-bg), var(--shadow-sm); }
+  .card-meta { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .q-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--r-sm); padding: 2px 8px; color: var(--ink3);
+  }
+  .topic-badge {
+    background: var(--red-bg); border: 1px solid var(--red-border);
+    color: var(--primary); border-radius: var(--r-pill); padding: 2px 8px;
+    font-size: 0.68rem; font-weight: 600;
+  }
+  .type-badge {
+    background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.2);
+    color: var(--blue); border-radius: var(--r-pill); padding: 2px 8px;
+    font-size: 0.68rem; font-weight: 600;
+  }
+  .bk-btn {
+    margin-left: auto; font-size: 16px; cursor: pointer;
+    background: none; border: none; opacity: 0.4; transition: opacity 0.15s;
+    padding: 2px 4px;
+  }
+  .bk-btn:hover, .bk-btn.on { opacity: 1; }
+  .q-text { font-size: 0.88rem; font-weight: 500; color: var(--ink2); line-height: 1.55; margin-bottom: 12px; }
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; }
+  @media (max-width: 480px) { .options-grid { grid-template-columns: 1fr; } }
+  .opt {
+    display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px;
+    background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: var(--r-sm); cursor: pointer;
+    transition: all 0.15s; font-size: 0.82rem; color: var(--ink2);
+  }
+  .opt:hover:not(.disabled) { background: var(--red-bg-hover); border-color: var(--red-border); }
+  .opt.disabled { cursor: default; }
+  .opt.correct { background: rgba(22,163,74,0.08); border-color: rgba(22,163,74,0.4); color: var(--green); }
+  .opt.wrong { background: var(--red-bg); border-color: var(--red-border); color: var(--primary); }
+  .opt.rev-correct { background: rgba(22,163,74,0.05); border-color: rgba(22,163,74,0.25); }
+  .opt-letter {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 700;
+    min-width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+    border-radius: 4px; background: var(--surface); border: 1px solid var(--border2);
+    color: var(--ink3); flex-shrink: 0; margin-top: 1px;
+  }
+  .opt.correct .opt-letter { background: var(--green); border-color: var(--green); color: #fff; }
+  .opt.wrong .opt-letter { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .opt.rev-correct .opt-letter { background: rgba(22,163,74,0.15); border-color: rgba(22,163,74,0.3); color: var(--green); }
+  .card-footer { display: flex; align-items: center; gap: 8px; }
+  .reveal-btn {
+    font-size: 0.78rem; font-weight: 600; color: var(--primary);
+    background: var(--red-bg); border: 1px solid var(--red-border);
+    border-radius: var(--r-pill); padding: 5px 12px; cursor: pointer;
+    transition: background 0.15s;
+  }
+  .reveal-btn:hover { background: var(--red-bg-hover); }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .explanation {
+    background: var(--red-bg); border-left: 3px solid var(--primary);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0; padding: 10px 12px;
+    font-size: 0.8rem; color: var(--ink2); line-height: 1.55;
+    margin-top: 10px; animation: fadeIn 0.3s ease;
+  }
+  .explanation strong { color: var(--primary); }
+
+  /* DIAGNOSIS BAR */
+  .diagnosis-bar {
+    position: fixed; bottom: 56px; left: 0; right: 0;
+    padding: 10px 16px; z-index: 90;
+    display: none; justify-content: center;
+  }
+  .diagnosis-bar.show { display: flex; }
+  .diag-btn {
+    background: var(--primary); color: #fff;
+    border: none; border-radius: var(--r-pill); padding: 12px 24px;
+    font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 700;
+    cursor: pointer; box-shadow: var(--shadow-lg);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: var(--shadow-lg); }
+    50% { box-shadow: 0 0 0 8px rgba(232,48,42,0.15), var(--shadow-lg); }
+  }
+  .diag-btn:hover { background: var(--primary-dark); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 200; display: flex; align-items: flex-end;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal-sheet {
+    width: 100%; max-width: 600px; margin: 0 auto;
+    background: var(--surface); border-radius: 20px 20px 0 0;
+    max-height: 90vh; overflow-y: auto;
+    transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    box-shadow: var(--shadow-lg);
+  }
+  .modal-overlay.open .modal-sheet { transform: translateY(0); }
+  .modal-handle { width: 40px; height: 4px; background: var(--border2); border-radius: 2px; margin: 12px auto 0; }
+  .modal-header {
+    position: sticky; top: 0; background: var(--surface);
+    border-bottom: 1px solid var(--border); padding: 12px 16px;
+    display: flex; align-items: center; gap: 8px; z-index: 1;
+  }
+  .modal-header h2 { font-size: 0.95rem; font-weight: 700; flex: 1; }
+  .modal-close {
+    width: 30px; height: 30px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 14px; color: var(--ink3);
+  }
+  .modal-body { padding: 16px; }
+  .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  @media (max-width: 400px) { .score-grid { grid-template-columns: 1fr 1fr; } }
+  .score-cell {
+    border-radius: var(--r-sm); padding: 12px; text-align: center;
+  }
+  .score-cell .val { font-size: 1.5rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+  .score-cell .lbl { font-size: 0.72rem; font-weight: 600; opacity: 0.75; }
+  .score-cell.green { background: rgba(22,163,74,0.1); color: var(--green); }
+  .score-cell.red { background: var(--red-bg); color: var(--primary); }
+  .score-cell.amber { background: rgba(217,119,6,0.1); color: var(--amber); }
+  .score-cell.blue { background: rgba(37,99,235,0.1); color: var(--blue); }
+  .modal-section-title { font-size: 0.78rem; font-weight: 700; color: var(--ink3); text-transform: uppercase; letter-spacing: 0.06em; margin: 16px 0 8px; }
+  .topic-bar-row { margin-bottom: 8px; }
+  .topic-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 3px; color: var(--ink2); font-weight: 500; }
+  .topic-bar-bg { height: 8px; background: var(--surface2); border-radius: var(--r-pill); overflow: hidden; }
+  .topic-bar-fill { height: 100%; border-radius: var(--r-pill); width: 0%; transition: width 0.6s ease; }
+  .type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .type-cell { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--r-sm); padding: 10px; text-align: center; }
+  .type-cell .emoji { font-size: 1.2rem; display: block; margin-bottom: 4px; }
+  .type-cell .type-name { font-size: 0.68rem; font-weight: 600; color: var(--ink3); }
+  .type-cell .type-val { font-size: 0.95rem; font-weight: 800; color: var(--ink); }
+  .focus-cards { display: flex; flex-direction: column; gap: 8px; }
+  .focus-card { border-radius: var(--r-sm); padding: 10px 12px; font-size: 0.8rem; }
+  .focus-card.critical { background: var(--red-bg); border-left: 3px solid var(--primary); color: var(--ink2); }
+  .focus-card.warning { background: rgba(217,119,6,0.08); border-left: 3px solid var(--amber); color: var(--ink2); }
+  .focus-card.good { background: rgba(22,163,74,0.08); border-left: 3px solid var(--green); color: var(--ink2); }
+  .focus-card strong { display: block; margin-bottom: 2px; font-size: 0.78rem; }
+  .verdict-box { background: var(--ink); border-radius: var(--r-sm); padding: 14px; margin-top: 12px; text-align: center; }
+  .verdict-box .verdict-emoji { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+  .verdict-box p { font-size: 0.82rem; color: rgba(255,255,255,0.85); line-height: 1.5; }
+  .modal-footer { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .modal-footer .btn { flex: 1; justify-content: center; }
+  .btn-secondary { background: var(--surface2); border: 1.5px solid var(--border2); color: var(--ink2); }
+
+  /* BOTTOM NAV */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 56px; background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-around;
+    z-index: 100;
+  }
+  .bnav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; font-size: 0.62rem; color: var(--ink4); padding: 6px 16px; }
+  .bnav-item.active { color: var(--primary); }
+  .bnav-item .bnav-icon { font-size: 20px; }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <div class="nav-left">
+    <div class="nav-back" onclick="history.back()">←</div>
+    <div class="nav-logo">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="2" width="12" height="16" rx="2" fill="white" fill-opacity="0.9"/>
+        <path d="M10 18 Q12 22 16 20 Q20 18 18 14" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <line x1="7" y1="7" x2="13" y2="7" stroke="#E8302A" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="7" y1="10" x2="13" y2="10" stroke="#E8302A" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="7" y1="13" x2="11" y2="13" stroke="#E8302A" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="nav-brand">
+      <strong>PDFNest</strong>
+      <span>Quiz Mode</span>
+    </div>
+  </div>
+  <div class="nav-right">
+    <div class="timer-chip">⏱ <span id="timer">00:00</span></div>
+    <div class="btn-icon" id="bk-toggle-btn" onclick="toggleBookmarks()" title="Bookmarks">🔖</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="breadcrumb">CSC104 › 100 Level › Computer Science › <span>AI & Machine Learning Quiz</span></div>
+    <div class="hero-tag">100 Level · Computer Science · CSC104</div>
+    <h1>Introduction to <em>AI & Machine Learning</em></h1>
+    <div class="hero-sub">Lectures 1–4 · <span id="q-count-label">40 questions</span> · Lecture Notes + Handwritten Notes</div>
+    <div class="stats-row">
+      <div class="stat-chip blue">📋 Showing: <strong id="stat-showing">40</strong></div>
+      <div class="stat-chip green">✅ Correct: <strong id="stat-correct">0</strong></div>
+      <div class="stat-chip red">❌ Wrong: <strong id="stat-wrong">0</strong></div>
+      <div class="stat-chip purple">🎯 Attempted: <strong id="stat-attempted">0</strong></div>
+      <div class="stat-chip amber">⭐ Score: <strong id="stat-score">0%</strong></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-bar"></div></div>
+      <div class="progress-label" id="prog-label">0 / 40</div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTIONS -->
+<div class="actions-row">
+  <button class="btn btn-outline" onclick="shuffleQuestions()">🔀 Shuffle</button>
+  <button class="btn btn-ghost-red" onclick="revealAll()">👁 Reveal All</button>
+  <button class="btn btn-danger" onclick="resetQuiz()">↺ Reset</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- BOOKMARKS -->
+  <div class="bm-card" id="bm-card">
+    <h3>🔖 Bookmarked Questions</h3>
+    <div id="bm-list"><span class="bm-empty">No bookmarks yet. Click 🔖 on any card.</span></div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-card">
+    <button class="sum-toggle" id="sum-toggle" onclick="toggleSummary()">
+      <div class="sum-toggle-left">📚 Topic Revision Summary</div>
+      <span class="sum-arrow" id="sum-arrow">▼</span>
+    </button>
+    <div id="sum-body">
+      <div class="sum-section">
+        <h4>1. What is AI?</h4>
+        <p>
+          <span class="chip">Artificial Intelligence</span> is a field of computer science dedicated to creating systems that perform tasks requiring human intelligence. Core capabilities: <span class="chip">Learning</span>, <span class="chip">Reasoning</span>, <span class="chip">Problem Solving</span>, <span class="chip">Perception</span>, <span class="chip">Language Understanding</span>. Two main categories: <span class="chip">Narrow AI</span> (task-specific) and <span class="chip">AGI</span> (Artificial General Intelligence).
+        </p>
+      </div>
+      <div class="sum-section">
+        <h4>2. Machine Learning</h4>
+        <p>
+          <span class="chip">Machine Learning</span> is a subset of AI where machines learn from data and improve without being explicitly programmed. Applications: <span class="chip">spam detection</span>, <span class="chip">recommendation systems</span>, <span class="chip">CGPA prediction</span>, <span class="chip">medical diagnosis</span>.
+        </p>
+      </div>
+      <div class="sum-section">
+        <h4>3. Brief History of AI</h4>
+        <p>
+          <span class="chip">1950</span>: AI idea conceived (Turing asked "Can machines think?"). <span class="chip">1956</span>: AI officially born as a term. <span class="chip">1960–1980s</span>: <span class="chip">AI Winter</span> — reduced funding. <span class="chip">1990s–2000s</span>: IBM Deep Blue beats Kasparov; ML growth. <span class="chip">2010</span>: Deep Learning era. <span class="chip">2012</span>: Deep Neural Networks. <span class="chip">2017</span>: Google Brain introduces <span class="chip">Transformers</span>. <span class="chip">ChatGPT</span> by OpenAI — Generative AI boom.
+        </p>
+      </div>
+      <div class="sum-section">
+        <h4>4. Generative AI & Tools</h4>
+        <p>
+          <span class="chip">Generative AI</span> creates new data (text, images, video, code). Main tools: <span class="chip">GAN</span> (Generator + Discriminator), <span class="chip">VAE</span> (Encoder + Decoder, latent space), <span class="chip">Transformers</span> (attention mechanism, LLMs), <span class="chip">Diffusion Models</span> (noise reversal). Applications: text creation, drug discovery, entertainment.
+        </p>
+      </div>
+      <div class="sum-section">
+        <h4>5. AI Agent & Smart Assistant</h4>
+        <p>
+          <span class="chip">AI Agent</span>: intelligent system that perceives environment, makes decisions, takes actions. Key parts: <span class="chip">Perception</span>, <span class="chip">Cognition</span>, <span class="chip">Action & Goal</span>. <span class="chip">Smart Assistants</span>: AI agents using natural language (e.g., Siri, Gemini, chatbots). Applications in healthcare, education, business, transportation.
+        </p>
+      </div>
+      <div class="sum-section">
+        <h4>6. Deep Learning, Neural Networks & LLMs</h4>
+        <p>
+          <span class="chip">Deep Learning</span> uses <span class="chip">Artificial Neural Networks</span> with multiple layers to analyse complex data. <span class="chip">Neural Networks</span>: fundamental architecture with interconnected nodes in layers. <span class="chip">LLM</span> (Large Language Model) — type of GenAI trained on massive text data. Key: <span class="chip">Scale</span> + <span class="chip">Transformer Architecture</span>. Uses: text generation, translation, summarisation, code generation.
+        </p>
+      </div>
+      <div class="sum-section">
+        <h4>7. AI Applications (NLP, Computer Vision, Robotics)</h4>
+        <p>
+          <span class="chip">NLP</span>: field enabling computers to understand human language. Apps: language translation, chatbots, sentiment analysis, speech recognition. <span class="chip">Computer Vision</span>: enables machines to see. Apps: face recognition, Google Lens, self-driving cars. <span class="chip">Robotics</span>: design, construction and operation of robots. Apps: logistics, healthcare co-bots, hazardous environments.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Search questions…" oninput="filterQuestions()">
+  </div>
+
+  <!-- FILTER PILLS -->
+  <div class="filter-pills" id="filter-pills"></div>
+
+  <!-- SHUFFLE NOTE -->
+  <div class="shuffle-note" id="shuffle-note">🔀 Shuffled — reset to restore order</div>
+
+  <!-- QUESTION LIST -->
+  <div id="q-list"></div>
+
+  <!-- NO RESULTS -->
+  <div class="no-results" id="no-results">🔍 No questions match your search or filter.</div>
+</div>
+
+<!-- DIAGNOSIS BAR -->
+<div class="diagnosis-bar" id="diag-bar">
+  <button class="diag-btn" onclick="openModal()">📊 View My Learning Diagnosis</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <span>📊</span>
+      <h2>Learning Diagnosis</h2>
+      <div class="modal-close" onclick="closeModal()">✕</div>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+      <button class="btn btn-danger" onclick="resetQuiz(); closeModal()">↺ Retake Quiz</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bnav-item active"><div class="bnav-icon">🏠</div>Home</div>
+  <div class="bnav-item"><div class="bnav-icon">➕</div>Contribute</div>
+  <div class="bnav-item"><div class="bnav-icon">👤</div>Profile</div>
+</nav>
+
+<script>
+const questions = [
+  {id:1,topic:"What is AI",text:"What does AI stand for?",type:"Theory",options:["Automated Intelligence","Artificial Intelligence","Analytical Interface","Autonomous Integration"],answer:1,explanation:"AI stands for Artificial Intelligence — the field of computer science dedicated to creating systems that can perform tasks typically requiring human intelligence."},
+  {id:2,topic:"What is AI",text:"Which of the following BEST defines Artificial Intelligence?",type:"Theory",options:["Hardware that computes numbers fast","Software used only for gaming","A field of computer science dedicated to creating systems that perform tasks requiring human intelligence","A database management system"],answer:2,explanation:"AI is a field of computer science focused on creating intelligent systems that can learn, reason, perceive, and understand language — tasks that typically require human intelligence."},
+  {id:3,topic:"What is AI",text:"Which of these is NOT listed as a core capability of AI?",type:"Theory",options:["Learning","Reasoning","Manufacturing","Perception"],answer:2,explanation:"Manufacturing is a physical industrial process, not a cognitive capability. The five core AI capabilities are: Learning, Reasoning, Problem Solving, Perception, and Language Understanding."},
+  {id:4,topic:"What is AI",text:"What does 'Perception' mean in the context of AI core capabilities?",type:"Theory",options:["Writing code automatically","Understanding sensory input like images, sounds, and text","Learning from past mistakes","Translating between languages"],answer:1,explanation:"Perception in AI refers to the ability to understand sensory input — such as images, sounds, and text — similar to how humans use their senses to understand the world."},
+  {id:5,topic:"What is AI",text:"Which of the following is an example of AI?",type:"Theory",options:["A basic calculator","A printed textbook","A chatbot","A light switch"],answer:2,explanation:"A chatbot is a classic example of AI — it uses natural language processing and reasoning to interact with users. Other examples include self-driving cars, code generation AI, and voice assistants."},
+  {id:6,topic:"Categories of AI",text:"What are the two main categories of Artificial Intelligence?",type:"Theory",options:["Deep Learning and Machine Learning","Narrow Intelligence and AGI","Supervised and Unsupervised AI","Robotics and NLP"],answer:1,explanation:"The two main categories of AI are Narrow Intelligence (designed for specific tasks) and AGI — Artificial General Intelligence (capable of any intellectual task a human can do)."},
+  {id:7,topic:"Categories of AI",text:"What does AGI stand for?",type:"Theory",options:["Advanced General Intelligence","Artificial Growth Index","Artificial General Intelligence","Automated Grid Interface"],answer:2,explanation:"AGI stands for Artificial General Intelligence — a theoretical form of AI that could perform any intellectual task a human can, unlike narrow AI which is task-specific."},
+  {id:8,topic:"Categories of AI",text:"Current AI systems like chatbots and image recognition tools are examples of:",type:"Theory",options:["AGI","Narrow AI","Superintelligence","Cognitive AI"],answer:1,explanation:"Most current AI systems are examples of Narrow AI — they are excellent at specific tasks (like answering questions or recognising faces) but cannot generalise across all tasks like AGI would."},
+  {id:9,topic:"Machine Learning",text:"Machine Learning is best described as:",type:"Theory",options:["A type of computer hardware","A subset of AI where machines learn from data without being explicitly programmed","A programming language used for databases","A network of computers connected via the internet"],answer:1,explanation:"Machine Learning is a subset of AI where machines learn patterns from data and improve their performance over time without being explicitly programmed for each task."},
+  {id:10,topic:"Machine Learning",text:"Which of the following is a correct example of Machine Learning?",type:"Theory",options:["A light bulb turning on","Spam detection in emails","A door opening automatically with a sensor","A simple calculator adding numbers"],answer:1,explanation:"Spam detection is a classic ML example — the algorithm learns from data to classify emails as spam or not based on patterns, without being explicitly programmed with rules for every possible spam message."},
+  {id:11,topic:"History of AI",text:"In which year was the concept of AI first conceived (idea sparked)?",type:"Theory",options:["1956","1980","1950","2010"],answer:2,explanation:"AI curiosity was sparked around 1950 when a man wrote a scientific paper asking 'Can machines think?' — this is considered when the AI idea was first conceived."},
+  {id:12,topic:"History of AI",text:"In what year was AI officially 'born' as a recognised term in computer science?",type:"Theory",options:["1950","1956","1980","2000"],answer:1,explanation:"In 1956, AI became an official term when it was coined at a conference, giving it recognition in the computer science world. AI was officially born in 1956."},
+  {id:13,topic:"History of AI",text:"The period from the 1960s to 1980s is known as the 'AI Winter' because:",type:"Theory",options:["AI systems were frozen due to hardware failures","Technology and data limitations led to reduced funding and interest in AI research","AI was banned in many countries","Computers became too hot to operate"],answer:1,explanation:"The 'AI Winter' (1960s–1980s) refers to a period where technology and data availability limitations led to reduced government funding and public interest in AI research."},
+  {id:14,topic:"History of AI",text:"Which chess champion did IBM's Deep Blue defeat in the 1990s?",type:"Theory",options:["Magnus Carlsen","Bobby Fischer","Garry Kasparov","Anatoly Karpov"],answer:2,explanation:"IBM's Deep Blue defeated world chess champion Garry Kasparov in the 1990s — a landmark moment showing machines could outperform humans in complex strategic tasks."},
+  {id:15,topic:"History of AI",text:"Who wrote a paper about deep learning techniques around 2006?",type:"Theory",options:["Elon Musk","Geoffrey Hinton","Sam Altman","Alan Turing"],answer:1,explanation:"Geoffrey Hinton wrote an influential paper on deep learning techniques around 2006, which significantly contributed to the deep learning revolution and the 2010s AI boom."},
+  {id:16,topic:"History of AI",text:"In 2017, which company introduced the Transformer architecture that became the foundation of modern AI?",type:"Theory",options:["OpenAI","Microsoft","Google Brain","Meta"],answer:2,explanation:"In 2017, the Google Brain team had a scientific breakthrough that introduced Transformers — a neural network architecture that became the foundation of Large Language Models (LLMs) like ChatGPT."},
+  {id:17,topic:"History of AI",text:"ChatGPT is a product of which company?",type:"Theory",options:["Google","Microsoft","OpenAI","Meta"],answer:2,explanation:"ChatGPT is developed by OpenAI. It is a prominent example of Generative AI, built on the Transformer architecture, and helped launch the mainstream Generative AI era."},
+  {id:18,topic:"Generative AI",text:"What is Generative AI?",type:"Theory",options:["AI that only classifies existing data","A type of AI that can create new data such as text, images, videos, music, or code","AI used exclusively for robotics","A database search tool"],answer:1,explanation:"Generative AI is a type of Artificial Intelligence that can create new data — including text, images, video, music, or code — by learning patterns and structures from existing data."},
+  {id:19,topic:"Generative AI",text:"How does Generative AI differ from traditional AI?",type:"Theory",options:["It works faster","Instead of just working with existing data, it learns patterns to create something new","It uses less computing power","It only works with numbers"],answer:1,explanation:"Traditional AI classifies or predicts using existing data. Generative AI goes further — it learns the underlying patterns and structure of data so it can generate entirely new, original content."},
+  {id:20,topic:"Generative AI Tools",text:"What are the two components of a Generative Adversarial Network (GAN)?",type:"Theory",options:["Encoder and Decoder","Trainer and Tester","Generator and Discriminator","Input and Output"],answer:2,explanation:"A GAN has two parts: the Generator (creates new data samples like images or text) and the Discriminator (tries to tell the difference between real and generated data). They compete to improve each other."},
+  {id:21,topic:"Generative AI Tools",text:"In a GAN, what is the role of the Discriminator?",type:"Theory",options:["To generate new images","To check and cross-check what the generator created to give a better result","To train the neural network weights","To store the training data"],answer:1,explanation:"The Discriminator checks and cross-checks what the Generator created, trying to distinguish real data from fake. This competition pushes the Generator to produce increasingly realistic outputs."},
+  {id:22,topic:"Generative AI Tools",text:"What does VAE stand for in Generative AI?",type:"Theory",options:["Variable Auto Encoder","Variational Auto Encoder","Virtual AI Engine","Visual Adversarial Engine"],answer:1,explanation:"VAE stands for Variational Autoencoder. It learns a compressed version of the input called a 'latent space', then uses this to create new data variations. It consists of an Encoder and a Decoder."},
+  {id:23,topic:"Generative AI Tools",text:"In a VAE, what does the Encoder do?",type:"Theory",options:["Takes a point from the latent space and turns it back into data","Takes input data and turns it into a probability distribution in the latent space","Generates random images","Calculates the loss function only"],answer:1,explanation:"The Encoder takes the input data and compresses it into a probability distribution in the latent space. The Decoder then takes a point from this latent space and reconstructs or generates new data from it."},
+  {id:24,topic:"Generative AI Tools",text:"Transformers use which mechanism to help models focus on important parts of input?",type:"Theory",options:["Feedback loops","Attention mechanism","Gradient descent only","Back propagation"],answer:1,explanation:"Transformers use an 'Attention' mechanism that helps the model focus on the most relevant parts of the input when generating output, making them especially powerful for language and sequential data tasks."},
+  {id:25,topic:"Generative AI Tools",text:"Diffusion Models work by:",type:"Theory",options:["Connecting multiple computers together","Starting with random noise and gradually removing it to create realistic data","Compressing data into a smaller file size","Copying data from one database to another"],answer:1,explanation:"Diffusion Models learn to reverse a process that adds noise to data. They start with random noise and gradually remove the noise step by step to create realistic, high-quality data like images or videos."},
+  {id:26,topic:"Generative AI Tools",text:"Which generative AI technique is BEST suited for Large Language Models (LLMs)?",type:"Theory",options:["GANs","VAEs","Diffusion Models","Transformer Networks"],answer:3,explanation:"Transformer Networks are the foundation of LLMs. Their Attention mechanism excels at processing sequential data like text, enabling capabilities like language translation, text generation, and question answering."},
+  {id:27,topic:"Applications of Gen AI",text:"Which of the following is NOT a listed application of Generative AI?",type:"Theory",options:["Text creation","Drug discovery","Transportation traffic control","Entertainment and gaming"],answer:2,explanation:"Transportation traffic control is an application of AI agents/smart systems, not specifically Generative AI. Gen AI applications include text creation, designing and prototyping, drug discovery, data organisation, and entertainment."},
+  {id:28,topic:"AI Agent",text:"An AI Agent is best defined as:",type:"Theory",options:["A software that only plays games","An intelligent system that can operate in an environment, perceive it, make decisions, and take actions to achieve a goal","A hardware component in a computer","A type of database"],answer:1,explanation:"An AI Agent is an intelligent system that can perceive its environment, make decisions, and take actions to achieve a particular goal — usually with some level of autonomy. A self-driving car is a good example."},
+  {id:29,topic:"AI Agent",text:"What are the three key components of an AI Agent?",type:"Theory",options:["CPU, RAM, and Storage","Input, Process, Output","Perception, Cognition, and Action & Goal","Sensors, Cameras, and Microphones"],answer:2,explanation:"The three key components of an AI Agent are: Perception (ability to sense the environment), Cognition (ability to think after perception), and Action & Goal (ability to interact with the environment to achieve an objective)."},
+  {id:30,topic:"AI Agent",text:"What is meant by 'Cognition' in the context of an AI Agent?",type:"Theory",options:["The ability to sense the environment","The ability to move physically","The ability to think and make decisions after perception","The ability to generate images"],answer:2,explanation:"Cognition in an AI Agent refers to its ability to think, reason, and make decisions after perceiving the environment — it is the 'brain' of the agent that processes information and plans actions."},
+  {id:31,topic:"Smart Assistants",text:"Smart Assistants are AI agents designed to:",type:"Theory",options:["Only control home appliances","Help people with tasks through natural language (voice or text)","Store and retrieve large databases","Perform only mathematical calculations"],answer:1,explanation:"Smart Assistants are AI agents designed to help people with tasks through natural language — either voice or text. They often connect with various services and devices. Examples include Siri, Gemini, and chatbots."},
+  {id:32,topic:"Smart Assistants",text:"Which of the following is an example of a Virtual Personal Assistant?",type:"Theory",options:["Microsoft Excel","Siri","A CCTV camera","A barcode scanner"],answer:1,explanation:"Siri is a Virtual Personal Assistant — an example of a Smart Assistant. Other examples include Google Assistant, Gemini, and Alexa. They can answer questions, set reminders, and control smart devices using natural language."},
+  {id:33,topic:"Smart Assistants",text:"In which application area would you find 'Personalised Learning Platforms' and 'Intelligent Tutoring Systems'?",type:"Theory",options:["Business and Finance","Transportation","Education","Healthcare"],answer:2,explanation:"Personalised Learning Platforms and Intelligent Tutoring Systems are applications of AI Agents and Smart Assistants in the Education sector, along with Automated Graining systems and automated grading."},
+  {id:34,topic:"Deep Learning",text:"Deep Learning differs from regular Machine Learning because it:",type:"Theory",options:["Requires less data","Uses artificial neural networks with multiple layers to analyse complex data and identify intricate features","Is only used for image generation","Works without any data"],answer:1,explanation:"Deep Learning utilises artificial neural networks with multiple layers ('deep' refers to these many layers) to analyse complex data and extract intricate features — far exceeding the capability of traditional ML algorithms."},
+  {id:35,topic:"Deep Learning",text:"Neural Networks are described as:",type:"Theory",options:["Physical cables connecting computers","Computational models composed of interconnected nodes or neurons that exist in layers","Simple decision trees","Lookup tables for data"],answer:1,explanation:"Neural Networks are the fundamental architecture of deep learning — they are computational models composed of interconnected nodes (neurons) that exist in layers, inspired by the structure of the human brain."},
+  {id:36,topic:"LLMs",text:"What does LLM stand for?",type:"Theory",options:["Linear Language Matrix","Large Language Model","Logical Learning Machine","Layered Logic Model"],answer:1,explanation:"LLM stands for Large Language Model. It is a type of Generative AI that is basically used to generate text. LLMs are trained on millions or trillions of data points and use the Transformer architecture."},
+  {id:37,topic:"LLMs",text:"Which characteristic distinguishes LLMs from other AI models?",type:"Theory",options:["They use only image data","They are trained on millions and trillions of data points using the Transformer architecture with attention mechanism","They are the smallest AI models available","They work without internet connection only"],answer:1,explanation:"LLMs are distinguished by their massive scale (trained on trillions of words), the Transformer architecture (with attention mechanism), and emergent abilities like text generation, translation, summarisation, and code generation."},
+  {id:38,topic:"AI Applications",text:"Natural Language Processing (NLP) is defined as:",type:"Theory",options:["A field of AI that enables computers to see and understand images","A field of AI that focuses on enabling computers to understand human language","A type of robot that speaks","A machine that translates images only"],answer:1,explanation:"NLP (Natural Language Processing) is the field of AI that focuses on enabling computers to understand, process, interpret, and generate human language. Applications include language translation, chatbots, sentiment analysis, and speech recognition."},
+  {id:39,topic:"AI Applications",text:"Computer Vision is the field of AI that:",type:"Theory",options:["Enables machines to see and understand visual information","Only processes audio signals","Replaces the human nervous system","Controls robotic arms only"],answer:0,explanation:"Computer Vision is the field of AI that enables machines to see and understand visual information. Examples include face recognition, Google Lens, and object detection used in self-driving cars."},
+  {id:40,topic:"AI Applications",text:"Robotics in AI is concerned with:",type:"Theory",options:["Only writing code","The design, construction, operation and application of robots","Generating text from prompts","Training neural networks only"],answer:1,explanation:"Robotics is the field of AI concerned with the design, construction, operation, and application of robots. Applications include logistics, healthcare (collaborative robots/co-bots), and hazardous environment operations."}
+];
+
+const state = {
+  answers: {},
+  revealed: {},
+  bookmarks: new Set(),
+  filter: 'All',
+  search: '',
+  shuffled: [...questions],
+  isShuffled: false,
+  timerSecs: 0,
+  timerInterval: null,
+};
+
+function init() {
+  buildFilters();
+  renderQuestions();
+  startTimer();
+}
+
+function buildFilters() {
+  const topics = ['All', ...new Set(questions.map(q => q.topic))];
+  const container = document.getElementById('filter-pills');
+  container.innerHTML = topics.map(t =>
+    `<div class="filter-pill ${t==='All'?'active':''}" onclick="setFilter('${t}',this)">${t}</div>`
+  ).join('');
+}
+
+function setFilter(topic, btn) {
+  state.filter = topic;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  renderQuestions();
+}
+
+function filterQuestions() {
+  state.search = document.getElementById('search-input').value.toLowerCase();
+  renderQuestions();
+}
+
+function getVisible() {
+  return state.shuffled.filter(q => {
+    const matchFilter = state.filter === 'All' || q.topic === state.filter;
+    const matchSearch = !state.search || q.text.toLowerCase().includes(state.search) || q.topic.toLowerCase().includes(state.search);
+    return matchFilter && matchSearch;
+  });
+}
+
+function renderQuestions() {
+  const visible = getVisible();
+  const list = document.getElementById('q-list');
+  const noRes = document.getElementById('no-results');
+  document.getElementById('stat-showing').textContent = visible.length;
+  if (!visible.length) {
+    list.innerHTML = '';
+    noRes.classList.add('show');
+    return;
+  }
+  noRes.classList.remove('show');
+  list.innerHTML = visible.map((q, idx) => buildCard(q, idx)).join('');
+  updateStats();
+}
+
+function buildCard(q, idx) {
+  const ans = state.answers[q.id];
+  const rev = state.revealed[q.id];
+  const bk = state.bookmarks.has(q.id);
+  const letters = ['A','B','C','D'];
+  const isAnswered = ans !== undefined;
+
+  let opts = q.options.map((o, i) => {
+    let cls = 'opt';
+    if (isAnswered || rev) cls += ' disabled';
+    if (isAnswered && i === ans && i === q.answer) cls += ' correct';
+    else if (isAnswered && i === ans && i !== q.answer) cls += ' wrong';
+    else if ((isAnswered || rev) && i === q.answer) cls += (rev && !isAnswered ? ' rev-correct' : ' correct');
+    return `<div class="${cls}" onclick="pickAnswer(${q.id},${i})">
+      <span class="opt-letter">${letters[i]}</span>
+      <span>${o}</span>
+    </div>`;
+  }).join('');
+
+  const showReveal = !isAnswered && !rev;
+  const showExpl = isAnswered || rev;
+
+  return `<div class="q-card ${bk?'bookmarked':''}" id="qcard-${q.id}">
+    <div class="card-meta">
+      <span class="q-num">Q${q.id}</span>
+      <span class="topic-badge">${q.topic}</span>
+      <span class="type-badge">${q.type}</span>
+      <button class="bk-btn ${bk?'on':''}" onclick="toggleBk(${q.id})">🔖</button>
+    </div>
+    <div class="q-text">${q.text}</div>
+    <div class="options-grid">${opts}</div>
+    <div class="card-footer">
+      ${showReveal ? `<button class="reveal-btn" onclick="revealAns(${q.id})">Reveal Answer</button>` : ''}
+    </div>
+    ${showExpl ? `<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>` : ''}
+  </div>`;
+}
+
+function pickAnswer(id, chosen) {
+  if (state.answers[id] !== undefined || state.revealed[id]) return;
+  state.answers[id] = chosen;
+  reRenderCard(id);
+  updateStats();
+  checkDiagnostic();
+}
+
+function revealAns(id) {
+  if (state.answers[id] !== undefined) return;
+  state.revealed[id] = true;
+  reRenderCard(id);
+}
+
+function reRenderCard(id) {
+  const q = questions.find(q => q.id === id);
+  const el = document.getElementById('qcard-' + id);
+  if (el && q) {
+    const dummy = document.createElement('div');
+    dummy.innerHTML = buildCard(q, 0);
+    const newCard = dummy.firstElementChild;
+    newCard.style.animation = 'none';
+    el.replaceWith(newCard);
+  }
+}
+
+function revealAll() {
+  questions.forEach(q => {
+    if (state.answers[q.id] === undefined) state.revealed[q.id] = true;
+  });
+  renderQuestions();
+}
+
+function resetQuiz() {
+  state.answers = {};
+  state.revealed = {};
+  state.bookmarks = new Set();
+  state.filter = 'All';
+  state.search = '';
+  state.shuffled = [...questions];
+  state.isShuffled = false;
+  state.timerSecs = 0;
+  document.getElementById('search-input').value = '';
+  document.querySelectorAll('.filter-pill').forEach((p,i) => p.classList.toggle('active', i===0));
+  document.getElementById('shuffle-note').classList.remove('show');
+  document.getElementById('diag-bar').classList.remove('show');
+  updateBookmarkPanel();
+  renderQuestions();
+}
+
+function shuffleQuestions() {
+  const arr = [...state.shuffled];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  state.shuffled = arr;
+  state.isShuffled = true;
+  document.getElementById('shuffle-note').classList.add('show');
+  renderQuestions();
+}
+
+function toggleBk(id) {
+  if (state.bookmarks.has(id)) state.bookmarks.delete(id);
+  else state.bookmarks.add(id);
+  reRenderCard(id);
+  updateBookmarkPanel();
+}
+
+function toggleBookmarks() {
+  const card = document.getElementById('bm-card');
+  const btn = document.getElementById('bk-toggle-btn');
+  card.classList.toggle('open');
+  btn.classList.toggle('active');
+}
+
+function updateBookmarkPanel() {
+  const list = document.getElementById('bm-list');
+  if (!state.bookmarks.size) {
+    list.innerHTML = '<span class="bm-empty">No bookmarks yet. Click 🔖 on any card.</span>';
+    return;
+  }
+  list.innerHTML = [...state.bookmarks].sort((a,b)=>a-b).map(id =>
+    `<div class="bm-pill" onclick="scrollToQ(${id})">Q${id}</div>`
+  ).join('');
+}
+
+function scrollToQ(id) {
+  const el = document.getElementById('qcard-' + id);
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function updateStats() {
+  const visible = getVisible();
+  const total = questions.length;
+  const attempted = Object.keys(state.answers).length;
+  const correct = Object.entries(state.answers).filter(([id, ans]) => {
+    const q = questions.find(q => q.id == id);
+    return q && q.answer === ans;
+  }).length;
+  const wrong = attempted - correct;
+  const score = attempted ? Math.round((correct / attempted) * 100) : 0;
+
+  document.getElementById('stat-showing').textContent = visible.length;
+  document.getElementById('stat-correct').textContent = correct;
+  document.getElementById('stat-wrong').textContent = wrong;
+  document.getElementById('stat-attempted').textContent = attempted;
+  document.getElementById('stat-score').textContent = score + '%';
+  document.getElementById('prog-bar').style.width = (attempted / total * 100) + '%';
+  document.getElementById('prog-label').textContent = attempted + ' / ' + total;
+}
+
+function checkDiagnostic() {
+  const attempted = Object.keys(state.answers).length;
+  const bar = document.getElementById('diag-bar');
+  if (attempted >= 10) bar.classList.add('show');
+  else bar.classList.remove('show');
+}
+
+function toggleSummary() {
+  const body = document.getElementById('sum-body');
+  const arrow = document.getElementById('sum-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function openModal() {
+  document.getElementById('modal-body').innerHTML = buildReport();
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(() => {
+    document.querySelectorAll('.topic-bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+  }, 80);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+}
+
+function buildReport() {
+  const attempted = Object.keys(state.answers).length;
+  const correct = Object.entries(state.answers).filter(([id, ans]) => {
+    const q = questions.find(q => q.id == id);
+    return q && q.answer === ans;
+  }).length;
+  const wrong = attempted - correct;
+  const score = attempted ? Math.round((correct / attempted) * 100) : 0;
+
+  // Topic performance
+  const topicMap = {};
+  questions.forEach(q => {
+    if (!topicMap[q.topic]) topicMap[q.topic] = { correct: 0, total: 0 };
+    if (state.answers[q.id] !== undefined) {
+      topicMap[q.topic].total++;
+      if (state.answers[q.id] === q.answer) topicMap[q.topic].correct++;
+    }
+  });
+  const topicBars = Object.entries(topicMap).filter(([,v]) => v.total > 0).map(([topic, v]) => {
+    const pct = Math.round((v.correct / v.total) * 100);
+    const color = pct >= 70 ? 'var(--green)' : pct >= 40 ? 'var(--amber)' : 'var(--primary)';
+    return `<div class="topic-bar-row">
+      <div class="topic-bar-label"><span>${topic}</span><span>${v.correct}/${v.total} (${pct}%)</span></div>
+      <div class="topic-bar-bg"><div class="topic-bar-fill" style="background:${color}" data-width="${pct}"></div></div>
+    </div>`;
+  }).join('') || '<p style="color:var(--ink4);font-size:0.78rem">Answer questions to see topic breakdown.</p>';
+
+  // Focus cards
+  const focusCards = Object.entries(topicMap).filter(([,v]) => v.total > 0).map(([topic, v]) => {
+    const pct = Math.round((v.correct / v.total) * 100);
+    if (pct < 40) return `<div class="focus-card critical"><strong>🚨 ${topic}</strong>Needs immediate review — only ${pct}% correct. Revisit notes and retry.</div>`;
+    if (pct < 70) return `<div class="focus-card warning"><strong>⚠️ ${topic}</strong>Decent but needs improvement — ${pct}% correct. Practice more questions on this topic.</div>`;
+    return `<div class="focus-card good"><strong>✅ ${topic}</strong>Great performance — ${pct}% correct! Keep it up.</div>`;
+  }).join('') || '<p style="color:var(--ink4);font-size:0.78rem">No data yet.</p>';
+
+  const verdictEmoji = score >= 80 ? '🏆' : score >= 60 ? '💪' : score >= 40 ? '📖' : '🔄';
+  const verdictText = score >= 80
+    ? "Excellent work! You have a strong grasp of AI & ML fundamentals. Keep practising to maintain this level!"
+    : score >= 60
+    ? "Good progress! You understand the core concepts. Focus on your weaker topics and you'll ace the exam."
+    : score >= 40
+    ? "You're getting there. Review your lecture notes carefully, especially the topics marked red above."
+    : "You need more practice. Don't be discouraged — go through the Topic Revision Summary and try again.";
+
+  return `
+    <div class="score-grid">
+      <div class="score-cell green"><div class="val">${correct}</div><div class="lbl">✅ Correct</div></div>
+      <div class="score-cell red"><div class="val">${wrong}</div><div class="lbl">❌ Wrong</div></div>
+      <div class="score-cell amber"><div class="val">${score}%</div><div class="lbl">⭐ Score</div></div>
+      <div class="score-cell blue"><div class="val">${attempted}/${questions.length}</div><div class="lbl">🎯 Attempted</div></div>
+    </div>
+    <div class="modal-section-title">Topic Performance</div>
+    ${topicBars}
+    <div class="modal-section-title">Performance by Type</div>
+    <div class="type-grid">
+      <div class="type-cell"><span class="emoji">📖</span><div class="type-name">Theory</div><div class="type-val">${attempted}</div></div>
+      <div class="type-cell"><span class="emoji">🧮</span><div class="type-name">Calculation</div><div class="type-val">0</div></div>
+      <div class="type-cell"><span class="emoji">📐</span><div class="type-name">Formula</div><div class="type-val">0</div></div>
+    </div>
+    <div class="modal-section-title">Areas to Focus On</div>
+    <div class="focus-cards">${focusCards}</div>
+    <div class="verdict-box">
+      <span class="verdict-emoji">${verdictEmoji}</span>
+      <p>${verdictText}</p>
+    </div>
+  `;
+}
+
+function startTimer() {
+  state.timerInterval = setInterval(() => {
+    state.timerSecs++;
+    const m = String(Math.floor(state.timerSecs / 60)).padStart(2, '0');
+    const s = String(state.timerSecs % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+}
+
+init();
+</script>
+</body>
+</html>
